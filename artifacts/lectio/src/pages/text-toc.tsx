@@ -2,7 +2,7 @@ import React from "react";
 import { Link, useParams } from "wouter";
 import { useGetText, useListParagraphs, useGetTextStats } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, CheckCircle2, Circle } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Circle, BookOpen } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function TextToc() {
@@ -59,12 +59,20 @@ export default function TextToc() {
           </h1>
           <p className="text-xl text-muted-foreground font-serif">{text.author}</p>
           
-          <div className="pt-6">
+          <div className="pt-6 flex flex-wrap gap-3 justify-center">
             <Link href={`/texts/${text.id}/read/${firstUnread}`}>
               <Button size="lg" className="rounded-full px-8 font-serif text-lg bg-primary hover:bg-primary/90 text-primary-foreground">
                 {stats?.completedParagraphs === 0 ? "Begin Reading" : "Continue Reading"}
               </Button>
             </Link>
+            {stats && stats.completedParagraphs > 0 && (
+              <Link href={`/texts/${text.id}/vocabulary`}>
+                <Button size="lg" variant="outline" className="rounded-full px-6 font-serif text-lg gap-2">
+                  <BookOpen className="h-4 w-4" />
+                  Vocabulary
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
 

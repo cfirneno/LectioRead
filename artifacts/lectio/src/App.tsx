@@ -9,6 +9,7 @@ import Landing from "@/pages/landing";
 import Home from "@/pages/home";
 import TextToc from "@/pages/text-toc";
 import Read from "@/pages/read";
+import Vocabulary from "@/pages/vocabulary";
 import Subscribe from "@/pages/subscribe";
 import CheckoutSuccess from "@/pages/checkout-success";
 import { Loader2 } from "lucide-react";
@@ -97,6 +98,11 @@ function Router() {
       <Route path="/texts/:textId">
         <RequireSubscription>
           <TextToc />
+        </RequireSubscription>
+      </Route>
+      <Route path="/texts/:textId/vocabulary">
+        <RequireSubscription>
+          <Vocabulary />
         </RequireSubscription>
       </Route>
       <Route path="/texts/:textId/read/:index">

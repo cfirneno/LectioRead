@@ -176,6 +176,25 @@ export const GetTextStatsResponse = zod.object({
 
 
 /**
+ * @summary Running vocabulary list of words seen so far in this text
+ */
+export const GetTextVocabularyParams = zod.object({
+  "textId": zod.coerce.number()
+})
+
+export const GetTextVocabularyResponse = zod.object({
+  "textId": zod.number(),
+  "throughParagraphIndex": zod.number().describe('Highest paragraph index included in the aggregation (-1 if none)'),
+  "entries": zod.array(zod.object({
+  "original": zod.string(),
+  "translation": zod.string(),
+  "count": zod.number(),
+  "firstParagraphIndex": zod.number()
+}))
+})
+
+
+/**
  * @summary List all reading progress records
  */
 export const ListProgressResponseItem = zod.object({

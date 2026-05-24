@@ -225,6 +225,25 @@ paths:
               schema:
                 $ref: "#/components/schemas/TextStats"
 
+  /texts/{textId}/vocabulary:
+    get:
+      operationId: getTextVocabulary
+      tags: [texts]
+      summary: Running vocabulary list of words seen so far in this text
+      parameters:
+        - name: textId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Vocabulary list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VocabularyList"
+
   /progress:
     get:
       operationId: listProgress
@@ -415,6 +434,33 @@ components:
         fullTranslation:
           type: ["string", "null"]
           description: "Cached full literary translation"
+
+    VocabularyEntry:
+      type: object
+      required: [original, translation, count, firstParagraphIndex]
+      properties:
+        original:
+          type: string
+        translation:
+          type: string
+        count:
+          type: integer
+        firstParagraphIndex:
+          type: integer
+
+    VocabularyList:
+      type: object
+      required: [textId, throughParagraphIndex, entries]
+      properties:
+        textId:
+          type: integer
+        throughParagraphIndex:
+          type: integer
+          description: Highest paragraph index included in the aggregation (-1 if none)
+        entries:
+          type: array
+          items:
+            $ref: "#/components/schemas/VocabularyEntry"
 
     InterlinearWord:
       type: object

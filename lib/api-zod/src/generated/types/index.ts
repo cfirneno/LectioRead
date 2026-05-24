@@ -20,3 +20,5 @@ export * from './text';
 export * from './textSearchRequest';
 export * from './textStats';
 export * from './textWithProgress';
+export * from './vocabularyEntry';
+export * from './vocabularyList';

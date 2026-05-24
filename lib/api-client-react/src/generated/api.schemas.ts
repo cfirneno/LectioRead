@@ -82,6 +82,20 @@ export interface Paragraph {
   fullTranslation?: string | null;
 }
 
+export interface VocabularyEntry {
+  original: string;
+  translation: string;
+  count: number;
+  firstParagraphIndex: number;
+}
+
+export interface VocabularyList {
+  textId: number;
+  /** Highest paragraph index included in the aggregation (-1 if none) */
+  throughParagraphIndex: number;
+  entries: VocabularyEntry[];
+}
+
 export interface InterlinearWord {
   original: string;
   translation: string;

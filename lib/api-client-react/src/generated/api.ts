@@ -32,7 +32,8 @@ import type {
   Text,
   TextSearchRequest,
   TextStats,
-  TextWithProgress
+  TextWithProgress,
+  VocabularyList
 } from './api.schemas';
 
 import { customFetch } from '../custom-fetch';
@@ -796,6 +797,83 @@ export function useGetTextStats<TData = Awaited<ReturnType<typeof getTextStats>>
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getGetTextStatsQueryOptions(textId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getGetTextVocabularyUrl = (textId: number,) => {
+
+
+
+
+  return `/api/texts/${textId}/vocabulary`
+}
+
+/**
+ * @summary Running vocabulary list of words seen so far in this text
+ */
+export const getTextVocabulary = async (textId: number, options?: RequestInit): Promise<VocabularyList> => {
+
+  return customFetch<VocabularyList>(getGetTextVocabularyUrl(textId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetTextVocabularyQueryKey = (textId: number,) => {
+    return [
+    `/api/texts/${textId}/vocabulary`
+    ] as const;
+    }
+
+
+export const getGetTextVocabularyQueryOptions = <TData = Awaited<ReturnType<typeof getTextVocabulary>>, TError = ErrorType<unknown>>(textId: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getTextVocabulary>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetTextVocabularyQueryKey(textId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getTextVocabulary>>> = ({ signal }) => getTextVocabulary(textId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(textId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getTextVocabulary>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetTextVocabularyQueryResult = NonNullable<Awaited<ReturnType<typeof getTextVocabulary>>>
+export type GetTextVocabularyQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Running vocabulary list of words seen so far in this text
+ */
+
+export function useGetTextVocabulary<TData = Awaited<ReturnType<typeof getTextVocabulary>>, TError = ErrorType<unknown>>(
+ textId: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getTextVocabulary>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetTextVocabularyQueryOptions(textId,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 
