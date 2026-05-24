@@ -21,7 +21,9 @@ export default function Read() {
   const [stage, setStage] = useState<1 | 2 | 3 | 4 | 5>(1);
 
   const { data: text } = useGetText(id);
-  const { data: paragraph, isLoading: isLoadingParagraph } = useGetParagraph(id, pIndex);
+  const { data: paragraph, isLoading: isLoadingParagraph } = useGetParagraph(id, pIndex, {
+    query: { enabled: Number.isFinite(id) && id > 0 && Number.isFinite(pIndex) && pIndex >= 0 } as never,
+  });
   
   const interlinearMutation = useGetInterlinearTranslation();
   const fullTranslationMutation = useGetFullTranslation();
