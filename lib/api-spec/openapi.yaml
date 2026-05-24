@@ -368,6 +368,9 @@ components:
         englishTitle:
           type: ["string", "null"]
           description: "Commonly used English title (e.g. 'Crime and Punishment' for 'Преступление и наказание')"
+        englishAuthor:
+          type: ["string", "null"]
+          description: "Author's name in Latin script as commonly used in English (e.g. 'Fyodor Dostoevsky')"
         createdAt:
           type: string
 

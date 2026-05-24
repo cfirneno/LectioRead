@@ -29,6 +29,7 @@ export interface TextSearchResult {
   description: string | null;
   publicationYear: number | null;
   englishTitle: string | null;
+  englishAuthor: string | null;
   paragraphs: string[];
 }
 
@@ -69,6 +70,7 @@ Otherwise, return a JSON object with these exact fields:
   "description": "brief description of the work in English",
   "publicationYear": <approximate publication year as an integer; negative for BCE (e.g. -750 for c. 750 BCE); use your best estimate; never null>,
   "englishTitle": "commonly used English title (e.g. 'Crime and Punishment'); use null only if the original IS already in English/Latin script and no separate English form is conventional",
+  "englishAuthor": "author's name in Latin script as commonly used in English (e.g. 'Fyodor Dostoevsky', 'Natsume Sōseki'); use null only if the author name is already in Latin script",
   "paragraphs": ["paragraph 1 text in ORIGINAL language", "paragraph 2 text in ORIGINAL language", ...]
 }
 
@@ -161,7 +163,7 @@ Rules:
 
 export async function lookupEnglishTitles(
   books: Array<{ id: number; title: string; author: string; language: string }>
-): Promise<Map<number, string>> {
+): Promise<Map<number, { englishTitle: string | null; englishAuthor: string | null }>> {
   if (books.length === 0) return new Map();
 
   const listing = books
@@ -170,17 +172,23 @@ export async function lookupEnglishTitles(
 
   const response = await openai.chat.completions.create({
     model: "gpt-5-mini",
-    max_completion_tokens: 4096,
+    max_completion_tokens: 8192,
     reasoning_effort: "minimal",
     messages: [
       {
         role: "system",
         content:
-          "You are a literary scholar. Return ONLY valid JSON — an array of {id, englishTitle} pairs giving the commonly used English title for each work. Omit any work whose original title is already in English/Latin script with no conventional English form.",
+          "You are a literary scholar. Return ONLY valid JSON — an array of {id, englishTitle, englishAuthor} objects giving the commonly used English title and the Latin-script English form of the author's name for each work.",
       },
       {
         role: "user",
-        content: `For each work below, give the commonly used English title (e.g. 'Crime and Punishment' for 'Преступление и наказание', 'I Am a Cat' for '吾輩は猫である'). Return ONLY a JSON array like [{"id": 12, "englishTitle": "Crime and Punishment"}, ...] — no other text.
+        content: `For each work below, give the commonly used English title and the author's name as commonly written in English (Latin script). Examples:
+- 'Преступление и наказание' by 'Фёдор Достоевский' → {"englishTitle": "Crime and Punishment", "englishAuthor": "Fyodor Dostoevsky"}
+- '吾輩は猫である' by '夏目漱石' → {"englishTitle": "I Am a Cat", "englishAuthor": "Natsume Sōseki"}
+
+If the original title/author is already in Latin script with no conventional English form, use null for that field.
+
+Return ONLY a JSON array like [{"id": 12, "englishTitle": "...", "englishAuthor": "..."}, ...] — no other text.
 
 ${listing}`,
       },
@@ -193,11 +201,20 @@ ${listing}`,
   const jsonMatch = content.match(/\[[\s\S]*\]/);
   if (!jsonMatch) throw new Error("Could not parse English title response as JSON");
 
-  const parsed = JSON.parse(jsonMatch[0]) as Array<{ id: number; englishTitle: string }>;
-  const out = new Map<number, string>();
+  const parsed = JSON.parse(jsonMatch[0]) as Array<{
+    id: number;
+    englishTitle?: string | null;
+    englishAuthor?: string | null;
+  }>;
+  const out = new Map<number, { englishTitle: string | null; englishAuthor: string | null }>();
   for (const item of parsed) {
-    if (typeof item.id === "number" && typeof item.englishTitle === "string" && item.englishTitle.trim()) {
-      out.set(item.id, item.englishTitle.trim());
+    if (typeof item.id !== "number") continue;
+    const englishTitle =
+      typeof item.englishTitle === "string" && item.englishTitle.trim() ? item.englishTitle.trim() : null;
+    const englishAuthor =
+      typeof item.englishAuthor === "string" && item.englishAuthor.trim() ? item.englishAuthor.trim() : null;
+    if (englishTitle || englishAuthor) {
+      out.set(item.id, { englishTitle, englishAuthor });
     }
   }
   return out;

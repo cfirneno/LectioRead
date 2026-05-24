@@ -35,5 +35,10 @@ export interface Text {
      * @nullable
      */
   englishTitle?: string | null;
+  /**
+     * Author's name in Latin script as commonly used in English (e.g. 'Fyodor Dostoevsky')
+     * @nullable
+     */
+  englishAuthor?: string | null;
   createdAt: string;
 }

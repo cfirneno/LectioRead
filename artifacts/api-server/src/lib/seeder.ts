@@ -49,14 +49,14 @@ export async function backfillEnglishTitles(): Promise<void> {
     const missing = await db
       .select({ id: textsTable.id, title: textsTable.title, author: textsTable.author, language: textsTable.language })
       .from(textsTable)
-      .where(isNull(textsTable.englishTitle));
+      .where(or(isNull(textsTable.englishTitle), isNull(textsTable.englishAuthor)));
 
     if (missing.length === 0) {
-      logger.info("All texts already have English titles");
+      logger.info("All texts already have English titles and authors");
       return;
     }
 
-    logger.info({ count: missing.length }, "Backfilling English titles");
+    logger.info({ count: missing.length }, "Backfilling English titles/authors");
 
     const BATCH = 25;
     let updated = 0;
@@ -64,21 +64,25 @@ export async function backfillEnglishTitles(): Promise<void> {
       const batch = missing.slice(i, i + BATCH);
       try {
         await waitForIdleForeground(3000);
-        const titles = await lookupEnglishTitles(batch);
-        for (const [id, englishTitle] of titles.entries()) {
+        const results = await lookupEnglishTitles(batch);
+        for (const [id, { englishTitle, englishAuthor }] of results.entries()) {
+          const patch: { englishTitle?: string; englishAuthor?: string } = {};
+          if (englishTitle) patch.englishTitle = englishTitle;
+          if (englishAuthor) patch.englishAuthor = englishAuthor;
+          if (Object.keys(patch).length === 0) continue;
           await db
             .update(textsTable)
-            .set({ englishTitle })
+            .set(patch)
             .where(eq(textsTable.id, id));
           updated++;
         }
-        logger.info({ batchSize: batch.length, gotTitles: titles.size, totalUpdated: updated }, "English title backfill batch done");
+        logger.info({ batchSize: batch.length, gotResults: results.size, totalUpdated: updated }, "English backfill batch done");
       } catch (err) {
-        logger.error({ err, batchStart: i }, "English title backfill batch failed");
+        logger.error({ err, batchStart: i }, "English backfill batch failed");
       }
     }
 
-    logger.info({ updated, total: missing.length }, "English title backfill complete");
+    logger.info({ updated, total: missing.length }, "English backfill complete");
   } catch (err) {
     logger.error({ err }, "English title backfill failed");
   }
@@ -716,6 +720,7 @@ async function fetchAndStore(query: string, catalogTitle: string): Promise<void>
       description: result.description,
       publicationYear: result.publicationYear ?? null,
       englishTitle: result.englishTitle ?? null,
+      englishAuthor: result.englishAuthor ?? null,
       paragraphCount: result.paragraphs.length,
       // Do not set lastAccessedAt — only user-initiated reads should set this
     })

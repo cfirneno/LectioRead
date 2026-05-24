@@ -381,7 +381,14 @@ export default function Home() {
                               </span>
                             )}
                           </p>
-                          <p className="text-xs text-muted-foreground truncate">{item.author}</p>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {item.author}
+                            {item.englishAuthor && item.englishAuthor.toLowerCase() !== item.author.toLowerCase() && (
+                              <span className="ml-2 text-muted-foreground/60 italic">
+                                ({item.englishAuthor})
+                              </span>
+                            )}
+                          </p>
                         </div>
                       </div>
                     </Link>
