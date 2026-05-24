@@ -365,6 +365,9 @@ components:
         publicationYear:
           type: ["integer", "null"]
           description: "Approximate publication year (negative for BCE, e.g. -750 for 750 BCE)"
+        englishTitle:
+          type: ["string", "null"]
+          description: "Commonly used English title (e.g. 'Crime and Punishment' for 'Преступление и наказание')"
         createdAt:
           type: string
 

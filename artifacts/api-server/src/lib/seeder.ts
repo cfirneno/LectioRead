@@ -1,6 +1,6 @@
 import { ilike, eq, and, or, isNull } from "drizzle-orm";
 import { db, textsTable, paragraphsTable, progressTable } from "@workspace/db";
-import { searchAndFetchText, generateInterlinearTranslation, lookupPublicationYears } from "./ai";
+import { searchAndFetchText, generateInterlinearTranslation, lookupPublicationYears, lookupEnglishTitles } from "./ai";
 import { logger } from "./logger";
 import { waitForIdleForeground } from "./foregroundGate";
 
@@ -41,6 +41,46 @@ export async function backfillPublicationYears(): Promise<void> {
     logger.info({ updated, total: missing.length }, "Publication year backfill complete");
   } catch (err) {
     logger.error({ err }, "Publication year backfill failed");
+  }
+}
+
+export async function backfillEnglishTitles(): Promise<void> {
+  try {
+    const missing = await db
+      .select({ id: textsTable.id, title: textsTable.title, author: textsTable.author, language: textsTable.language })
+      .from(textsTable)
+      .where(isNull(textsTable.englishTitle));
+
+    if (missing.length === 0) {
+      logger.info("All texts already have English titles");
+      return;
+    }
+
+    logger.info({ count: missing.length }, "Backfilling English titles");
+
+    const BATCH = 25;
+    let updated = 0;
+    for (let i = 0; i < missing.length; i += BATCH) {
+      const batch = missing.slice(i, i + BATCH);
+      try {
+        await waitForIdleForeground(3000);
+        const titles = await lookupEnglishTitles(batch);
+        for (const [id, englishTitle] of titles.entries()) {
+          await db
+            .update(textsTable)
+            .set({ englishTitle })
+            .where(eq(textsTable.id, id));
+          updated++;
+        }
+        logger.info({ batchSize: batch.length, gotTitles: titles.size, totalUpdated: updated }, "English title backfill batch done");
+      } catch (err) {
+        logger.error({ err, batchStart: i }, "English title backfill batch failed");
+      }
+    }
+
+    logger.info({ updated, total: missing.length }, "English title backfill complete");
+  } catch (err) {
+    logger.error({ err }, "English title backfill failed");
   }
 }
 
@@ -675,6 +715,7 @@ async function fetchAndStore(query: string, catalogTitle: string): Promise<void>
       sourceUrl: result.sourceUrl,
       description: result.description,
       publicationYear: result.publicationYear ?? null,
+      englishTitle: result.englishTitle ?? null,
       paragraphCount: result.paragraphs.length,
       // Do not set lastAccessedAt — only user-initiated reads should set this
     })

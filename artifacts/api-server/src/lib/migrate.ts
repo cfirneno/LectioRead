@@ -5,6 +5,7 @@ import { logger } from "./logger";
 export async function runIdempotentMigrations(): Promise<void> {
   try {
     await db.execute(sql`ALTER TABLE texts ADD COLUMN IF NOT EXISTS publication_year integer`);
+    await db.execute(sql`ALTER TABLE texts ADD COLUMN IF NOT EXISTS english_title text`);
     logger.info("Idempotent migrations applied");
   } catch (err) {
     logger.error({ err }, "Idempotent migration failed");

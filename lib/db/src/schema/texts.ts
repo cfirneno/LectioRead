@@ -12,6 +12,7 @@ export const textsTable = pgTable("texts", {
   description: text("description"),
   paragraphCount: integer("paragraph_count").notNull().default(0),
   publicationYear: integer("publication_year"),
+  englishTitle: text("english_title"),
   lastAccessedAt: timestamp("last_accessed_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });

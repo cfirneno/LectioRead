@@ -28,6 +28,7 @@ export interface TextSearchResult {
   sourceUrl: string | null;
   description: string | null;
   publicationYear: number | null;
+  englishTitle: string | null;
   paragraphs: string[];
 }
 
@@ -67,6 +68,7 @@ Otherwise, return a JSON object with these exact fields:
   "sourceUrl": "URL if known from Project Gutenberg or Wikisource, or null",
   "description": "brief description of the work in English",
   "publicationYear": <approximate publication year as an integer; negative for BCE (e.g. -750 for c. 750 BCE); use your best estimate; never null>,
+  "englishTitle": "commonly used English title (e.g. 'Crime and Punishment'); use null only if the original IS already in English/Latin script and no separate English form is conventional",
   "paragraphs": ["paragraph 1 text in ORIGINAL language", "paragraph 2 text in ORIGINAL language", ...]
 }
 
@@ -155,6 +157,50 @@ Rules:
   }
 
   return JSON.parse(jsonMatch[0]) as InterlinearWord[];
+}
+
+export async function lookupEnglishTitles(
+  books: Array<{ id: number; title: string; author: string; language: string }>
+): Promise<Map<number, string>> {
+  if (books.length === 0) return new Map();
+
+  const listing = books
+    .map((b) => `${b.id}. "${b.title}" by ${b.author} (${b.language})`)
+    .join("\n");
+
+  const response = await openai.chat.completions.create({
+    model: "gpt-5-mini",
+    max_completion_tokens: 4096,
+    reasoning_effort: "minimal",
+    messages: [
+      {
+        role: "system",
+        content:
+          "You are a literary scholar. Return ONLY valid JSON — an array of {id, englishTitle} pairs giving the commonly used English title for each work. Omit any work whose original title is already in English/Latin script with no conventional English form.",
+      },
+      {
+        role: "user",
+        content: `For each work below, give the commonly used English title (e.g. 'Crime and Punishment' for 'Преступление и наказание', 'I Am a Cat' for '吾輩は猫である'). Return ONLY a JSON array like [{"id": 12, "englishTitle": "Crime and Punishment"}, ...] — no other text.
+
+${listing}`,
+      },
+    ],
+  });
+
+  const content = response.choices[0]?.message?.content;
+  if (!content) throw new Error("No response from AI");
+
+  const jsonMatch = content.match(/\[[\s\S]*\]/);
+  if (!jsonMatch) throw new Error("Could not parse English title response as JSON");
+
+  const parsed = JSON.parse(jsonMatch[0]) as Array<{ id: number; englishTitle: string }>;
+  const out = new Map<number, string>();
+  for (const item of parsed) {
+    if (typeof item.id === "number" && typeof item.englishTitle === "string" && item.englishTitle.trim()) {
+      out.set(item.id, item.englishTitle.trim());
+    }
+  }
+  return out;
 }
 
 export async function lookupPublicationYears(

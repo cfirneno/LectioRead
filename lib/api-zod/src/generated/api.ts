@@ -35,6 +35,7 @@ export const SearchTextResponse = zod.object({
   "description": zod.string().nullish(),
   "paragraphCount": zod.number(),
   "publicationYear": zod.number().nullish().describe('Approximate publication year (negative for BCE, e.g. -750 for 750 BCE)'),
+  "englishTitle": zod.string().nullish().describe('Commonly used English title (e.g. \'Crime and Punishment\' for \'Преступление и наказание\')'),
   "createdAt": zod.string()
 })
 
@@ -52,6 +53,7 @@ export const ListTextsResponseItem = zod.object({
   "description": zod.string().nullish(),
   "paragraphCount": zod.number(),
   "publicationYear": zod.number().nullish().describe('Approximate publication year (negative for BCE, e.g. -750 for 750 BCE)'),
+  "englishTitle": zod.string().nullish().describe('Commonly used English title (e.g. \'Crime and Punishment\' for \'Преступление и наказание\')'),
   "createdAt": zod.string()
 })
 export const ListTextsResponse = zod.array(ListTextsResponseItem)
@@ -90,6 +92,7 @@ export const GetTextResponse = zod.object({
   "description": zod.string().nullish(),
   "paragraphCount": zod.number(),
   "publicationYear": zod.number().nullish().describe('Approximate publication year (negative for BCE, e.g. -750 for 750 BCE)'),
+  "englishTitle": zod.string().nullish().describe('Commonly used English title (e.g. \'Crime and Punishment\' for \'Преступление и наказание\')'),
   "createdAt": zod.string()
 })
 

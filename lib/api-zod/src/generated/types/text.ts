@@ -30,5 +30,10 @@ export interface Text {
      * @nullable
      */
   publicationYear?: number | null;
+  /**
+     * Commonly used English title (e.g. 'Crime and Punishment' for 'Преступление и наказание')
+     * @nullable
+     */
+  englishTitle?: string | null;
   createdAt: string;
 }

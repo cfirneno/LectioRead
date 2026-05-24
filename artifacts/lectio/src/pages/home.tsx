@@ -375,6 +375,11 @@ export default function Home() {
                         <div className="min-w-0 flex-1">
                           <p className="font-serif font-medium text-sm text-foreground truncate">
                             {item.title}
+                            {item.englishTitle && item.englishTitle.toLowerCase() !== item.title.toLowerCase() && (
+                              <span className="ml-2 text-muted-foreground/70 font-normal italic">
+                                — {item.englishTitle}
+                              </span>
+                            )}
                           </p>
                           <p className="text-xs text-muted-foreground truncate">{item.author}</p>
                         </div>
