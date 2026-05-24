@@ -19,9 +19,12 @@ const queryClient = new QueryClient({
     queries: {
       retry: (failureCount, error: unknown) => {
         const status = (error as { status?: number })?.status;
-        if (status === 401 || status === 402) return false;
-        return failureCount < 2;
+        // 402 = subscription required — never retry; user must subscribe.
+        if (status === 402) return false;
+        // 401 can be transient (Clerk session warming up) — retry a few times.
+        return failureCount < 3;
       },
+      retryDelay: (attemptIndex) => Math.min(500 * 2 ** attemptIndex, 3000),
     },
   },
 });
