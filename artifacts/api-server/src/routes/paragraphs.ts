@@ -12,6 +12,7 @@ import {
   generateFullTranslation,
 } from "../lib/ai";
 import { requireSubscribedUser, type AuthedRequest } from "../lib/subscriptionGuard";
+import { beginForeground } from "../lib/foregroundGate";
 
 const router: IRouter = Router();
 
@@ -149,11 +150,17 @@ router.post(
       return;
     }
 
-    const words = await generateInterlinearTranslation(
-      paragraph.originalText,
-      text.language,
-      text.targetLanguage ?? "English"
-    );
+    const releaseForeground = beginForeground();
+    let words;
+    try {
+      words = await generateInterlinearTranslation(
+        paragraph.originalText,
+        text.language,
+        text.targetLanguage ?? "English"
+      );
+    } finally {
+      releaseForeground();
+    }
 
     await db
       .update(paragraphsTable)
@@ -211,11 +218,17 @@ router.post(
       return;
     }
 
-    const translatedText = await generateFullTranslation(
-      paragraph.originalText,
-      text.language,
-      text.targetLanguage ?? "English"
-    );
+    const releaseForeground = beginForeground();
+    let translatedText: string;
+    try {
+      translatedText = await generateFullTranslation(
+        paragraph.originalText,
+        text.language,
+        text.targetLanguage ?? "English"
+      );
+    } finally {
+      releaseForeground();
+    }
 
     await db
       .update(paragraphsTable)

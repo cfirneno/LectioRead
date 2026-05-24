@@ -9,6 +9,7 @@ import {
 } from "@workspace/api-zod";
 import { searchAndFetchText } from "../lib/ai";
 import { requireSubscribedUser, type AuthedRequest } from "../lib/subscriptionGuard";
+import { beginForeground } from "../lib/foregroundGate";
 
 const router: IRouter = Router();
 
@@ -24,6 +25,7 @@ router.post("/texts/search", async (req: AuthedRequest, res): Promise<void> => {
   const { query } = parsed.data;
   req.log.info({ query }, "Searching for text");
 
+  const releaseForeground = beginForeground();
   try {
     const result = await searchAndFetchText(query);
 
@@ -87,6 +89,8 @@ router.post("/texts/search", async (req: AuthedRequest, res): Promise<void> => {
   } catch (err) {
     req.log.error({ err }, "Failed to search/fetch text");
     res.status(500).json({ error: "Failed to find text" });
+  } finally {
+    releaseForeground();
   }
 });
 

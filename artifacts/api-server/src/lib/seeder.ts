@@ -2,6 +2,7 @@ import { ilike } from "drizzle-orm";
 import { db, textsTable, paragraphsTable } from "@workspace/db";
 import { searchAndFetchText } from "./ai";
 import { logger } from "./logger";
+import { waitForIdleForeground } from "./foregroundGate";
 
 const CATALOG_QUERIES: Array<{ query: string; title: string }> = [
   // Il Principe — chapters 1-3 (existing), add more
@@ -543,6 +544,9 @@ async function runWithConcurrency<T>(
   const queue = [...tasks];
   const workers = Array.from({ length: concurrency }, async () => {
     while (queue.length > 0) {
+      // Yield to user-initiated requests: pause seeding while any foreground
+      // request is in flight (e.g. /texts/search) and for a short quiet window after.
+      await waitForIdleForeground(4000);
       const task = queue.shift();
       if (task) await task();
     }
@@ -573,7 +577,7 @@ export async function seedCatalog(): Promise<void> {
       })
   );
 
-  runWithConcurrency(tasks, 2).catch((err) => {
+  runWithConcurrency(tasks, 1).catch((err) => {
     logger.error({ err }, "Catalog seed failed");
   });
 }
