@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { useSearchText, useListTexts, useGetRecentTexts } from "@workspace/api-client-react";
+import { UserButton } from "@clerk/react";
+import { useSearchText, useListTexts, useGetRecentTexts, useCreateBillingPortalSession } from "@workspace/api-client-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { BookOpen, Search, Loader2, Clock, ChevronDown, ChevronUp } from "lucide-react";
+import { BookOpen, Search, Loader2, Clock, ChevronDown, ChevronUp, CreditCard } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface CatalogText {
@@ -169,6 +170,16 @@ export default function Home() {
   const searchMutation = useSearchText();
   const { data: recentTexts } = useGetRecentTexts();
   const { data: allTexts } = useListTexts();
+  const portal = useCreateBillingPortalSession();
+
+  const handleManageBilling = () => {
+    portal.mutate(undefined, {
+      onSuccess: (data) => {
+        if (data.url) window.location.href = data.url;
+      },
+      onError: () => toast({ title: "Could not open billing portal", variant: "destructive" }),
+    });
+  };
 
   const textByTitle = new Map((allTexts ?? []).map((t) => [t.title.toLowerCase(), t]));
 
@@ -213,9 +224,24 @@ export default function Home() {
     <div className="min-h-[100dvh] bg-background text-foreground selection:bg-primary/20">
       <header className="border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2 font-serif text-2xl font-semibold text-primary">
-            <BookOpen className="h-6 w-6" />
-            <span>Lectio</span>
+          <Link href="/app">
+            <div className="flex items-center gap-2 font-serif text-2xl font-semibold text-primary cursor-pointer">
+              <BookOpen className="h-6 w-6" />
+              <span>Lectio</span>
+            </div>
+          </Link>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleManageBilling}
+              disabled={portal.isPending}
+              className="font-serif text-muted-foreground"
+            >
+              <CreditCard className="h-4 w-4 mr-1.5" />
+              {portal.isPending ? "Opening…" : "Billing"}
+            </Button>
+            <UserButton />
           </div>
         </div>
       </header>

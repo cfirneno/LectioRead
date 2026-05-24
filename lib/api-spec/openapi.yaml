@@ -16,6 +16,8 @@ tags:
     description: Paragraph operations
   - name: progress
     description: Reading progress operations
+  - name: subscription
+    description: Subscription and billing operations
 
 paths:
   /healthz:
@@ -255,6 +257,51 @@ paths:
               schema:
                 $ref: "#/components/schemas/Progress"
 
+  /subscription/me:
+    get:
+      operationId: getSubscriptionStatus
+      tags: [subscription]
+      summary: Get current user's subscription status
+      responses:
+        "200":
+          description: Subscription status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubscriptionStatus"
+        "401":
+          description: Unauthorized
+
+  /subscription/checkout:
+    post:
+      operationId: createCheckoutSession
+      tags: [subscription]
+      summary: Create a Stripe Checkout session for the $1/month subscription
+      responses:
+        "200":
+          description: Checkout URL
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CheckoutUrl"
+        "401":
+          description: Unauthorized
+
+  /subscription/portal:
+    post:
+      operationId: createBillingPortalSession
+      tags: [subscription]
+      summary: Create a Stripe billing portal session
+      responses:
+        "200":
+          description: Portal URL
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CheckoutUrl"
+        "401":
+          description: Unauthorized
+
 components:
   schemas:
     HealthStatus:
@@ -427,3 +474,21 @@ components:
           type: integer
         completed:
           type: boolean
+
+    SubscriptionStatus:
+      type: object
+      required: [active]
+      properties:
+        active:
+          type: boolean
+        status:
+          type: string
+          nullable: true
+
+    CheckoutUrl:
+      type: object
+      required: [url]
+      properties:
+        url:
+          type: string
+          nullable: true

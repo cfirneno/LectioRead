@@ -2,12 +2,12 @@ import { Router, type IRouter } from "express";
 import { eq, and } from "drizzle-orm";
 import { db, progressTable } from "@workspace/db";
 import { SaveProgressBody } from "@workspace/api-zod";
+import { requireSubscribedUser, type AuthedRequest } from "../lib/subscriptionGuard";
 
 const router: IRouter = Router();
 
-router.get("/progress", async (_req, res): Promise<void> => {
-  const records = await db.select().from(progressTable);
-
+router.get("/progress", requireSubscribedUser, async (req: AuthedRequest, res): Promise<void> => {
+  const records = await db.select().from(progressTable).where(eq(progressTable.userId, req.userId!));
   res.json(
     records.map((r) => ({
       id: r.id,
@@ -19,20 +19,21 @@ router.get("/progress", async (_req, res): Promise<void> => {
   );
 });
 
-router.post("/progress", async (req, res): Promise<void> => {
+router.post("/progress", requireSubscribedUser, async (req: AuthedRequest, res): Promise<void> => {
   const parsed = SaveProgressBody.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.message });
     return;
   }
-
   const { textId, paragraphIndex, completed } = parsed.data;
+  const userId = req.userId!;
 
   const [existing] = await db
     .select()
     .from(progressTable)
     .where(
       and(
+        eq(progressTable.userId, userId),
         eq(progressTable.textId, textId),
         eq(progressTable.paragraphIndex, paragraphIndex)
       )
@@ -44,7 +45,6 @@ router.post("/progress", async (req, res): Promise<void> => {
       .set({ completed, updatedAt: new Date() })
       .where(eq(progressTable.id, existing.id))
       .returning();
-
     res.json({
       id: updated.id,
       textId: updated.textId,
@@ -57,7 +57,7 @@ router.post("/progress", async (req, res): Promise<void> => {
 
   const [created] = await db
     .insert(progressTable)
-    .values({ textId, paragraphIndex, completed })
+    .values({ userId, textId, paragraphIndex, completed })
     .returning();
 
   res.json({

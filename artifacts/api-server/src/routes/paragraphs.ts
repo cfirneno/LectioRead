@@ -11,10 +11,13 @@ import {
   generateInterlinearTranslation,
   generateFullTranslation,
 } from "../lib/ai";
+import { requireSubscribedUser, type AuthedRequest } from "../lib/subscriptionGuard";
 
 const router: IRouter = Router();
 
-router.get("/texts/:textId/paragraphs", async (req, res): Promise<void> => {
+router.use(requireSubscribedUser);
+
+router.get("/texts/:textId/paragraphs", async (req: AuthedRequest, res): Promise<void> => {
   const params = ListParagraphsParams.safeParse(req.params);
   if (!params.success) {
     res.status(400).json({ error: params.error.message });
@@ -30,7 +33,12 @@ router.get("/texts/:textId/paragraphs", async (req, res): Promise<void> => {
   const progressRecords = await db
     .select()
     .from(progressTable)
-    .where(eq(progressTable.textId, params.data.textId));
+    .where(
+      and(
+        eq(progressTable.textId, params.data.textId),
+        eq(progressTable.userId, req.userId!)
+      )
+    );
 
   const progressMap = new Map(
     progressRecords.map((p) => [p.paragraphIndex, p.completed])
@@ -49,7 +57,7 @@ router.get("/texts/:textId/paragraphs", async (req, res): Promise<void> => {
 
 router.get(
   "/texts/:textId/paragraphs/:index",
-  async (req, res): Promise<void> => {
+  async (req: AuthedRequest, res): Promise<void> => {
     const params = GetParagraphParams.safeParse(req.params);
     if (!params.success) {
       res.status(400).json({ error: params.error.message });
@@ -76,6 +84,7 @@ router.get(
       .from(progressTable)
       .where(
         and(
+          eq(progressTable.userId, req.userId!),
           eq(progressTable.textId, params.data.textId),
           eq(progressTable.paragraphIndex, params.data.index)
         )

@@ -206,3 +206,28 @@ export const SaveProgressResponse = zod.object({
 })
 
 
+/**
+ * @summary Get current user's subscription status
+ */
+export const GetSubscriptionStatusResponse = zod.object({
+  "active": zod.boolean(),
+  "status": zod.string().nullish()
+})
+
+
+/**
+ * @summary Create a Stripe Checkout session for the $1/month subscription
+ */
+export const CreateCheckoutSessionResponse = zod.object({
+  "url": zod.string().nullable()
+})
+
+
+/**
+ * @summary Create a Stripe billing portal session
+ */
+export const CreateBillingPortalSessionResponse = zod.object({
+  "url": zod.string().nullable()
+})
+
+

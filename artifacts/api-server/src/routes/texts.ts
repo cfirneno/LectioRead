@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { eq, desc, ilike } from "drizzle-orm";
+import { eq, desc, ilike, and } from "drizzle-orm";
 import { db, textsTable, paragraphsTable, progressTable } from "@workspace/db";
 import {
   SearchTextBody,
@@ -7,11 +7,13 @@ import {
   GetTextStatsParams,
 } from "@workspace/api-zod";
 import { searchAndFetchText } from "../lib/ai";
-import { logger } from "../lib/logger";
+import { requireSubscribedUser, type AuthedRequest } from "../lib/subscriptionGuard";
 
 const router: IRouter = Router();
 
-router.post("/texts/search", async (req, res): Promise<void> => {
+router.use(requireSubscribedUser);
+
+router.post("/texts/search", async (req: AuthedRequest, res): Promise<void> => {
   const parsed = SearchTextBody.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.message });
@@ -87,7 +89,7 @@ router.post("/texts/search", async (req, res): Promise<void> => {
   }
 });
 
-router.get("/texts", async (_req, res): Promise<void> => {
+router.get("/texts", async (_req: AuthedRequest, res): Promise<void> => {
   const texts = await db
     .select()
     .from(textsTable)
@@ -108,58 +110,49 @@ router.get("/texts", async (_req, res): Promise<void> => {
   );
 });
 
-router.get("/texts/recent", async (_req, res): Promise<void> => {
-  // Only return texts the user has actively read (has at least one progress record)
+router.get("/texts/recent", async (req: AuthedRequest, res): Promise<void> => {
+  const userId = req.userId!;
+  // Find texts the user has actually read (per-user progress)
+  const userProgress = await db
+    .select()
+    .from(progressTable)
+    .where(eq(progressTable.userId, userId));
+
+  const textIdsWithProgress = Array.from(new Set(userProgress.map((p) => p.textId)));
+  if (textIdsWithProgress.length === 0) {
+    res.json([]);
+    return;
+  }
+
   const allTexts = await db
     .select()
     .from(textsTable)
-    .orderBy(desc(textsTable.lastAccessedAt))
-    .limit(50);
+    .orderBy(desc(textsTable.lastAccessedAt));
 
-  const textsWithProgress = await Promise.all(
-    allTexts.map(async (t) => {
-      const count = await db
-        .select()
-        .from(progressTable)
-        .where(eq(progressTable.textId, t.id));
-      return { text: t, hasProgress: count.length > 0 };
-    })
-  );
+  const texts = allTexts.filter((t) => textIdsWithProgress.includes(t.id)).slice(0, 10);
 
-  const texts = textsWithProgress
-    .filter((r) => r.hasProgress)
-    .slice(0, 10)
-    .map((r) => r.text);
-
-  const results = await Promise.all(
-    texts.map(async (t) => {
-      const progressRecords = await db
-        .select()
-        .from(progressTable)
-        .where(eq(progressTable.textId, t.id));
-
-      const completedCount = progressRecords.filter((p) => p.completed).length;
-      const lastProgress = progressRecords
-        .filter((p) => p.completed)
-        .sort((a, b) => b.paragraphIndex - a.paragraphIndex)[0];
-
-      return {
-        id: t.id,
-        title: t.title,
-        author: t.author,
-        language: t.language,
-        paragraphCount: t.paragraphCount,
-        completedCount,
-        lastParagraphIndex: lastProgress ? lastProgress.paragraphIndex : null,
-        lastAccessedAt: t.lastAccessedAt ? t.lastAccessedAt.toISOString() : null,
-      };
-    })
-  );
+  const results = texts.map((t) => {
+    const progressRecords = userProgress.filter((p) => p.textId === t.id);
+    const completedCount = progressRecords.filter((p) => p.completed).length;
+    const lastProgress = progressRecords
+      .filter((p) => p.completed)
+      .sort((a, b) => b.paragraphIndex - a.paragraphIndex)[0];
+    return {
+      id: t.id,
+      title: t.title,
+      author: t.author,
+      language: t.language,
+      paragraphCount: t.paragraphCount,
+      completedCount,
+      lastParagraphIndex: lastProgress ? lastProgress.paragraphIndex : null,
+      lastAccessedAt: t.lastAccessedAt ? t.lastAccessedAt.toISOString() : null,
+    };
+  });
 
   res.json(results);
 });
 
-router.get("/texts/:textId", async (req, res): Promise<void> => {
+router.get("/texts/:textId", async (req: AuthedRequest, res): Promise<void> => {
   const params = GetTextParams.safeParse(req.params);
   if (!params.success) {
     res.status(400).json({ error: params.error.message });
@@ -194,7 +187,7 @@ router.get("/texts/:textId", async (req, res): Promise<void> => {
   });
 });
 
-router.get("/texts/:textId/stats", async (req, res): Promise<void> => {
+router.get("/texts/:textId/stats", async (req: AuthedRequest, res): Promise<void> => {
   const params = GetTextStatsParams.safeParse(req.params);
   if (!params.success) {
     res.status(400).json({ error: params.error.message });
@@ -214,7 +207,12 @@ router.get("/texts/:textId/stats", async (req, res): Promise<void> => {
   const progressRecords = await db
     .select()
     .from(progressTable)
-    .where(eq(progressTable.textId, params.data.textId));
+    .where(
+      and(
+        eq(progressTable.userId, req.userId!),
+        eq(progressTable.textId, params.data.textId)
+      )
+    );
 
   const completedParagraphs = progressRecords.filter((p) => p.completed).length;
   const percentComplete =

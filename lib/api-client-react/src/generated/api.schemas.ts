@@ -113,3 +113,12 @@ export interface ProgressInput {
   completed: boolean;
 }
 
+export interface SubscriptionStatus {
+  active: boolean;
+  status?: string | null;
+}
+
+export interface CheckoutUrl {
+  url: string | null;
+}
+
