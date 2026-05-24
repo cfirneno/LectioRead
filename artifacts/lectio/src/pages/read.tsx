@@ -8,7 +8,7 @@ import {
   useSaveProgress
 } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2, Home } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 
 export default function Read() {
@@ -112,6 +112,11 @@ export default function Read() {
             <Link href={`/texts/${id}`}>
               <Button variant="ghost" size="icon" className="-ml-2 text-muted-foreground hover:text-foreground">
                 <ArrowLeft className="h-5 w-5" />
+              </Button>
+            </Link>
+            <Link href="/app">
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground" title="Home">
+                <Home className="h-5 w-5" />
               </Button>
             </Link>
             <div className="font-serif text-sm text-muted-foreground line-clamp-1">

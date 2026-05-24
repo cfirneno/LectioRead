@@ -40,7 +40,7 @@ export default function TextToc() {
     <div className="min-h-[100dvh] bg-background">
       <header className="sticky top-0 z-10 border-b border-border/40 bg-background/95 backdrop-blur">
         <div className="container max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/">
+          <Link href="/app">
             <Button variant="ghost" size="sm" className="font-serif gap-2 -ml-3 text-muted-foreground hover:text-foreground">
               <ArrowLeft className="h-4 w-4" />
               Library

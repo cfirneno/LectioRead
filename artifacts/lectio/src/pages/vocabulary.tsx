@@ -1,7 +1,7 @@
 import { Link, useParams } from "wouter";
 import { useGetText, useGetTextVocabulary } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, BookOpen } from "lucide-react";
+import { ArrowLeft, BookOpen, Home } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
@@ -40,12 +40,19 @@ export default function Vocabulary() {
     <div className="min-h-[100dvh] bg-background">
       <header className="sticky top-0 z-10 border-b border-border/40 bg-background/95 backdrop-blur">
         <div className="container max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href={`/texts/${id}`}>
-            <Button variant="ghost" size="sm" className="font-serif gap-2 -ml-3 text-muted-foreground hover:text-foreground">
-              <ArrowLeft className="h-4 w-4" />
-              Back
-            </Button>
-          </Link>
+          <div className="flex items-center gap-1">
+            <Link href={`/texts/${id}`}>
+              <Button variant="ghost" size="sm" className="font-serif gap-2 -ml-3 text-muted-foreground hover:text-foreground">
+                <ArrowLeft className="h-4 w-4" />
+                Back
+              </Button>
+            </Link>
+            <Link href="/app">
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground" title="Home">
+                <Home className="h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
           <div className="text-sm font-serif text-muted-foreground">
             {vocab ? `${vocab.entries.length} words` : ""}
           </div>
