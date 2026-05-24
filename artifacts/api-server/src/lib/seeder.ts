@@ -1,8 +1,33 @@
-import { ilike, eq, and } from "drizzle-orm";
-import { db, textsTable, paragraphsTable } from "@workspace/db";
+import { ilike, eq, and, or } from "drizzle-orm";
+import { db, textsTable, paragraphsTable, progressTable } from "@workspace/db";
 import { searchAndFetchText, generateInterlinearTranslation } from "./ai";
 import { logger } from "./logger";
 import { waitForIdleForeground } from "./foregroundGate";
+
+export async function cleanBrokenCatalogEntries(): Promise<void> {
+  try {
+    const broken = await db
+      .select({ id: textsTable.id, title: textsTable.title, language: textsTable.language })
+      .from(textsTable)
+      .where(
+        or(
+          ilike(textsTable.language, "english"),
+          ilike(textsTable.description ?? textsTable.title, "%cannot provide%"),
+          ilike(textsTable.description ?? textsTable.title, "%under copyright%"),
+        ),
+      );
+    if (broken.length === 0) return;
+    for (const b of broken) {
+      await db.delete(progressTable).where(eq(progressTable.textId, b.id));
+      await db.delete(paragraphsTable).where(eq(paragraphsTable.textId, b.id));
+      await db.delete(textsTable).where(eq(textsTable.id, b.id));
+      logger.info({ id: b.id, title: b.title, language: b.language }, "Cleaned broken catalog entry");
+    }
+    logger.info({ count: broken.length }, "Catalog cleanup complete");
+  } catch (err) {
+    logger.error({ err }, "Failed to clean broken catalog entries");
+  }
+}
 
 const CATALOG_QUERIES: Array<{ query: string; title: string }> = [
   // Il Principe — chapters 1-3 (existing), add more

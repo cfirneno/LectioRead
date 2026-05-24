@@ -201,9 +201,9 @@ export default function Home() {
         },
         onError: (err: unknown) => {
           setLoadingQuery(null);
-          const anyErr = err as { response?: { data?: { error?: string }; status?: number }; status?: number };
-          const serverMessage = anyErr?.response?.data?.error;
-          const status = anyErr?.response?.status ?? anyErr?.status;
+          const apiErr = err as { status?: number; data?: { error?: string } | null };
+          const serverMessage = apiErr?.data?.error;
+          const status = apiErr?.status;
           if (status === 400 && serverMessage) {
             toast({
               title: "Not available",
