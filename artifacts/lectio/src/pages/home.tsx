@@ -170,8 +170,17 @@ export default function Home() {
   const { data: recentTexts } = useGetRecentTexts();
   const { data: allTexts } = useListTexts();
 
-  const handleSelect = (query: string) => {
+  const textByTitle = new Map((allTexts ?? []).map((t) => [t.title.toLowerCase(), t]));
+
+  const handleSelect = (query: string, title?: string) => {
     if (searchMutation.isPending) return;
+    if (title) {
+      const existing = textByTitle.get(title.toLowerCase());
+      if (existing) {
+        setLocation(`/texts/${existing.id}`);
+        return;
+      }
+    }
     setLoadingQuery(query);
     searchMutation.mutate(
       { data: { query } },
@@ -198,7 +207,6 @@ export default function Home() {
   };
 
   const grouped = groupByLanguage(CATALOG);
-  const alreadyLoaded = new Set((allTexts ?? []).map((t) => t.title.toLowerCase()));
   const isLoading = searchMutation.isPending;
 
   return (
@@ -282,12 +290,12 @@ export default function Home() {
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {grouped[lang].map((item) => {
-                  const cached = alreadyLoaded.has(item.title.toLowerCase());
+                  const cached = textByTitle.has(item.title.toLowerCase());
                   const loading = loadingQuery === item.query;
                   return (
                     <button
                       key={item.query}
-                      onClick={() => handleSelect(item.query)}
+                      onClick={() => handleSelect(item.query, item.title)}
                       disabled={isLoading}
                       className="text-left rounded-lg border border-border/50 bg-card/40 hover:bg-card hover:border-primary/40 transition-all p-4 space-y-2 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                     >

@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, ilike } from "drizzle-orm";
 import { db, textsTable, paragraphsTable, progressTable } from "@workspace/db";
 import {
   SearchTextBody,
@@ -23,6 +23,30 @@ router.post("/texts/search", async (req, res): Promise<void> => {
 
   try {
     const result = await searchAndFetchText(query);
+
+    // Return existing text if the AI resolved to a title already in the library
+    const [existing] = await db
+      .select()
+      .from(textsTable)
+      .where(ilike(textsTable.title, result.title))
+      .limit(1);
+
+    if (existing) {
+      req.log.info({ title: result.title, id: existing.id }, "Returning existing text");
+      await db.update(textsTable).set({ lastAccessedAt: new Date() }).where(eq(textsTable.id, existing.id));
+      res.json({
+        id: existing.id,
+        title: existing.title,
+        author: existing.author,
+        language: existing.language,
+        targetLanguage: existing.targetLanguage,
+        sourceUrl: existing.sourceUrl,
+        description: existing.description,
+        paragraphCount: existing.paragraphCount,
+        createdAt: existing.createdAt.toISOString(),
+      });
+      return;
+    }
 
     const [text] = await db
       .insert(textsTable)
@@ -85,11 +109,27 @@ router.get("/texts", async (_req, res): Promise<void> => {
 });
 
 router.get("/texts/recent", async (_req, res): Promise<void> => {
-  const texts = await db
+  // Only return texts the user has actively read (has at least one progress record)
+  const allTexts = await db
     .select()
     .from(textsTable)
     .orderBy(desc(textsTable.lastAccessedAt))
-    .limit(10);
+    .limit(50);
+
+  const textsWithProgress = await Promise.all(
+    allTexts.map(async (t) => {
+      const count = await db
+        .select()
+        .from(progressTable)
+        .where(eq(progressTable.textId, t.id));
+      return { text: t, hasProgress: count.length > 0 };
+    })
+  );
+
+  const texts = textsWithProgress
+    .filter((r) => r.hasProgress)
+    .slice(0, 10)
+    .map((r) => r.text);
 
   const results = await Promise.all(
     texts.map(async (t) => {
