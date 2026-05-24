@@ -199,13 +199,24 @@ export default function Home() {
         onSuccess: (data) => {
           setLocation(`/texts/${data.id}/read/0`);
         },
-        onError: () => {
+        onError: (err: unknown) => {
           setLoadingQuery(null);
-          toast({
-            title: "Could not load text",
-            description: "The text could not be retrieved. Please try again.",
-            variant: "destructive",
-          });
+          const anyErr = err as { response?: { data?: { error?: string }; status?: number }; status?: number };
+          const serverMessage = anyErr?.response?.data?.error;
+          const status = anyErr?.response?.status ?? anyErr?.status;
+          if (status === 400 && serverMessage) {
+            toast({
+              title: "Not available",
+              description: serverMessage,
+              variant: "destructive",
+            });
+          } else {
+            toast({
+              title: "Could not load text",
+              description: serverMessage ?? "The text could not be retrieved. Please try again.",
+              variant: "destructive",
+            });
+          }
         },
       }
     );

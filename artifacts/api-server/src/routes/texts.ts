@@ -7,7 +7,7 @@ import {
   GetTextStatsParams,
   GetTextVocabularyParams,
 } from "@workspace/api-zod";
-import { searchAndFetchText } from "../lib/ai";
+import { searchAndFetchText, CopyrightedTextError } from "../lib/ai";
 import { requireSubscribedUser, type AuthedRequest } from "../lib/subscriptionGuard";
 import { beginForeground } from "../lib/foregroundGate";
 
@@ -87,6 +87,11 @@ router.post("/texts/search", async (req: AuthedRequest, res): Promise<void> => {
       createdAt: text.createdAt.toISOString(),
     });
   } catch (err) {
+    if (err instanceof CopyrightedTextError) {
+      req.log.info({ query, message: err.message }, "Refused copyrighted text");
+      res.status(400).json({ error: err.message });
+      return;
+    }
     req.log.error({ err }, "Failed to search/fetch text");
     res.status(500).json({ error: "Failed to find text" });
   } finally {
