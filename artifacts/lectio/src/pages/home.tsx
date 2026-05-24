@@ -355,7 +355,7 @@ export default function Home() {
             </div>
           ) : (
             LANGUAGE_ORDER.filter((lang) => libraryByLanguage[lang]?.length).map((lang) => (
-              <details key={lang} open className="group rounded-lg border border-border/40 bg-card/20 overflow-hidden">
+              <details key={lang} className="group rounded-lg border border-border/40 bg-card/20 overflow-hidden">
                 <summary className="cursor-pointer list-none flex items-center justify-between px-4 py-3 hover:bg-card/40 transition-colors select-none">
                   <div className="flex items-baseline gap-3">
                     <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-0 -rotate-90" />
