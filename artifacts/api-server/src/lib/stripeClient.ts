@@ -2,6 +2,20 @@ import Stripe from "stripe";
 import { StripeSync } from "stripe-replit-sync";
 
 async function getCredentials(): Promise<{ publishableKey: string; secretKey: string }> {
+  const envSecret = process.env.STRIPE_SECRET_KEY;
+  const envPublishable = process.env.STRIPE_PUBLISHABLE_KEY;
+  if (envSecret && envPublishable) {
+    const secretMode = envSecret.startsWith("sk_live_") ? "live" : envSecret.startsWith("sk_test_") ? "test" : null;
+    const publishableMode = envPublishable.startsWith("pk_live_") ? "live" : envPublishable.startsWith("pk_test_") ? "test" : null;
+    if (!secretMode || !publishableMode) {
+      throw new Error("STRIPE_SECRET_KEY must start with sk_live_ or sk_test_, STRIPE_PUBLISHABLE_KEY must start with pk_live_ or pk_test_");
+    }
+    if (secretMode !== publishableMode) {
+      throw new Error(`Stripe key mode mismatch: secret is ${secretMode}, publishable is ${publishableMode}. Both must be live or both test.`);
+    }
+    return { publishableKey: envPublishable, secretKey: envSecret };
+  }
+
   const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
   const xReplitToken = process.env.REPL_IDENTITY
     ? "repl " + process.env.REPL_IDENTITY
@@ -10,7 +24,7 @@ async function getCredentials(): Promise<{ publishableKey: string; secretKey: st
       : null;
 
   if (!hostname || !xReplitToken) {
-    throw new Error("Missing Replit connector env vars. Connect Stripe via Integrations.");
+    throw new Error("Missing Replit connector env vars. Connect Stripe via Integrations or set STRIPE_SECRET_KEY and STRIPE_PUBLISHABLE_KEY.");
   }
 
   const isProduction = process.env.REPLIT_DEPLOYMENT === "1";
