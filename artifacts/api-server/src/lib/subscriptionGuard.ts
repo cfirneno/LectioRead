@@ -1,10 +1,30 @@
 import type { Request, Response, NextFunction } from "express";
 import { getAuth, clerkClient } from "@clerk/express";
-import { eq, sql } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { db, userSubscriptionsTable } from "@workspace/db";
+import { reconcileFromStripe } from "./subscriptionSync";
 
 export interface AuthedRequest extends Request {
   userId?: string;
+}
+
+function isActive(status: string | null | undefined): boolean {
+  return status === "active" || status === "trialing";
+}
+
+export async function getEffectiveSubscriptionStatus(userId: string): Promise<{
+  status: string | null;
+  active: boolean;
+}> {
+  const [sub] = await db.select().from(userSubscriptionsTable).where(eq(userSubscriptionsTable.userId, userId));
+  if (!sub) return { status: null, active: false };
+  if (isActive(sub.status)) return { status: sub.status, active: true };
+  // If we have a customer but no active local status, ask Stripe directly.
+  if (sub.stripeCustomerId) {
+    const reconciled = await reconcileFromStripe(userId);
+    return reconciled;
+  }
+  return { status: sub.status, active: false };
 }
 
 export async function requireSubscribedUser(
@@ -20,31 +40,8 @@ export async function requireSubscribedUser(
   }
   req.userId = userId;
 
-  const [sub] = await db.select().from(userSubscriptionsTable).where(eq(userSubscriptionsTable.userId, userId));
-  if (!sub) {
-    res.status(402).json({ error: "Subscription required" });
-    return;
-  }
-
-  let status = sub.status;
-  if (sub.stripeSubscriptionId) {
-    try {
-      const row = await db.execute(
-        sql`SELECT status FROM stripe.subscriptions WHERE id = ${sub.stripeSubscriptionId} LIMIT 1`
-      );
-      const liveStatus = (row.rows[0] as { status?: string } | undefined)?.status;
-      if (liveStatus) {
-        status = liveStatus;
-        if (liveStatus !== sub.status) {
-          await db.update(userSubscriptionsTable).set({ status: liveStatus }).where(eq(userSubscriptionsTable.userId, userId));
-        }
-      }
-    } catch {
-      /* ignore */
-    }
-  }
-
-  if (status !== "active" && status !== "trialing") {
+  const { active, status } = await getEffectiveSubscriptionStatus(userId);
+  if (!active) {
     res.status(402).json({ error: "Subscription required", status });
     return;
   }

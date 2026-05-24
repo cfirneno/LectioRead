@@ -112,24 +112,33 @@ router.get("/texts", async (_req: AuthedRequest, res): Promise<void> => {
 
 router.get("/texts/recent", async (req: AuthedRequest, res): Promise<void> => {
   const userId = req.userId!;
-  // Find texts the user has actually read (per-user progress)
   const userProgress = await db
     .select()
     .from(progressTable)
     .where(eq(progressTable.userId, userId));
 
-  const textIdsWithProgress = Array.from(new Set(userProgress.map((p) => p.textId)));
-  if (textIdsWithProgress.length === 0) {
+  if (userProgress.length === 0) {
     res.json([]);
     return;
   }
 
-  const allTexts = await db
-    .select()
-    .from(textsTable)
-    .orderBy(desc(textsTable.lastAccessedAt));
+  // Per-user last-activity timestamp per text
+  const lastActivityByText = new Map<number, Date>();
+  for (const p of userProgress) {
+    const prev = lastActivityByText.get(p.textId);
+    if (!prev || p.updatedAt > prev) lastActivityByText.set(p.textId, p.updatedAt);
+  }
 
-  const texts = allTexts.filter((t) => textIdsWithProgress.includes(t.id)).slice(0, 10);
+  const textIds = Array.from(lastActivityByText.keys());
+  const allTexts = await db.select().from(textsTable);
+  const texts = allTexts
+    .filter((t) => textIds.includes(t.id))
+    .sort(
+      (a, b) =>
+        (lastActivityByText.get(b.id)?.getTime() ?? 0) -
+        (lastActivityByText.get(a.id)?.getTime() ?? 0),
+    )
+    .slice(0, 10);
 
   const results = texts.map((t) => {
     const progressRecords = userProgress.filter((p) => p.textId === t.id);
@@ -137,6 +146,7 @@ router.get("/texts/recent", async (req: AuthedRequest, res): Promise<void> => {
     const lastProgress = progressRecords
       .filter((p) => p.completed)
       .sort((a, b) => b.paragraphIndex - a.paragraphIndex)[0];
+    const lastActivity = lastActivityByText.get(t.id);
     return {
       id: t.id,
       title: t.title,
@@ -145,7 +155,7 @@ router.get("/texts/recent", async (req: AuthedRequest, res): Promise<void> => {
       paragraphCount: t.paragraphCount,
       completedCount,
       lastParagraphIndex: lastProgress ? lastProgress.paragraphIndex : null,
-      lastAccessedAt: t.lastAccessedAt ? t.lastAccessedAt.toISOString() : null,
+      lastAccessedAt: lastActivity ? lastActivity.toISOString() : null,
     };
   });
 

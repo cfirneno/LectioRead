@@ -1,8 +1,9 @@
 import { Router, type IRouter, type Request, type Response, type NextFunction } from "express";
 import { getAuth, clerkClient } from "@clerk/express";
-import { eq, sql } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { db, userSubscriptionsTable } from "@workspace/db";
 import { getUncachableStripeClient } from "../lib/stripeClient";
+import { getEffectiveSubscriptionStatus } from "../lib/subscriptionGuard";
 
 const router: IRouter = Router();
 
@@ -61,29 +62,8 @@ async function getOrCreatePriceId(): Promise<string> {
 }
 
 router.get("/subscription/me", requireAuth, async (req: AuthedRequest, res): Promise<void> => {
-  const [sub] = await db.select().from(userSubscriptionsTable).where(eq(userSubscriptionsTable.userId, req.userId!));
-  if (!sub) {
-    res.json({ active: false, status: null });
-    return;
-  }
-  let active = sub.status === "active" || sub.status === "trialing";
-  if (active && sub.stripeSubscriptionId) {
-    try {
-      const row = await db.execute(
-        sql`SELECT status FROM stripe.subscriptions WHERE id = ${sub.stripeSubscriptionId} LIMIT 1`
-      );
-      const liveStatus = (row.rows[0] as { status?: string } | undefined)?.status;
-      if (liveStatus) {
-        active = liveStatus === "active" || liveStatus === "trialing";
-        if (liveStatus !== sub.status) {
-          await db.update(userSubscriptionsTable).set({ status: liveStatus }).where(eq(userSubscriptionsTable.userId, req.userId!));
-        }
-      }
-    } catch {
-      /* stripe schema may not exist yet */
-    }
-  }
-  res.json({ active, status: sub.status });
+  const { active, status } = await getEffectiveSubscriptionStatus(req.userId!);
+  res.json({ active, status });
 });
 
 router.post("/subscription/checkout", requireAuth, async (req: AuthedRequest, res): Promise<void> => {
@@ -95,11 +75,22 @@ router.post("/subscription/checkout", requireAuth, async (req: AuthedRequest, re
     let customerId = existing?.stripeCustomerId ?? null;
 
     if (!customerId) {
-      const customer = await stripe.customers.create({
-        email: req.userEmail ?? undefined,
-        metadata: { clerkUserId: req.userId! },
+      // Search Stripe first to avoid creating duplicate customers from
+      // concurrent /subscription/checkout calls (mitigates the race).
+      const existingCustomers = await stripe.customers.search({
+        query: `metadata['clerkUserId']:'${req.userId!}'`,
+        limit: 1,
       });
-      customerId = customer.id;
+      const found = existingCustomers.data[0];
+      if (found) {
+        customerId = found.id;
+      } else {
+        const customer = await stripe.customers.create({
+          email: req.userEmail ?? undefined,
+          metadata: { clerkUserId: req.userId! },
+        });
+        customerId = customer.id;
+      }
       if (existing) {
         await db
           .update(userSubscriptionsTable)

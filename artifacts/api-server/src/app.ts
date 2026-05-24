@@ -11,6 +11,7 @@ import {
 import router from "./routes";
 import { logger } from "./lib/logger";
 import { getStripeSync } from "./lib/stripeClient";
+import { applyStripeEventToSubscriptions } from "./lib/subscriptionSync";
 
 const app: Express = express();
 
@@ -48,6 +49,14 @@ app.post(
       }
       const sync = await getStripeSync();
       await sync.processWebhook(req.body as Buffer, sig);
+      // processWebhook already verified the signature; safely parse and
+      // mirror entitlement state into our user_subscriptions table.
+      try {
+        const event = JSON.parse((req.body as Buffer).toString("utf8"));
+        await applyStripeEventToSubscriptions(event);
+      } catch (mirrorErr) {
+        req.log.error({ err: mirrorErr }, "Failed to mirror Stripe event to user_subscriptions");
+      }
       res.status(200).json({ received: true });
     } catch (err) {
       req.log.error({ err }, "Stripe webhook error");
