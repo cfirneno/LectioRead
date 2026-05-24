@@ -362,6 +362,9 @@ components:
           type: ["string", "null"]
         paragraphCount:
           type: integer
+        publicationYear:
+          type: ["integer", "null"]
+          description: "Approximate publication year (negative for BCE, e.g. -750 for 750 BCE)"
         createdAt:
           type: string
 

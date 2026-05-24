@@ -34,6 +34,7 @@ export const SearchTextResponse = zod.object({
   "sourceUrl": zod.string().nullable().describe('URL of the open-source text'),
   "description": zod.string().nullish(),
   "paragraphCount": zod.number(),
+  "publicationYear": zod.number().nullish().describe('Approximate publication year (negative for BCE, e.g. -750 for 750 BCE)'),
   "createdAt": zod.string()
 })
 
@@ -50,6 +51,7 @@ export const ListTextsResponseItem = zod.object({
   "sourceUrl": zod.string().nullable().describe('URL of the open-source text'),
   "description": zod.string().nullish(),
   "paragraphCount": zod.number(),
+  "publicationYear": zod.number().nullish().describe('Approximate publication year (negative for BCE, e.g. -750 for 750 BCE)'),
   "createdAt": zod.string()
 })
 export const ListTextsResponse = zod.array(ListTextsResponseItem)
@@ -87,6 +89,7 @@ export const GetTextResponse = zod.object({
   "sourceUrl": zod.string().nullable().describe('URL of the open-source text'),
   "description": zod.string().nullish(),
   "paragraphCount": zod.number(),
+  "publicationYear": zod.number().nullish().describe('Approximate publication year (negative for BCE, e.g. -750 for 750 BCE)'),
   "createdAt": zod.string()
 })
 

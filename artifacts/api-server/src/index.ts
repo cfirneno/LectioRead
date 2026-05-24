@@ -1,6 +1,7 @@
 import app from "./app";
 import { logger } from "./lib/logger";
 import { seedCatalog, cleanBrokenCatalogEntries } from "./lib/seeder";
+import { runIdempotentMigrations } from "./lib/migrate";
 
 const rawPort = process.env["PORT"];
 
@@ -23,9 +24,13 @@ app.listen(port, (err) => {
   }
 
   logger.info({ port }, "Server listening");
-  cleanBrokenCatalogEntries()
-    .catch((err) => logger.error({ err }, "Cleanup failed"))
+  runIdempotentMigrations()
+    .catch((err) => logger.error({ err }, "Migrations failed"))
     .finally(() => {
-      seedCatalog().catch((err) => logger.error({ err }, "Seed failed"));
+      cleanBrokenCatalogEntries()
+        .catch((err) => logger.error({ err }, "Cleanup failed"))
+        .finally(() => {
+          seedCatalog().catch((err) => logger.error({ err }, "Seed failed"));
+        });
     });
 });

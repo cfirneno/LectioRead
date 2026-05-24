@@ -149,7 +149,7 @@ const CATALOG: CatalogText[] = [
   },
 ];
 
-const LANGUAGE_ORDER = ["Italian", "Latin", "Greek", "Spanish", "French", "German"];
+const LANGUAGE_ORDER = ["Latin", "Greek", "Italian", "French", "Spanish", "German", "Russian", "Japanese"];
 
 function groupByLanguage(texts: CatalogText[]): Record<string, CatalogText[]> {
   const groups: Record<string, CatalogText[]> = {};
@@ -196,8 +196,20 @@ export default function Home() {
     libraryByLanguage[lang].push(t);
   }
   for (const lang of Object.keys(libraryByLanguage)) {
-    libraryByLanguage[lang].sort((a, b) => a.title.localeCompare(b.title));
+    libraryByLanguage[lang].sort((a, b) => {
+      const ya = a.publicationYear ?? Number.POSITIVE_INFINITY;
+      const yb = b.publicationYear ?? Number.POSITIVE_INFINITY;
+      if (ya !== yb) return ya - yb;
+      return a.title.localeCompare(b.title);
+    });
   }
+
+  const formatYear = (y: number | null | undefined): string => {
+    if (y === null || y === undefined) return "";
+    if (y < 0) return `${Math.abs(y)} BCE`;
+    if (y < 1000) return `${y} CE`;
+    return String(y);
+  };
 
   const handleSelect = (query: string, title?: string) => {
     if (searchMutation.isPending) return;
@@ -335,7 +347,7 @@ export default function Home() {
           </section>
         )}
 
-        <section className="space-y-8">
+        <section className="space-y-4">
           {(allTexts ?? []).length === 0 ? (
             <div className="text-center text-muted-foreground font-serif py-12">
               <Loader2 className="h-5 w-5 animate-spin mx-auto mb-3 text-primary" />
@@ -343,35 +355,34 @@ export default function Home() {
             </div>
           ) : (
             LANGUAGE_ORDER.filter((lang) => libraryByLanguage[lang]?.length).map((lang) => (
-              <div key={lang} className="space-y-3">
-                <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground border-b border-border/40 pb-2 flex items-baseline gap-2">
-                  <span>{lang}</span>
-                  <span className="text-[10px] font-mono text-muted-foreground/60 normal-case tracking-normal">
-                    {libraryByLanguage[lang].length}
-                  </span>
-                </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              <details key={lang} open className="group rounded-lg border border-border/40 bg-card/20 overflow-hidden">
+                <summary className="cursor-pointer list-none flex items-center justify-between px-4 py-3 hover:bg-card/40 transition-colors select-none">
+                  <div className="flex items-baseline gap-3">
+                    <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-0 -rotate-90" />
+                    <h2 className="font-serif text-lg font-semibold text-foreground">{lang}</h2>
+                    <span className="text-xs font-mono text-muted-foreground/70">
+                      {libraryByLanguage[lang].length} {libraryByLanguage[lang].length === 1 ? "book" : "books"}
+                    </span>
+                  </div>
+                </summary>
+                <div className="border-t border-border/30 divide-y divide-border/30">
                   {libraryByLanguage[lang].map((item) => (
                     <Link key={item.id} href={`/texts/${item.id}/read/0`}>
-                      <button
-                        className="w-full text-left rounded-lg border border-border/50 bg-card/40 hover:bg-card hover:border-primary/40 transition-all p-4 space-y-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-                      >
-                        <div className="space-y-0.5 min-w-0">
-                          <p className="font-serif font-semibold text-sm leading-snug text-foreground line-clamp-2">
+                      <div className="flex items-baseline gap-3 px-5 py-3 hover:bg-card/60 transition-colors cursor-pointer">
+                        <span className="text-[11px] font-mono text-muted-foreground/60 w-20 shrink-0 tabular-nums">
+                          {formatYear(item.publicationYear) || "—"}
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <p className="font-serif font-medium text-sm text-foreground truncate">
                             {item.title}
                           </p>
-                          <p className="text-xs text-muted-foreground">{item.author}</p>
+                          <p className="text-xs text-muted-foreground truncate">{item.author}</p>
                         </div>
-                        {item.description && (
-                          <p className="text-xs text-muted-foreground/80 font-serif italic leading-snug line-clamp-2">
-                            {item.description}
-                          </p>
-                        )}
-                      </button>
+                      </div>
                     </Link>
                   ))}
                 </div>
-              </div>
+              </details>
             ))
           )}
         </section>

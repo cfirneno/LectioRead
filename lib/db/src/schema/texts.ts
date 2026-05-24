@@ -11,6 +11,7 @@ export const textsTable = pgTable("texts", {
   sourceUrl: text("source_url"),
   description: text("description"),
   paragraphCount: integer("paragraph_count").notNull().default(0),
+  publicationYear: integer("publication_year"),
   lastAccessedAt: timestamp("last_accessed_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });

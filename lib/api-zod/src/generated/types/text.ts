@@ -25,5 +25,10 @@ export interface Text {
   /** @nullable */
   description?: string | null;
   paragraphCount: number;
+  /**
+     * Approximate publication year (negative for BCE, e.g. -750 for 750 BCE)
+     * @nullable
+     */
+  publicationYear?: number | null;
   createdAt: string;
 }

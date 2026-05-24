@@ -557,6 +557,7 @@ async function fetchAndStore(query: string, catalogTitle: string): Promise<void>
       targetLanguage: "English",
       sourceUrl: result.sourceUrl,
       description: result.description,
+      publicationYear: result.publicationYear ?? null,
       paragraphCount: result.paragraphs.length,
       // Do not set lastAccessedAt — only user-initiated reads should set this
     })

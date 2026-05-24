@@ -27,6 +27,7 @@ export interface TextSearchResult {
   language: string;
   sourceUrl: string | null;
   description: string | null;
+  publicationYear: number | null;
   paragraphs: string[];
 }
 
@@ -62,9 +63,10 @@ Otherwise, return a JSON object with these exact fields:
 {
   "title": "exact title in the original language",
   "author": "author name",
-  "language": "original language (e.g. Italian, Latin, French, Spanish, Russian, Greek)",
+  "language": "original language (e.g. Italian, Latin, French, Spanish, Russian, Greek, Japanese)",
   "sourceUrl": "URL if known from Project Gutenberg or Wikisource, or null",
   "description": "brief description of the work in English",
+  "publicationYear": <approximate publication year as an integer; negative for BCE (e.g. -750 for c. 750 BCE); use your best estimate; never null>,
   "paragraphs": ["paragraph 1 text in ORIGINAL language", "paragraph 2 text in ORIGINAL language", ...]
 }
 
