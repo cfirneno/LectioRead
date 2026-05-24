@@ -10,5 +10,10 @@
   "devDependencies": {
     "@types/node": "catalog:",
     "tsx": "catalog:"
+  },
+  "dependencies": {
+    "@clerk/backend": "^3.4.13",
+    "@workspace/db": "workspace:*",
+    "drizzle-orm": "catalog:"
   }
 }
