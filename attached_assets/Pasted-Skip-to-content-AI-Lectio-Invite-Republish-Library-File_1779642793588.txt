@@ -1,0 +1,233 @@
+Skip to content
+
+AI
+
+Lectio
+
+
+Invite
+
+Republish
+
+
+
+
+
+
+Library
+
+File tree
+Search
+
+New
+Apps
+Lectio — Foreign Language Reader
+Lectio — Foreign Language Reader
+Website
+
+
+Agent
+4
+
+Overview
+
+Logs
+
+Analytics
+
+Resources
+
+Domains
+
+Manage
+
+Back
+lectioread.com
+Verified
+
+Email Verification Required
+A verification email was sent to your domain registration contact email. Please verify within 15 days to avoid service disruptions. 
+Provider
+Replit
+Age
+—
+Renewal date
+—
+Renewal price
+$11.50
+Auto renewal
+
+DNS Records
+Manually configure your domain’s DNS records
+Type
+Hostname
+Record
+A	@	34.111.179.208	
+TXT	@	replit-verify=96440aa6-a63e-4090-86d3-7a1266f35d5e	
+TXT	_dmarc	v=DMARC1; p=reject; sp=reject; pct=100;	
+CNAME	clerk	frontend-api.clerk.services	
+CNAME	accounts	accounts.clerk.services	
+CNAME	clkmail	mail.s8nsamje6mvb.clerk.services	
+CNAME	clk._domainkey	dkim1.s8nsamje6mvb.clerk.services	
+CNAME	clk2._domainkey	dkim2.s8nsamje6mvb.clerk.services	
+
+Add DNS record
+Published your App
+
+
+
+Show previous messages
+
+2 messages & 19 actions
+
+Checkpoint made
+1 hour ago
+
+Worked for 1 minute
+not standard
+
+1 hour ago
+
+1 message & 1 action
+Which part isn't standard?
+
+Something else — I'll describe it
+it takes much too long. to get to the reading.
+1 hour ago
+
+Worked for 7 seconds
+
+1 message & 7 actions
+not taps, loading time
+
+1 hour ago
+
+(5 seconds)
+unacceptable
+
+1 hour ago
+
+2 messages & 10 actions
+
+Checkpoint made
+1 hour ago
+
+Worked for 1 minute
+happening now...circle spinning above "Open Manuscript" forever
+
+1 hour ago
+
+2 actions
+it sucks
+
+1 hour ago
+
+1 message & 16 actions
+sure it is, retartd!
+
+1 hour ago
+
+2 messages & 10 actions
+
+Checkpoint made
+59 minutes ago
+
+Worked for 2 minutes
+same stupid fucking circle spinning, asshole
+
+58 minutes ago
+
+3 messages & 20 actions
+
+Checkpoint made
+56 minutes ago
+
+Worked for 1 minute
+worst code ever...I'm annoucing it to 40 million readers
+
+56 minutes ago
+
+2 messages & 7 actions
+
+Checkpoint made
+56 minutes ago
+
+Worked for 29 seconds
+for cyrillic as in Greek and Russian can you add a pronouciation line letter by letter between the interlinear translation and the orignal text? also add Dostievski
+
+54 minutes ago
+
+1 message & 16 actions
+
+Checkpoint made
+53 minutes ago
+
+Worked for 1 minute
+is this on Lectioread.com?
+
+6 minutes ago
+
+1 message & 4 actions
+
+Checkpoint made
+6 minutes ago
+
+Worked for 20 seconds
+you brought the domain with me....publish it I want to start making money!
+
+5 minutes ago
+
+2 messages & 1 action
+
+Worked for 8 seconds
+Republish
+Finish Stripe sandbox setup
+This app uses a Stripe sandbox connection. Complete the setup in the Publishing pane before publishing.
+
+Open Publishing
+
+Published your app
+3 minutes ago
+IN the domains the lectioread.com is listed
+
+3 minutes ago
+The app is live, and Replit shows lectioread.com listed in your deployment's domains — that means the custom domain is attached on Replit's side.
+
+The last step is on your DNS provider (wherever you bought/manage lectioread.com):
+
+In the Replit deployment's Domains panel, click lectioread.com — it will show you the required DNS records (typically an A record for the root and a CNAME for www, both pointing at Replit).
+Go to your DNS provider's dashboard and add exactly those records.
+Wait a few minutes (sometimes up to an hour) for DNS to propagate and for Replit to issue the TLS certificate. The domain row in Replit will flip from "Pending" to "Verified" when it's ready.
+After that, https://lectioread.com will load Lectio with a valid cert. You're open for business.
+
+it says email verification is required
+
+2 minutes ago
+
+1 message & 7 actions
+
+Worked for 28 seconds
+it has all the cnames already populated
+
+Just now
+If the CNAMEs are already populated in Replit's panel, then the Replit side is fine — you just need to copy those CNAME records into your DNS provider's dashboard (wherever the domain's nameservers point). Replit shows you what records to add, but it can't add them for you unless the domain was purchased through Replit and using Replit nameservers.
+
+Two scenarios:
+
+You bought lectioread.com through Replit → DNS is managed for you. In that case, the records shown are already live; just wait a few minutes for Clerk to verify them. The status next to each record should turn green/"Verified" within minutes to an hour.
+
+You bought it elsewhere (Namecheap, GoDaddy, Cloudflare, etc.) → Replit only shows you the records; you must log into that provider and add each CNAME there manually. Once added, return to the Replit Domains panel and the status will flip to Verified once propagation completes (typically minutes, up to 48 hours).
+
+Check the status indicator next to each CNAME in the Domains panel. If they say "Pending" or "Unverified," DNS hasn't propagated yet — wait, or add them at your registrar. If they say "Verified," try the signup again; email codes should now deliver.
+
+
+Scroll to latest
+
+Make, test, iterate…
+
+
+
+Power
+
+
+
