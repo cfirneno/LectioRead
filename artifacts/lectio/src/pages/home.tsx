@@ -183,6 +183,22 @@ export default function Home() {
 
   const textByTitle = new Map((allTexts ?? []).map((t) => [t.title.toLowerCase(), t]));
 
+  const normalizeLanguage = (lang: string): string => {
+    const l = lang.trim();
+    if (/^ancient\s+greek$/i.test(l) || /^greek$/i.test(l) || /^koine$/i.test(l)) return "Greek";
+    return l.charAt(0).toUpperCase() + l.slice(1).toLowerCase();
+  };
+
+  const libraryByLanguage: Record<string, typeof allTexts extends (infer U)[] | undefined ? U[] : never> = {};
+  for (const t of allTexts ?? []) {
+    const lang = normalizeLanguage(t.language);
+    if (!libraryByLanguage[lang]) libraryByLanguage[lang] = [];
+    libraryByLanguage[lang].push(t);
+  }
+  for (const lang of Object.keys(libraryByLanguage)) {
+    libraryByLanguage[lang].sort((a, b) => a.title.localeCompare(b.title));
+  }
+
   const handleSelect = (query: string, title?: string) => {
     if (searchMutation.isPending) return;
     if (title) {
@@ -320,47 +336,44 @@ export default function Home() {
         )}
 
         <section className="space-y-8">
-          {LANGUAGE_ORDER.filter((lang) => grouped[lang]).map((lang) => (
-            <div key={lang} className="space-y-3">
-              <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground border-b border-border/40 pb-2">
-                {lang}
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {grouped[lang].map((item) => {
-                  const cached = textByTitle.has(item.title.toLowerCase());
-                  const loading = loadingQuery === item.query;
-                  return (
-                    <button
-                      key={item.query}
-                      onClick={() => handleSelect(item.query, item.title)}
-                      disabled={isLoading}
-                      className="text-left rounded-lg border border-border/50 bg-card/40 hover:bg-card hover:border-primary/40 transition-all p-4 space-y-2 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-                    >
-                      <div className="flex items-start justify-between gap-2">
+          {(allTexts ?? []).length === 0 ? (
+            <div className="text-center text-muted-foreground font-serif py-12">
+              <Loader2 className="h-5 w-5 animate-spin mx-auto mb-3 text-primary" />
+              <p>Preparing the library…</p>
+            </div>
+          ) : (
+            LANGUAGE_ORDER.filter((lang) => libraryByLanguage[lang]?.length).map((lang) => (
+              <div key={lang} className="space-y-3">
+                <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground border-b border-border/40 pb-2 flex items-baseline gap-2">
+                  <span>{lang}</span>
+                  <span className="text-[10px] font-mono text-muted-foreground/60 normal-case tracking-normal">
+                    {libraryByLanguage[lang].length}
+                  </span>
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {libraryByLanguage[lang].map((item) => (
+                    <Link key={item.id} href={`/texts/${item.id}/read/0`}>
+                      <button
+                        className="w-full text-left rounded-lg border border-border/50 bg-card/40 hover:bg-card hover:border-primary/40 transition-all p-4 space-y-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                      >
                         <div className="space-y-0.5 min-w-0">
                           <p className="font-serif font-semibold text-sm leading-snug text-foreground line-clamp-2">
                             {item.title}
                           </p>
                           <p className="text-xs text-muted-foreground">{item.author}</p>
                         </div>
-                        {loading ? (
-                          <Loader2 className="h-4 w-4 animate-spin text-primary shrink-0 mt-0.5" />
-                        ) : cached ? (
-                          <span className="text-[10px] font-medium text-primary/70 bg-primary/10 rounded-full px-2 py-0.5 shrink-0 mt-0.5 whitespace-nowrap">
-                            in library
-                          </span>
-                        ) : null}
-                      </div>
-                      <p className="text-xs text-muted-foreground/80 font-serif italic leading-snug line-clamp-2">
-                        {item.description}
-                      </p>
-                      <p className="text-[10px] text-muted-foreground/60 font-mono">{item.year}</p>
-                    </button>
-                  );
-                })}
+                        {item.description && (
+                          <p className="text-xs text-muted-foreground/80 font-serif italic leading-snug line-clamp-2">
+                            {item.description}
+                          </p>
+                        )}
+                      </button>
+                    </Link>
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </section>
 
         <section className="border-t border-border/40 pt-8">
