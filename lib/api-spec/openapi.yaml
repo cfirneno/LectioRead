@@ -470,6 +470,9 @@ components:
           type: string
         translation:
           type: string
+        transliteration:
+          type: string
+          description: Romanized pronunciation for non-Latin scripts (Greek, Cyrillic, etc.). Omitted for Latin-script languages.
 
     InterlinearTranslation:
       type: object

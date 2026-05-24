@@ -27,6 +27,16 @@ const CATALOG_QUERIES: Array<{ query: string; title: string }> = [
   { query: "De Bello Gallico Book IV chapters 20-30 (Britain invasion) by Julius Caesar", title: "Bello Gallico IV" },
   { query: "De Bello Gallico Book VI chapters 13-20 (Druids) by Julius Caesar", title: "Bello Gallico VI" },
 
+  // Dostoevsky — Russian
+  { query: "Преступление и наказание by Fyodor Dostoevsky, opening of part 1 chapter 1 (original Russian)", title: "Преступление и наказание I.1" },
+  { query: "Преступление и наказание by Fyodor Dostoevsky, part 1 chapter 2 (original Russian, tavern scene)", title: "Преступление и наказание I.2" },
+  { query: "Преступление и наказание by Fyodor Dostoevsky, part 1 chapter 7 (original Russian, the murder)", title: "Преступление и наказание I.7" },
+  { query: "Братья Карамазовы by Fyodor Dostoevsky, opening of book 1 chapter 1 (original Russian)", title: "Братья Карамазовы I.1" },
+  { query: "Братья Карамазовы by Fyodor Dostoevsky, Grand Inquisitor chapter (original Russian)", title: "Братья Карамазовы: Великий инквизитор" },
+  { query: "Идиот by Fyodor Dostoevsky, part 1 chapter 1 (original Russian, train scene)", title: "Идиот I.1" },
+  { query: "Записки из подполья by Fyodor Dostoevsky, opening of part 1 (original Russian)", title: "Записки из подполья" },
+  { query: "Бесы by Fyodor Dostoevsky, opening chapter (original Russian)", title: "Бесы I.1" },
+
   // Meditations — Marcus Aurelius
   { query: "Meditations Book I by Marcus Aurelius in Greek", title: "εἰς ἑαυτόν" },
   { query: "Meditations Book II by Marcus Aurelius in Greek", title: "εἰς ἑαυτόν II" },

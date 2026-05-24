@@ -150,9 +150,14 @@ export default function Read() {
                 <div className="flex flex-wrap justify-center gap-x-4 md:gap-x-6 gap-y-8 md:gap-y-12">
                   {interlinearData.words.map((wordPair: any, i: number) => (
                     <div key={i} className="flex flex-col items-center group">
-                      <span className="font-serif text-2xl md:text-3xl text-foreground mb-2">
+                      <span className="font-serif text-2xl md:text-3xl text-foreground mb-1">
                         {wordPair.original}
                       </span>
+                      {wordPair.transliteration && (
+                        <span className="font-sans text-xs md:text-sm italic text-muted-foreground tracking-wide mb-1">
+                          {wordPair.transliteration}
+                        </span>
+                      )}
                       <span className="font-sans text-sm md:text-base font-medium text-primary tracking-wide">
                         {wordPair.translation}
                       </span>

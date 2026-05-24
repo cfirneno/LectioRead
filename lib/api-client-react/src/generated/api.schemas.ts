@@ -99,6 +99,8 @@ export interface VocabularyList {
 export interface InterlinearWord {
   original: string;
   translation: string;
+  /** Romanized pronunciation for non-Latin scripts (Greek, Cyrillic, etc.). Omitted for Latin-script languages. */
+  transliteration?: string;
 }
 
 export interface InterlinearTranslation {

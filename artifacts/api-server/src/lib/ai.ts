@@ -3,6 +3,22 @@ import { openai } from "@workspace/integrations-openai-ai-server";
 export interface InterlinearWord {
   original: string;
   translation: string;
+  transliteration?: string;
+}
+
+const NON_LATIN_SCRIPT_LANGS = new Set([
+  "greek",
+  "ancient greek",
+  "koine greek",
+  "russian",
+  "ukrainian",
+  "bulgarian",
+  "serbian",
+  "old church slavonic",
+]);
+
+function needsTransliteration(language: string): boolean {
+  return NON_LATIN_SCRIPT_LANGS.has(language.trim().toLowerCase());
 }
 
 export interface TextSearchResult {
@@ -86,7 +102,7 @@ Return ONLY valid JSON — no other text.`,
 
 Return a JSON array of objects, one per word/token:
 [
-  {"original": "original_word", "translation": "literal_english_meaning"},
+  {"original": "original_word", "translation": "literal_english_meaning"${needsTransliteration(sourceLanguage) ? `, "transliteration": "romanized_pronunciation"` : ""}},
   ...
 ]
 
@@ -94,7 +110,12 @@ Rules:
 - Keep punctuation attached to the word it belongs to
 - For compound expressions, keep them as one entry
 - Give the most literal possible translation, not polished
-- Preserve the exact word order of the original`,
+- Preserve the exact word order of the original${
+          needsTransliteration(sourceLanguage)
+            ? `
+- Include a "transliteration" field for every word with its romanized pronunciation (e.g. for Russian use scientific transliteration; for Ancient Greek use standard scholarly romanization with macrons where appropriate)`
+            : ""
+        }`,
       },
     ],
   });

@@ -140,7 +140,8 @@ export const GetInterlinearTranslationResponse = zod.object({
   "originalText": zod.string(),
   "words": zod.array(zod.object({
   "original": zod.string(),
-  "translation": zod.string()
+  "translation": zod.string(),
+  "transliteration": zod.string().optional().describe('Romanized pronunciation for non-Latin scripts (Greek, Cyrillic, etc.). Omitted for Latin-script languages.')
 }))
 })
 
