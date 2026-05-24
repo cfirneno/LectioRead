@@ -1,6 +1,6 @@
 import app from "./app";
 import { logger } from "./lib/logger";
-import { seedCatalog, cleanBrokenCatalogEntries, backfillPublicationYears, backfillEnglishTitles } from "./lib/seeder";
+import { seedCatalog, cleanBrokenCatalogEntries, backfillPublicationYears, backfillEnglishTitles, deduplicateCatalogTexts } from "./lib/seeder";
 import { runIdempotentMigrations } from "./lib/migrate";
 
 const rawPort = process.env["PORT"];
@@ -27,6 +27,9 @@ app.listen(port, (err) => {
   runIdempotentMigrations()
     .catch((err) => logger.error({ err }, "Migrations failed"))
     .finally(() => {
+      deduplicateCatalogTexts()
+        .catch((err) => logger.error({ err }, "Dedup failed"))
+        .finally(() => {
       cleanBrokenCatalogEntries()
         .catch((err) => logger.error({ err }, "Cleanup failed"))
         .finally(() => {
@@ -39,6 +42,7 @@ app.listen(port, (err) => {
                   seedCatalog().catch((err) => logger.error({ err }, "Seed failed"));
                 });
             });
+        });
         });
     });
 });

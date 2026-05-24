@@ -88,6 +88,42 @@ export async function backfillEnglishTitles(): Promise<void> {
   }
 }
 
+export async function deduplicateCatalogTexts(): Promise<void> {
+  try {
+    // Group by (lower(title), lower(author)); keep the row with the highest paragraph_count
+    // (ties → lowest id); delete the rest along with their paragraphs and progress.
+    const { sql } = await import("drizzle-orm");
+    const result = await db.execute(sql`
+      WITH ranked AS (
+        SELECT id,
+               row_number() OVER (
+                 PARTITION BY lower(title), lower(author)
+                 ORDER BY paragraph_count DESC, id ASC
+               ) AS rn
+        FROM texts
+      ),
+      to_delete AS (
+        SELECT id FROM ranked WHERE rn > 1
+      ),
+      del_progress AS (
+        DELETE FROM progress WHERE text_id IN (SELECT id FROM to_delete)
+      ),
+      del_paragraphs AS (
+        DELETE FROM paragraphs WHERE text_id IN (SELECT id FROM to_delete)
+      )
+      DELETE FROM texts WHERE id IN (SELECT id FROM to_delete) RETURNING id;
+    `);
+    const deleted = Array.isArray(result.rows) ? result.rows.length : 0;
+    if (deleted > 0) {
+      logger.info({ deleted }, "Deduplicated catalog texts");
+    } else {
+      logger.info("No duplicate catalog texts to remove");
+    }
+  } catch (err) {
+    logger.error({ err }, "Catalog deduplication failed");
+  }
+}
+
 export async function cleanBrokenCatalogEntries(): Promise<void> {
   try {
     const broken = await db
@@ -684,28 +720,27 @@ const CATALOG_QUERIES: Array<{ query: string; title: string }> = [
   { query: "Dostoevsky Униженные и оскорблённые (The Insulted and Humiliated) Part 1 Chapter 1 in Russian", title: "Униженные и оскорблённые — I" },
 ];
 
-async function titleExistsInDb(partialTitle: string): Promise<boolean> {
+async function catalogKeyExists(key: string): Promise<boolean> {
   const [row] = await db
     .select({ id: textsTable.id })
     .from(textsTable)
-    .where(ilike(textsTable.title, `%${partialTitle}%`))
+    .where(eq(textsTable.catalogKey, key))
     .limit(1);
   return !!row;
 }
 
 async function fetchAndStore(query: string, catalogTitle: string): Promise<void> {
-  // Check before calling AI using a keyword from the catalog title to handle
-  // minor title format variations the AI might return
-  if (await titleExistsInDb(catalogTitle)) {
+  // Dedup by stable catalogKey, NOT by AI-returned title (which varies per call).
+  if (await catalogKeyExists(catalogTitle)) {
     logger.info({ catalogTitle }, "Catalog text already in DB, skipping");
     return;
   }
 
   const result = await searchAndFetchText(query);
 
-  // Check again after AI call to guard against concurrent inserts
-  if (await titleExistsInDb(catalogTitle)) {
-    logger.info({ title: result.title }, "Skipping duplicate catalog text");
+  // Re-check after AI call to guard against concurrent inserts
+  if (await catalogKeyExists(catalogTitle)) {
+    logger.info({ title: result.title, catalogTitle }, "Skipping duplicate catalog text");
     return;
   }
 
@@ -721,6 +756,7 @@ async function fetchAndStore(query: string, catalogTitle: string): Promise<void>
       publicationYear: result.publicationYear ?? null,
       englishTitle: result.englishTitle ?? null,
       englishAuthor: result.englishAuthor ?? null,
+      catalogKey: catalogTitle,
       paragraphCount: result.paragraphs.length,
       // Do not set lastAccessedAt — only user-initiated reads should set this
     })
@@ -780,7 +816,7 @@ export async function seedCatalog(): Promise<void> {
   const missing: Array<{ query: string; title: string }> = [];
 
   for (const item of CATALOG_QUERIES) {
-    if (!(await titleExistsInDb(item.title))) {
+    if (!(await catalogKeyExists(item.title))) {
       missing.push(item);
     }
   }
