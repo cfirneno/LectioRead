@@ -95,9 +95,9 @@ function Router() {
           <Home />
         </RequireSubscription>
       </Route>
-      <Route path="/texts/:textId">
+      <Route path="/texts/:textId/read/:index">
         <RequireSubscription>
-          <TextToc />
+          <Read />
         </RequireSubscription>
       </Route>
       <Route path="/texts/:textId/vocabulary">
@@ -105,9 +105,9 @@ function Router() {
           <Vocabulary />
         </RequireSubscription>
       </Route>
-      <Route path="/texts/:textId/read/:index">
+      <Route path="/texts/:textId">
         <RequireSubscription>
-          <Read />
+          <TextToc />
         </RequireSubscription>
       </Route>
       <Route component={NotFound} />

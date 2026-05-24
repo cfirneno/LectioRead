@@ -18,6 +18,7 @@ export async function searchAndFetchText(query: string): Promise<TextSearchResul
   const response = await openai.chat.completions.create({
     model: "gpt-5-mini",
     max_completion_tokens: 8192,
+    reasoning_effort: "minimal",
     messages: [
       {
         role: "system",
@@ -69,6 +70,7 @@ export async function generateInterlinearTranslation(
   const response = await openai.chat.completions.create({
     model: "gpt-5-mini",
     max_completion_tokens: 4096,
+    reasoning_effort: "minimal",
     messages: [
       {
         role: "system",
@@ -118,6 +120,7 @@ export async function generateFullTranslation(
   const response = await openai.chat.completions.create({
     model: "gpt-5-mini",
     max_completion_tokens: 2048,
+    reasoning_effort: "minimal",
     messages: [
       {
         role: "system",
