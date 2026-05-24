@@ -16,7 +16,7 @@ export interface TextSearchResult {
 
 export async function searchAndFetchText(query: string): Promise<TextSearchResult> {
   const response = await openai.chat.completions.create({
-    model: "gpt-5.4",
+    model: "gpt-5-mini",
     max_completion_tokens: 8192,
     messages: [
       {
@@ -67,7 +67,7 @@ export async function generateInterlinearTranslation(
   targetLanguage: string = "English"
 ): Promise<InterlinearWord[]> {
   const response = await openai.chat.completions.create({
-    model: "gpt-5.4",
+    model: "gpt-5-mini",
     max_completion_tokens: 4096,
     messages: [
       {
@@ -116,7 +116,7 @@ export async function generateFullTranslation(
   targetLanguage: string = "English"
 ): Promise<string> {
   const response = await openai.chat.completions.create({
-    model: "gpt-5.4",
+    model: "gpt-5-mini",
     max_completion_tokens: 2048,
     messages: [
       {

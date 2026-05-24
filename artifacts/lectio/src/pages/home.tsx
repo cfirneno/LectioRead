@@ -188,7 +188,7 @@ export default function Home() {
     if (title) {
       const existing = textByTitle.get(title.toLowerCase());
       if (existing) {
-        setLocation(`/texts/${existing.id}`);
+        setLocation(`/texts/${existing.id}/read/0`);
         return;
       }
     }
@@ -197,7 +197,7 @@ export default function Home() {
       { data: { query } },
       {
         onSuccess: (data) => {
-          setLocation(`/texts/${data.id}`);
+          setLocation(`/texts/${data.id}/read/0`);
         },
         onError: () => {
           setLoadingQuery(null);

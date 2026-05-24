@@ -1,6 +1,6 @@
-import { ilike } from "drizzle-orm";
+import { ilike, eq, and } from "drizzle-orm";
 import { db, textsTable, paragraphsTable } from "@workspace/db";
-import { searchAndFetchText } from "./ai";
+import { searchAndFetchText, generateInterlinearTranslation } from "./ai";
 import { logger } from "./logger";
 import { waitForIdleForeground } from "./foregroundGate";
 
@@ -535,6 +535,29 @@ async function fetchAndStore(query: string, catalogTitle: string): Promise<void>
 
   await db.insert(paragraphsTable).values(paragraphInserts);
   logger.info({ title: result.title }, "Seeded catalog text");
+
+  // Pre-warm the first paragraph's interlinear so reading starts instantly.
+  // Yield to foreground requests first; failures are non-fatal.
+  try {
+    await waitForIdleForeground(4000);
+    const [first] = await db
+      .select()
+      .from(paragraphsTable)
+      .where(and(eq(paragraphsTable.textId, text.id), eq(paragraphsTable.index, 0)));
+    if (first && !first.interlinearTranslation) {
+      const words = await generateInterlinearTranslation(
+        first.originalText,
+        text.language,
+        text.targetLanguage ?? "English"
+      );
+      await db
+        .update(paragraphsTable)
+        .set({ interlinearTranslation: JSON.stringify(words) })
+        .where(eq(paragraphsTable.id, first.id));
+    }
+  } catch (err) {
+    logger.warn({ err, title: result.title }, "Failed to pre-warm interlinear");
+  }
 }
 
 async function runWithConcurrency<T>(
