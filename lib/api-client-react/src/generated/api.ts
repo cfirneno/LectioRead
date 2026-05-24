@@ -555,7 +555,7 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
 
 
-   return  { queryKey, queryFn, enabled: !!(textId && index), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getParagraph>>, TError, TData> & { queryKey: QueryKey }
+   return  { queryKey, queryFn, enabled: !!(textId && index !== undefined && index !== null), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getParagraph>>, TError, TData> & { queryKey: QueryKey }
 }
 
 export type GetParagraphQueryResult = NonNullable<Awaited<ReturnType<typeof getParagraph>>>
