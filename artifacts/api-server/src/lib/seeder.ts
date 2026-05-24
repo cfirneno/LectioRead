@@ -1,8 +1,48 @@
-import { ilike, eq, and, or } from "drizzle-orm";
+import { ilike, eq, and, or, isNull } from "drizzle-orm";
 import { db, textsTable, paragraphsTable, progressTable } from "@workspace/db";
-import { searchAndFetchText, generateInterlinearTranslation } from "./ai";
+import { searchAndFetchText, generateInterlinearTranslation, lookupPublicationYears } from "./ai";
 import { logger } from "./logger";
 import { waitForIdleForeground } from "./foregroundGate";
+
+export async function backfillPublicationYears(): Promise<void> {
+  try {
+    const missing = await db
+      .select({ id: textsTable.id, title: textsTable.title, author: textsTable.author })
+      .from(textsTable)
+      .where(isNull(textsTable.publicationYear));
+
+    if (missing.length === 0) {
+      logger.info("All texts already have publication years");
+      return;
+    }
+
+    logger.info({ count: missing.length }, "Backfilling publication years");
+
+    const BATCH = 25;
+    let updated = 0;
+    for (let i = 0; i < missing.length; i += BATCH) {
+      const batch = missing.slice(i, i + BATCH);
+      try {
+        await waitForIdleForeground(3000);
+        const years = await lookupPublicationYears(batch);
+        for (const [id, year] of years.entries()) {
+          await db
+            .update(textsTable)
+            .set({ publicationYear: year })
+            .where(eq(textsTable.id, id));
+          updated++;
+        }
+        logger.info({ batchSize: batch.length, gotYears: years.size, totalUpdated: updated }, "Year backfill batch done");
+      } catch (err) {
+        logger.error({ err, batchStart: i }, "Year backfill batch failed");
+      }
+    }
+
+    logger.info({ updated, total: missing.length }, "Publication year backfill complete");
+  } catch (err) {
+    logger.error({ err }, "Publication year backfill failed");
+  }
+}
 
 export async function cleanBrokenCatalogEntries(): Promise<void> {
   try {

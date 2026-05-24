@@ -157,6 +157,50 @@ Rules:
   return JSON.parse(jsonMatch[0]) as InterlinearWord[];
 }
 
+export async function lookupPublicationYears(
+  books: Array<{ id: number; title: string; author: string }>
+): Promise<Map<number, number>> {
+  if (books.length === 0) return new Map();
+
+  const listing = books
+    .map((b) => `${b.id}. "${b.title}" by ${b.author}`)
+    .join("\n");
+
+  const response = await openai.chat.completions.create({
+    model: "gpt-5-mini",
+    max_completion_tokens: 4096,
+    reasoning_effort: "minimal",
+    messages: [
+      {
+        role: "system",
+        content:
+          "You are a literary scholar. Return ONLY valid JSON — an array of {id, year} pairs. Use negative integers for BCE (e.g. -750 for c. 750 BCE). Use your best estimate; never return null.",
+      },
+      {
+        role: "user",
+        content: `Give the approximate original publication year for each work below. Return ONLY a JSON array like [{"id": 12, "year": 1532}, ...] — no other text.
+
+${listing}`,
+      },
+    ],
+  });
+
+  const content = response.choices[0]?.message?.content;
+  if (!content) throw new Error("No response from AI");
+
+  const jsonMatch = content.match(/\[[\s\S]*\]/);
+  if (!jsonMatch) throw new Error("Could not parse year lookup response as JSON");
+
+  const parsed = JSON.parse(jsonMatch[0]) as Array<{ id: number; year: number }>;
+  const out = new Map<number, number>();
+  for (const item of parsed) {
+    if (typeof item.id === "number" && typeof item.year === "number" && Number.isFinite(item.year)) {
+      out.set(item.id, Math.round(item.year));
+    }
+  }
+  return out;
+}
+
 export async function generateFullTranslation(
   originalText: string,
   sourceLanguage: string,

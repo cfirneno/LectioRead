@@ -1,6 +1,6 @@
 import app from "./app";
 import { logger } from "./lib/logger";
-import { seedCatalog, cleanBrokenCatalogEntries } from "./lib/seeder";
+import { seedCatalog, cleanBrokenCatalogEntries, backfillPublicationYears } from "./lib/seeder";
 import { runIdempotentMigrations } from "./lib/migrate";
 
 const rawPort = process.env["PORT"];
@@ -30,7 +30,11 @@ app.listen(port, (err) => {
       cleanBrokenCatalogEntries()
         .catch((err) => logger.error({ err }, "Cleanup failed"))
         .finally(() => {
-          seedCatalog().catch((err) => logger.error({ err }, "Seed failed"));
+          backfillPublicationYears()
+            .catch((err) => logger.error({ err }, "Year backfill failed"))
+            .finally(() => {
+              seedCatalog().catch((err) => logger.error({ err }, "Seed failed"));
+            });
         });
     });
 });
