@@ -184,15 +184,27 @@ export default function Read() {
 
         <div className="shrink-0 flex justify-center py-8">
           {!isGenerating && stage < 5 && (
-            <div className="text-center space-y-2">
-              <Button 
-                size="lg" 
-                onClick={advanceStage}
-                className="rounded-full px-12 h-14 font-serif text-xl bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm"
-              >
-                Continue
-              </Button>
-              <p className="text-xs text-muted-foreground font-sans hidden md:block">Press Enter ↵</p>
+            <div className="flex items-center gap-4">
+              {(stage === 2 || stage === 4) && (
+                <Button
+                  size="lg"
+                  variant="ghost"
+                  onClick={() => setStage(stage === 2 ? 1 : 3)}
+                  className="rounded-full px-8 h-14 font-serif text-lg text-muted-foreground hover:text-foreground"
+                >
+                  ← Back
+                </Button>
+              )}
+              <div className="text-center space-y-2">
+                <Button 
+                  size="lg" 
+                  onClick={advanceStage}
+                  className="rounded-full px-12 h-14 font-serif text-xl bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm"
+                >
+                  Continue
+                </Button>
+                <p className="text-xs text-muted-foreground font-sans hidden md:block">Press Enter ↵</p>
+              </div>
             </div>
           )}
 
