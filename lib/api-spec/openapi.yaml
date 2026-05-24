@@ -3,13 +3,20 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Lectio — Foreign Language Reader API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: texts
+    description: Text/book operations
+  - name: paragraphs
+    description: Paragraph operations
+  - name: progress
+    description: Reading progress operations
+
 paths:
   /healthz:
     get:
@@ -24,6 +31,230 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /texts/search:
+    post:
+      operationId: searchText
+      tags: [texts]
+      summary: Search for an open-source text
+      description: Uses AI to find the best open-source version of a requested work and return its paragraphs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TextSearchRequest"
+      responses:
+        "200":
+          description: Text found and returned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Text"
+        "400":
+          description: Bad request
+
+  /texts:
+    get:
+      operationId: listTexts
+      tags: [texts]
+      summary: List all saved texts
+      responses:
+        "200":
+          description: List of texts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Text"
+
+  /texts/recent:
+    get:
+      operationId: getRecentTexts
+      tags: [texts]
+      summary: Get recently accessed texts with progress
+      responses:
+        "200":
+          description: Recent texts with progress info
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TextWithProgress"
+
+  /texts/{textId}:
+    get:
+      operationId: getText
+      tags: [texts]
+      summary: Get a single text by ID
+      parameters:
+        - name: textId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Text details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Text"
+        "404":
+          description: Not found
+
+  /texts/{textId}/paragraphs:
+    get:
+      operationId: listParagraphs
+      tags: [paragraphs]
+      summary: List all paragraphs for a text with completion status
+      parameters:
+        - name: textId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of paragraphs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ParagraphSummary"
+
+  /texts/{textId}/paragraphs/{index}:
+    get:
+      operationId: getParagraph
+      tags: [paragraphs]
+      summary: Get a specific paragraph (original text only)
+      parameters:
+        - name: textId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: index
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Paragraph details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Paragraph"
+        "404":
+          description: Not found
+
+  /texts/{textId}/paragraphs/{index}/interlinear:
+    post:
+      operationId: getInterlinearTranslation
+      tags: [paragraphs]
+      summary: Generate or retrieve the interlinear (word-for-word) translation
+      parameters:
+        - name: textId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: index
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Interlinear translation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InterlinearTranslation"
+        "404":
+          description: Not found
+
+  /texts/{textId}/paragraphs/{index}/translation:
+    post:
+      operationId: getFullTranslation
+      tags: [paragraphs]
+      summary: Generate or retrieve the full literary translation
+      parameters:
+        - name: textId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: index
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Full literary translation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FullTranslation"
+        "404":
+          description: Not found
+
+  /texts/{textId}/stats:
+    get:
+      operationId: getTextStats
+      tags: [texts]
+      summary: Get reading stats for a text
+      parameters:
+        - name: textId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Reading stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TextStats"
+
+  /progress:
+    get:
+      operationId: listProgress
+      tags: [progress]
+      summary: List all reading progress records
+      responses:
+        "200":
+          description: All progress records
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Progress"
+    post:
+      operationId: saveProgress
+      tags: [progress]
+      summary: Mark a paragraph as completed or reset it
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProgressInput"
+      responses:
+        "200":
+          description: Progress saved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Progress"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +265,165 @@ components:
       required:
         - status
 
+    TextSearchRequest:
+      type: object
+      required: [query]
+      properties:
+        query:
+          type: string
+          description: "e.g. 'The Prince by Machiavelli, chapter 1'"
+
+    Text:
+      type: object
+      required: [id, title, author, language, sourceUrl, paragraphCount, createdAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        author:
+          type: string
+        language:
+          type: string
+          description: "e.g. 'Italian', 'Latin', 'French'"
+        targetLanguage:
+          type: ["string", "null"]
+          description: "The language to translate to, e.g. 'English'"
+        sourceUrl:
+          type: ["string", "null"]
+          description: "URL of the open-source text"
+        description:
+          type: ["string", "null"]
+        paragraphCount:
+          type: integer
+        createdAt:
+          type: string
+
+    TextWithProgress:
+      type: object
+      required: [id, title, author, language, paragraphCount, completedCount, lastAccessedAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        author:
+          type: string
+        language:
+          type: string
+        paragraphCount:
+          type: integer
+        completedCount:
+          type: integer
+        lastParagraphIndex:
+          type: ["integer", "null"]
+        lastAccessedAt:
+          type: ["string", "null"]
+
+    TextStats:
+      type: object
+      required: [textId, totalParagraphs, completedParagraphs, percentComplete]
+      properties:
+        textId:
+          type: integer
+        totalParagraphs:
+          type: integer
+        completedParagraphs:
+          type: integer
+        percentComplete:
+          type: number
+
+    ParagraphSummary:
+      type: object
+      required: [id, textId, index, originalText, completed]
+      properties:
+        id:
+          type: integer
+        textId:
+          type: integer
+        index:
+          type: integer
+        originalText:
+          type: string
+        completed:
+          type: boolean
+
+    Paragraph:
+      type: object
+      required: [id, textId, index, originalText, completed]
+      properties:
+        id:
+          type: integer
+        textId:
+          type: integer
+        index:
+          type: integer
+        originalText:
+          type: string
+        completed:
+          type: boolean
+        interlinearTranslation:
+          type: ["string", "null"]
+          description: "Cached interlinear translation"
+        fullTranslation:
+          type: ["string", "null"]
+          description: "Cached full literary translation"
+
+    InterlinearWord:
+      type: object
+      required: [original, translation]
+      properties:
+        original:
+          type: string
+        translation:
+          type: string
+
+    InterlinearTranslation:
+      type: object
+      required: [paragraphId, words, originalText]
+      properties:
+        paragraphId:
+          type: integer
+        originalText:
+          type: string
+        words:
+          type: array
+          items:
+            $ref: "#/components/schemas/InterlinearWord"
+
+    FullTranslation:
+      type: object
+      required: [paragraphId, originalText, translatedText]
+      properties:
+        paragraphId:
+          type: integer
+        originalText:
+          type: string
+        translatedText:
+          type: string
+
+    Progress:
+      type: object
+      required: [id, textId, paragraphIndex, completed, updatedAt]
+      properties:
+        id:
+          type: integer
+        textId:
+          type: integer
+        paragraphIndex:
+          type: integer
+        completed:
+          type: boolean
+        updatedAt:
+          type: string
+
+    ProgressInput:
+      type: object
+      required: [textId, paragraphIndex, completed]
+      properties:
+        textId:
+          type: integer
+        paragraphIndex:
+          type: integer
+        completed:
+          type: boolean
