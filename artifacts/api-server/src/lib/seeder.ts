@@ -521,6 +521,83 @@ const CATALOG_QUERIES: Array<{ query: string; title: string }> = [
   { query: "Marx Das Kapital Vorwort (Preface) in German", title: "Das Kapital" },
   { query: "Freud Die Traumdeutung Introduction in German", title: "Traumdeutung" },
   { query: "Wittgenstein Tractatus Logico-Philosophicus opening propositions in German", title: "Tractatus" },
+
+  // === Russian ===
+  // Pushkin (1799-1837)
+  { query: "Pushkin Евгений Онегин (Eugene Onegin) Chapter 1 stanzas 1-10 in Russian", title: "Евгений Онегин — I" },
+  { query: "Pushkin Евгений Онегин (Eugene Onegin) Chapter 2 opening in Russian", title: "Евгений Онегин — II" },
+  { query: "Pushkin Капитанская дочка (The Captain's Daughter) Chapter 1 in Russian", title: "Капитанская дочка — I" },
+  { query: "Pushkin Пиковая дама (The Queen of Spades) Chapter 1 in Russian", title: "Пиковая дама — I" },
+  { query: "Pushkin Повести Белкина — Выстрел (The Shot) opening in Russian", title: "Выстрел" },
+  { query: "Pushkin Борис Годунов opening scene in Russian", title: "Борис Годунов" },
+  { query: "Pushkin Медный всадник (The Bronze Horseman) prologue in Russian", title: "Медный всадник" },
+
+  // Turgenev (1818-1883)
+  { query: "Turgenev Отцы и дети (Fathers and Sons) Chapter 1 in Russian", title: "Отцы и дети — I" },
+  { query: "Turgenev Отцы и дети (Fathers and Sons) Chapter 5 in Russian", title: "Отцы и дети — V" },
+  { query: "Turgenev Записки охотника — Хорь и Калиныч in Russian", title: "Хорь и Калиныч" },
+  { query: "Turgenev Дворянское гнездо (A Nest of the Gentry) Chapter 1 in Russian", title: "Дворянское гнездо — I" },
+  { query: "Turgenev Первая любовь (First Love) Chapter 1 in Russian", title: "Первая любовь — I" },
+  { query: "Turgenev Ася (Asya) opening in Russian", title: "Ася" },
+
+  // Chekhov (1860-1904)
+  { query: "Chekhov Дама с собачкой (The Lady with the Dog) Part 1 in Russian", title: "Дама с собачкой — I" },
+  { query: "Chekhov Палата №6 (Ward No. 6) Chapter 1 in Russian", title: "Палата №6 — I" },
+  { query: "Chekhov Степь (The Steppe) Chapter 1 in Russian", title: "Степь — I" },
+  { query: "Chekhov Чайка (The Seagull) Act 1 opening in Russian", title: "Чайка" },
+  { query: "Chekhov Вишнёвый сад (The Cherry Orchard) Act 1 opening in Russian", title: "Вишнёвый сад" },
+  { query: "Chekhov Три сестры (Three Sisters) Act 1 opening in Russian", title: "Три сестры" },
+  { query: "Chekhov Ванька (Vanka) opening in Russian", title: "Ванька" },
+  { query: "Chekhov Студент (The Student) opening in Russian", title: "Студент" },
+
+  // Tolstoy (1828-1910)
+  { query: "Tolstoy Война и мир (War and Peace) Volume 1 Part 1 Chapter 1 in Russian", title: "Война и мир — I" },
+  { query: "Tolstoy Война и мир (War and Peace) Volume 1 Part 1 Chapter 6 in Russian", title: "Война и мир — VI" },
+  { query: "Tolstoy Анна Каренина (Anna Karenina) Part 1 Chapter 1 in Russian", title: "Анна Каренина — I" },
+  { query: "Tolstoy Анна Каренина (Anna Karenina) Part 1 Chapter 6 in Russian", title: "Анна Каренина — VI" },
+  { query: "Tolstoy Смерть Ивана Ильича (Death of Ivan Ilyich) Chapter 1 in Russian", title: "Смерть Ивана Ильича — I" },
+  { query: "Tolstoy Крейцерова соната (Kreutzer Sonata) Chapter 1 in Russian", title: "Крейцерова соната — I" },
+  { query: "Tolstoy Хаджи-Мурат opening in Russian", title: "Хаджи-Мурат" },
+  { query: "Tolstoy Детство (Childhood) Chapter 1 in Russian", title: "Детство — I" },
+  { query: "Tolstoy Севастопольские рассказы — Севастополь в декабре in Russian", title: "Севастополь в декабре" },
+
+  // Dostoevsky (1821-1881)
+  { query: "Dostoevsky Преступление и наказание (Crime and Punishment) Part 1 Chapter 1 in Russian", title: "Преступление и наказание — I" },
+  { query: "Dostoevsky Преступление и наказание (Crime and Punishment) Part 1 Chapter 2 in Russian", title: "Преступление и наказание — II" },
+  { query: "Dostoevsky Братья Карамазовы (Brothers Karamazov) Book 1 Chapter 1 in Russian", title: "Братья Карамазовы — I" },
+  { query: "Dostoevsky Братья Карамазовы (Brothers Karamazov) Book 5 Chapter 5 — The Grand Inquisitor in Russian", title: "Великий инквизитор" },
+  { query: "Dostoevsky Идиот (The Idiot) Part 1 Chapter 1 in Russian", title: "Идиот — I" },
+  { query: "Dostoevsky Бесы (Demons) Part 1 Chapter 1 in Russian", title: "Бесы — I" },
+  { query: "Dostoevsky Записки из подполья (Notes from Underground) Part 1 Chapter 1 in Russian", title: "Записки из подполья — I" },
+  { query: "Dostoevsky Белые ночи (White Nights) First Night in Russian", title: "Белые ночи" },
+  { query: "Dostoevsky Игрок (The Gambler) Chapter 1 in Russian", title: "Игрок — I" },
+  { query: "Dostoevsky Униженные и оскорблённые (The Insulted and Humiliated) Part 1 Chapter 1 in Russian", title: "Униженные и оскорблённые — I" },
+
+  // === Japanese ===
+  // Natsume Sōseki (1867-1916)
+  { query: "Natsume Sōseki 吾輩は猫である (I Am a Cat) Chapter 1 opening in Japanese", title: "吾輩は猫である — I" },
+  { query: "Natsume Sōseki こころ (Kokoro) Part 1 Chapter 1 in Japanese", title: "こころ — I" },
+  { query: "Natsume Sōseki こころ (Kokoro) Part 1 Chapter 2 in Japanese", title: "こころ — II" },
+  { query: "Natsume Sōseki 坊っちゃん (Botchan) Chapter 1 in Japanese", title: "坊っちゃん — I" },
+  { query: "Natsume Sōseki 草枕 (Kusamakura) Chapter 1 in Japanese", title: "草枕 — I" },
+  { query: "Natsume Sōseki 三四郎 (Sanshirō) Chapter 1 in Japanese", title: "三四郎 — I" },
+  { query: "Natsume Sōseki 門 (The Gate) Chapter 1 in Japanese", title: "門 — I" },
+  { query: "Natsume Sōseki 夢十夜 First Night in Japanese", title: "夢十夜 — 第一夜" },
+
+  // Murasaki Shikibu — Genji Monogatari (c. 1008)
+  { query: "Genji Monogatari (源氏物語) Chapter 1 桐壺 (Kiritsubo) opening in classical Japanese", title: "源氏物語 — 桐壺" },
+  { query: "Genji Monogatari (源氏物語) Chapter 2 帚木 (Hahakigi) opening in classical Japanese", title: "源氏物語 — 帚木" },
+  { query: "Genji Monogatari (源氏物語) Chapter 5 若紫 (Wakamurasaki) opening in classical Japanese", title: "源氏物語 — 若紫" },
+  { query: "Genji Monogatari (源氏物語) Chapter 9 葵 (Aoi) opening in classical Japanese", title: "源氏物語 — 葵" },
+
+  // Chūshingura — The 47 Rōnin (Kanadehon Chūshingura, 1748)
+  { query: "Kanadehon Chūshingura (仮名手本忠臣蔵) Act 1 opening in classical Japanese", title: "仮名手本忠臣蔵 — 一段目" },
+  { query: "Kanadehon Chūshingura (仮名手本忠臣蔵) Act 3 opening in classical Japanese", title: "仮名手本忠臣蔵 — 三段目" },
+  { query: "Kanadehon Chūshingura (仮名手本忠臣蔵) Act 7 — Ichiriki tea house scene in classical Japanese", title: "仮名手本忠臣蔵 — 七段目" },
+
+  // Mishima Yukio (1925-1970) — most works still under copyright
+  // The AI will refuse copyrighted entries; only public-domain or pre-1929 work will seed.
+  { query: "Mishima Yukio early short story 花ざかりの森 opening in Japanese", title: "花ざかりの森" },
 ];
 
 async function titleExistsInDb(partialTitle: string): Promise<boolean> {
