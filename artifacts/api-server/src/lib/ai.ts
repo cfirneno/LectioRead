@@ -360,7 +360,7 @@ export async function generateQuiz(
       },
       {
         role: "user",
-        content: `Write a 6-question multiple-choice quiz for this ${sourceLanguage} paragraph. ${targetLanguage} is the student's language.
+        content: `Write a 5-question multiple-choice quiz for this ${sourceLanguage} paragraph. ${targetLanguage} is the student's language.
 
 PARAGRAPH (${sourceLanguage}):
 ${originalText}
@@ -393,13 +393,12 @@ Return a JSON object exactly like:
       "correctIndex": 0,
       "explanation": "Brief grammatical reasoning."
     },
-    { "kind": "grammar", ... },
     { "kind": "grammar", ... }
   ]
 }
 
 Rules:
-- Exactly 6 questions, in this order: 1 translation, 2 vocab, 3 grammar.
+- Exactly 5 questions, in this order: 1 translation, 2 vocab, 2 grammar.
 - All prompts and options in ${targetLanguage} (except the ${sourceLanguage} words quoted in single quotes).
 - For grammar questions, ask about specific morphology found in the paragraph (case/number/gender for nouns, tense/voice/mood/person for verbs, etc.).
 - For vocab questions, quote the actual word from the paragraph in single quotes.
@@ -418,11 +417,11 @@ Rules:
 
   const parsed = JSON.parse(jsonMatch[0]) as { questions?: QuizQuestion[] };
   const questions = Array.isArray(parsed.questions) ? parsed.questions : [];
-  if (questions.length < 6) {
+  if (questions.length < 5) {
     throw new Error(`Quiz returned only ${questions.length} questions`);
   }
 
-  const cleaned: QuizQuestion[] = questions.slice(0, 6).map((q) => {
+  const cleaned: QuizQuestion[] = questions.slice(0, 5).map((q) => {
     if (
       !q ||
       typeof q.prompt !== "string" ||

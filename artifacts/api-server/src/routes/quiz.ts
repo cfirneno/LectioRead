@@ -19,6 +19,12 @@ type StoredQuiz = {
   questions: QuizQuestion[];
 };
 
+const QUIZ_LENGTH = 5;
+
+function trimQuiz(quiz: StoredQuiz): StoredQuiz {
+  return { ...quiz, questions: quiz.questions.slice(0, QUIZ_LENGTH) };
+}
+
 async function loadOrCreateQuiz(
   textId: number,
   index: number,
@@ -36,7 +42,10 @@ async function loadOrCreateQuiz(
       and(eq(quizzesTable.textId, textId), eq(quizzesTable.paragraphIndex, index)),
     );
   if (cached) {
-    return { paragraphId: paragraph.id, quiz: JSON.parse(cached.content) as StoredQuiz };
+    return {
+      paragraphId: paragraph.id,
+      quiz: trimQuiz(JSON.parse(cached.content) as StoredQuiz),
+    };
   }
 
   const [text] = await db.select().from(textsTable).where(eq(textsTable.id, textId));
@@ -82,7 +91,7 @@ async function loadOrCreateQuiz(
         and(eq(quizzesTable.textId, textId), eq(quizzesTable.paragraphIndex, index)),
       );
     const quiz = canonical ? (JSON.parse(canonical.content) as StoredQuiz) : generated;
-    return { paragraphId: paragraph.id, quiz };
+    return { paragraphId: paragraph.id, quiz: trimQuiz(quiz) };
   } finally {
     release();
   }
