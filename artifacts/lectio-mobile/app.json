@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Lectio",
-    "slug": "lectio-mobile",
+    "slug": "lectioread",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
