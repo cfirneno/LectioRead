@@ -144,11 +144,36 @@ export default function Landing() {
             </div>
             <p>
               Because Latin is inflected — every noun and adjective marked for
-              case — Virgil could place the words almost anywhere he wanted and
-              still have the sentence make sense. So he <em>snakes</em> the
-              modifiers around their nouns the way the serpents snake around
-              their victims. The grammar enacts the horror. In English you can
-              describe the scene; in Latin you watch it happen on the page.
+              case, number, and gender by its ending — Virgil could place the
+              words almost anywhere he wanted and still have the sentence make
+              sense. So he <em>snakes</em> the modifiers around their nouns the
+              way the serpents snake around their victims. Look at the pairs
+              the endings lock together:
+            </p>
+            <ul className="list-none pl-0 space-y-1 text-base">
+              <li>
+                <em>perfūsus … vittās</em> — "drenched … fillets" (the
+                participle reaches across two words to its noun)
+              </li>
+              <li>
+                <em>ātrō … venēnō</em> — "black … venom" (adjective and noun
+                separated by <em>vittās</em>, which they wrap around)
+              </li>
+              <li>
+                <em>eōdem … flātū</em> — "with the same … breath" (split by
+                <em> tepefacta per ōra</em>)
+              </li>
+              <li>
+                <em>cruentō … caede</em> — "with bloody … slaughter" (wrapped
+                around <em>expulsa</em>)
+              </li>
+            </ul>
+            <p>
+              The matching endings (<em>-us / -ās</em>, <em>-ō / -ō</em>,
+              <em> -em / -ū</em>, <em>-ō / -e</em>) tell the reader which words
+              belong together, no matter how far apart they sit. The grammar
+              enacts the horror. In English you can describe the scene; in
+              Latin you watch it happen on the page.
             </p>
             <p>
               That's what reading in the original gives you, and it's why even
