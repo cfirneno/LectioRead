@@ -8,6 +8,21 @@ function scrollToWhyOriginal() {
 
 const LAOCOON_LINES: Array<Array<{ la: string; en: string }>> = [
   [
+    { la: "ille", en: "he" },
+    { la: "simul", en: "at once" },
+    { la: "manibus", en: "with his hands" },
+    { la: "tendit", en: "strives" },
+    { la: "dīvellere", en: "to tear apart" },
+    { la: "nōdōs", en: "the knots" },
+  ],
+  [
+    { la: "perfūsus", en: "drenched" },
+    { la: "saniē", en: "with gore" },
+    { la: "vittās", en: "his fillets" },
+    { la: "ātrōque", en: "and with black" },
+    { la: "venēnō", en: "venom" },
+  ],
+  [
     { la: "illum", en: "him" },
     { la: "eōdem", en: "with the same" },
     { la: "flātū", en: "breath" },
