@@ -5,7 +5,8 @@
  * Lectio — Foreign Language Reader API
  * OpenAPI spec version: 0.1.0
  */
+import type { QuizAnswer } from './quizAnswer';
 
-export interface CheckoutUrl {
-  url: string;
+export interface QuizSubmission {
+  answers: QuizAnswer[];
 }

@@ -111,6 +111,68 @@ export interface VocabularyList {
   entries: VocabularyEntry[];
 }
 
+export interface PublicQuizQuestion {
+  id: number;
+  /** translation | vocab | grammar */
+  kind: string;
+  prompt: string;
+  options: string[];
+}
+
+export interface PublicQuiz {
+  textId: number;
+  paragraphIndex: number;
+  paragraphText: string;
+  questions: PublicQuizQuestion[];
+}
+
+export interface QuizAnswer {
+  id: number;
+  chosenIndex: number;
+}
+
+export interface QuizSubmission {
+  answers: QuizAnswer[];
+}
+
+export interface QuizResultItem {
+  id: number;
+  kind: string;
+  prompt: string;
+  options: string[];
+  correctIndex: number;
+  chosenIndex: number;
+  correct: boolean;
+  explanation: string;
+}
+
+export interface QuizResult {
+  textId: number;
+  paragraphIndex: number;
+  score: number;
+  total: number;
+  items: QuizResultItem[];
+}
+
+export interface ReviewWeakItem {
+  kind: string;
+  prompt: string;
+  explanation?: string;
+  correctAnswer?: string;
+  missedCount: number;
+  lastSeenAt: string;
+  textId?: number;
+  paragraphIndex?: number;
+  textTitle?: string;
+}
+
+export interface ReviewSummary {
+  totalAttempts: number;
+  totalScore: number;
+  totalPossible: number;
+  weakItems: ReviewWeakItem[];
+}
+
 export type WordLookupAnalysisFeaturesItem = {
   label: string;
   value: string;
@@ -175,7 +237,7 @@ export interface SubscriptionStatus {
 }
 
 export interface CheckoutUrl {
-  url: string | null;
+  url: string;
 }
 
 export type LookupWordParams = {

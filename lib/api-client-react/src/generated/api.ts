@@ -29,6 +29,10 @@ import type {
   ParagraphSummary,
   Progress,
   ProgressInput,
+  PublicQuiz,
+  QuizResult,
+  QuizSubmission,
+  ReviewSummary,
   Scansion,
   SubscriptionStatus,
   Text,
@@ -818,6 +822,229 @@ export const useGetFullTranslation = <TError = ErrorType<void>,
       > => {
       return useMutation(getGetFullTranslationMutationOptions(options));
     }
+
+export const getGetQuizUrl = (textId: number,
+    index: number,) => {
+
+
+
+
+  return `/api/texts/${textId}/paragraphs/${index}/quiz`
+}
+
+/**
+ * @summary Generate or retrieve the cached quiz for a paragraph (6 MC questions)
+ */
+export const getQuiz = async (textId: number,
+    index: number, options?: RequestInit): Promise<PublicQuiz> => {
+
+  return customFetch<PublicQuiz>(getGetQuizUrl(textId,index),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+export const getGetQuizMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getQuiz>>, TError,{textId: number;index: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof getQuiz>>, TError,{textId: number;index: number}, TContext> => {
+
+const mutationKey = ['getQuiz'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof getQuiz>>, {textId: number;index: number}> = (props) => {
+          const {textId,index} = props ?? {};
+
+          return  getQuiz(textId,index,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type GetQuizMutationResult = NonNullable<Awaited<ReturnType<typeof getQuiz>>>
+
+    export type GetQuizMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Generate or retrieve the cached quiz for a paragraph (6 MC questions)
+ */
+export const useGetQuiz = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getQuiz>>, TError,{textId: number;index: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof getQuiz>>,
+        TError,
+        {textId: number;index: number},
+        TContext
+      > => {
+      return useMutation(getGetQuizMutationOptions(options));
+    }
+
+export const getGradeQuizUrl = (textId: number,
+    index: number,) => {
+
+
+
+
+  return `/api/texts/${textId}/paragraphs/${index}/quiz/grade`
+}
+
+/**
+ * @summary Submit answers and receive a score plus per-question feedback
+ */
+export const gradeQuiz = async (textId: number,
+    index: number,
+    quizSubmission: QuizSubmission, options?: RequestInit): Promise<QuizResult> => {
+
+  return customFetch<QuizResult>(getGradeQuizUrl(textId,index),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      quizSubmission,)
+  }
+);}
+
+
+
+
+export const getGradeQuizMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof gradeQuiz>>, TError,{textId: number;index: number;data: BodyType<QuizSubmission>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof gradeQuiz>>, TError,{textId: number;index: number;data: BodyType<QuizSubmission>}, TContext> => {
+
+const mutationKey = ['gradeQuiz'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof gradeQuiz>>, {textId: number;index: number;data: BodyType<QuizSubmission>}> = (props) => {
+          const {textId,index,data} = props ?? {};
+
+          return  gradeQuiz(textId,index,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type GradeQuizMutationResult = NonNullable<Awaited<ReturnType<typeof gradeQuiz>>>
+    export type GradeQuizMutationBody = BodyType<QuizSubmission>
+    export type GradeQuizMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Submit answers and receive a score plus per-question feedback
+ */
+export const useGradeQuiz = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof gradeQuiz>>, TError,{textId: number;index: number;data: BodyType<QuizSubmission>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof gradeQuiz>>,
+        TError,
+        {textId: number;index: number;data: BodyType<QuizSubmission>},
+        TContext
+      > => {
+      return useMutation(getGradeQuizMutationOptions(options));
+    }
+
+export const getGetReviewUrl = () => {
+
+
+
+
+  return `/api/review`
+}
+
+/**
+ * @summary Aggregated weak items and quiz statistics for the current user
+ */
+export const getReview = async ( options?: RequestInit): Promise<ReviewSummary> => {
+
+  return customFetch<ReviewSummary>(getGetReviewUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetReviewQueryKey = () => {
+    return [
+    `/api/review`
+    ] as const;
+    }
+
+
+export const getGetReviewQueryOptions = <TData = Awaited<ReturnType<typeof getReview>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getReview>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetReviewQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getReview>>> = ({ signal }) => getReview({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getReview>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetReviewQueryResult = NonNullable<Awaited<ReturnType<typeof getReview>>>
+export type GetReviewQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Aggregated weak items and quiz statistics for the current user
+ */
+
+export function useGetReview<TData = Awaited<ReturnType<typeof getReview>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getReview>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetReviewQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
 
 export const getGetScansionUrl = (textId: number,
     index: number,) => {

@@ -840,4 +840,3 @@ components:
       properties:
         url:
           type: string
-          nullable: true

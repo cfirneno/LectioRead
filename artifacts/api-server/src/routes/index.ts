@@ -5,6 +5,7 @@ import paragraphsRouter from "./paragraphs";
 import progressRouter from "./progress";
 import subscriptionRouter from "./subscription";
 import lookupRouter from "./lookup";
+import quizRouter from "./quiz";
 
 const router: IRouter = Router();
 
@@ -14,5 +15,6 @@ router.use(lookupRouter);
 router.use(textsRouter);
 router.use(paragraphsRouter);
 router.use(progressRouter);
+router.use(quizRouter);
 
 export default router;

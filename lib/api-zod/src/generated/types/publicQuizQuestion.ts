@@ -6,6 +6,10 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export interface CheckoutUrl {
-  url: string;
+export interface PublicQuizQuestion {
+  id: number;
+  /** translation | vocab | grammar */
+  kind: string;
+  prompt: string;
+  options: string[];
 }

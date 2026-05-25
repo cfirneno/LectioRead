@@ -11,9 +11,10 @@ import {
 } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { ArrowLeft, Loader2, Home, Music, ExternalLink } from "lucide-react";
+import { ArrowLeft, Loader2, Home, Music, ExternalLink, GraduationCap } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { getGrammarResource, type GrammarResource } from "@/lib/grammar-resources";
+import { QuizOverlay } from "@/components/quiz-overlay";
 
 function WordLookupPopover({
   original,
@@ -149,6 +150,7 @@ export default function Read() {
   const queryClient = useQueryClient();
 
   const [stage, setStage] = useState<1 | 2 | 3 | 4 | 5>(1);
+  const [quizOpen, setQuizOpen] = useState(false);
 
   const { data: text } = useGetText(id);
   const { data: paragraph, isLoading: isLoadingParagraph } = useGetParagraph(id, pIndex, {
@@ -453,10 +455,27 @@ export default function Read() {
                 </Button>
                 <p className="text-xs text-muted-foreground font-sans hidden md:block">Press Enter ↵</p>
               </div>
+              <Button
+                size="lg"
+                variant="outline"
+                onClick={() => setQuizOpen(true)}
+                className="rounded-full px-8 h-14 font-serif text-lg border-border/60 hover:bg-secondary/50 text-foreground"
+              >
+                <GraduationCap className="h-5 w-5 mr-2" />
+                Test yourself
+              </Button>
             </div>
           )}
         </div>
       </main>
+
+      {quizOpen && id !== undefined && (
+        <QuizOverlay
+          textId={id}
+          paragraphIndex={pIndex}
+          onClose={() => setQuizOpen(false)}
+        />
+      )}
     </div>
   );
 }

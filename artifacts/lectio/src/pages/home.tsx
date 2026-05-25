@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { BookOpen, Search, Loader2, Clock, ChevronDown, ChevronUp, CreditCard } from "lucide-react";
+import { BookOpen, Search, Loader2, Clock, ChevronDown, ChevronUp, CreditCard, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface CatalogText {
@@ -270,6 +270,12 @@ export default function Home() {
             </div>
           </Link>
           <div className="flex items-center gap-2">
+            <Link href="/app/review">
+              <Button variant="ghost" size="sm" className="font-serif text-muted-foreground">
+                <Sparkles className="h-4 w-4 mr-1.5" />
+                Review
+              </Button>
+            </Link>
             <Button
               variant="ghost"
               size="sm"

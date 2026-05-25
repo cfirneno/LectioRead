@@ -194,6 +194,81 @@ export const GetFullTranslationResponse = zod.object({
 
 
 /**
+ * @summary Generate or retrieve the cached quiz for a paragraph (6 MC questions)
+ */
+export const GetQuizParams = zod.object({
+  "textId": zod.coerce.number(),
+  "index": zod.coerce.number()
+})
+
+export const GetQuizResponse = zod.object({
+  "textId": zod.number(),
+  "paragraphIndex": zod.number(),
+  "paragraphText": zod.string(),
+  "questions": zod.array(zod.object({
+  "id": zod.number(),
+  "kind": zod.string().describe('translation | vocab | grammar'),
+  "prompt": zod.string(),
+  "options": zod.array(zod.string())
+}))
+})
+
+
+/**
+ * @summary Submit answers and receive a score plus per-question feedback
+ */
+export const GradeQuizParams = zod.object({
+  "textId": zod.coerce.number(),
+  "index": zod.coerce.number()
+})
+
+export const GradeQuizBody = zod.object({
+  "answers": zod.array(zod.object({
+  "id": zod.number(),
+  "chosenIndex": zod.number()
+}))
+})
+
+export const GradeQuizResponse = zod.object({
+  "textId": zod.number(),
+  "paragraphIndex": zod.number(),
+  "score": zod.number(),
+  "total": zod.number(),
+  "items": zod.array(zod.object({
+  "id": zod.number(),
+  "kind": zod.string(),
+  "prompt": zod.string(),
+  "options": zod.array(zod.string()),
+  "correctIndex": zod.number(),
+  "chosenIndex": zod.number(),
+  "correct": zod.boolean(),
+  "explanation": zod.string()
+}))
+})
+
+
+/**
+ * @summary Aggregated weak items and quiz statistics for the current user
+ */
+export const GetReviewResponse = zod.object({
+  "totalAttempts": zod.number(),
+  "totalScore": zod.number(),
+  "totalPossible": zod.number(),
+  "weakItems": zod.array(zod.object({
+  "kind": zod.string(),
+  "prompt": zod.string(),
+  "explanation": zod.string().optional(),
+  "correctAnswer": zod.string().optional(),
+  "missedCount": zod.number(),
+  "lastSeenAt": zod.string(),
+  "textId": zod.number().optional(),
+  "paragraphIndex": zod.number().optional(),
+  "textTitle": zod.string().optional()
+}))
+})
+
+
+/**
  * @summary Generate or retrieve scansion marks (macrons/breves) for a verse paragraph
  */
 export const GetScansionParams = zod.object({
@@ -286,7 +361,7 @@ export const GetSubscriptionStatusResponse = zod.object({
  * @summary Create a Stripe Checkout session for the $1/month subscription
  */
 export const CreateCheckoutSessionResponse = zod.object({
-  "url": zod.string().nullable()
+  "url": zod.string()
 })
 
 
@@ -294,7 +369,7 @@ export const CreateCheckoutSessionResponse = zod.object({
  * @summary Create a Stripe billing portal session
  */
 export const CreateBillingPortalSessionResponse = zod.object({
-  "url": zod.string().nullable()
+  "url": zod.string()
 })
 
 
