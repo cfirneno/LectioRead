@@ -329,3 +329,124 @@ Return ONLY the translated text, nothing else. Make it read naturally in ${targe
 
   return content.trim();
 }
+
+export type QuizQuestion = {
+  kind: "translation" | "vocab" | "grammar";
+  prompt: string;
+  options: [string, string, string, string];
+  correctIndex: 0 | 1 | 2 | 3;
+  explanation: string;
+};
+
+export type GeneratedQuiz = {
+  paragraphText: string;
+  questions: QuizQuestion[];
+};
+
+export async function generateQuiz(
+  originalText: string,
+  fullTranslation: string,
+  sourceLanguage: string,
+  targetLanguage: string = "English",
+): Promise<GeneratedQuiz> {
+  const response = await openai.chat.completions.create({
+    model: "gpt-5-mini",
+    max_completion_tokens: 4096,
+    reasoning_effort: "minimal",
+    messages: [
+      {
+        role: "system",
+        content: `You are a ${sourceLanguage} teacher writing a short comprehension quiz on one paragraph. Return ONLY valid JSON. Each question has exactly 4 options. Make distractors plausible but unambiguously wrong.`,
+      },
+      {
+        role: "user",
+        content: `Write a 6-question multiple-choice quiz for this ${sourceLanguage} paragraph. ${targetLanguage} is the student's language.
+
+PARAGRAPH (${sourceLanguage}):
+${originalText}
+
+REFERENCE TRANSLATION (${targetLanguage}):
+${fullTranslation}
+
+Return a JSON object exactly like:
+{
+  "questions": [
+    {
+      "kind": "translation",
+      "prompt": "Which is the best ${targetLanguage} translation of the paragraph above?",
+      "options": ["...", "...", "...", "..."],
+      "correctIndex": 0,
+      "explanation": "Short note on why this is correct and why the others are wrong."
+    },
+    {
+      "kind": "vocab",
+      "prompt": "What does '<word from paragraph>' mean here?",
+      "options": ["...", "...", "...", "..."],
+      "correctIndex": 0,
+      "explanation": "Brief explanation referencing the paragraph context."
+    },
+    { "kind": "vocab", ... },
+    {
+      "kind": "grammar",
+      "prompt": "What is the grammatical form of '<word>' in this paragraph?",
+      "options": ["...", "...", "...", "..."],
+      "correctIndex": 0,
+      "explanation": "Brief grammatical reasoning."
+    },
+    { "kind": "grammar", ... },
+    { "kind": "grammar", ... }
+  ]
+}
+
+Rules:
+- Exactly 6 questions, in this order: 1 translation, 2 vocab, 3 grammar.
+- All prompts and options in ${targetLanguage} (except the ${sourceLanguage} words quoted in single quotes).
+- For grammar questions, ask about specific morphology found in the paragraph (case/number/gender for nouns, tense/voice/mood/person for verbs, etc.).
+- For vocab questions, quote the actual word from the paragraph in single quotes.
+- Make the translation options 4 short paragraph-length renderings; one accurate, others subtly wrong (mistranslated key word, wrong subject, wrong tense, etc.).
+- Keep "explanation" to one or two sentences, plain prose, no markdown.
+- correctIndex must be 0, 1, 2, or 3 — randomize which slot the correct answer sits in.`,
+      },
+    ],
+  });
+
+  const content = response.choices[0]?.message?.content;
+  if (!content) throw new Error("No quiz response from AI");
+
+  const jsonMatch = content.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) throw new Error("Could not parse quiz JSON from AI");
+
+  const parsed = JSON.parse(jsonMatch[0]) as { questions?: QuizQuestion[] };
+  const questions = Array.isArray(parsed.questions) ? parsed.questions : [];
+  if (questions.length < 6) {
+    throw new Error(`Quiz returned only ${questions.length} questions`);
+  }
+
+  const cleaned: QuizQuestion[] = questions.slice(0, 6).map((q) => {
+    if (
+      !q ||
+      typeof q.prompt !== "string" ||
+      !Array.isArray(q.options) ||
+      q.options.length !== 4 ||
+      typeof q.correctIndex !== "number" ||
+      q.correctIndex < 0 ||
+      q.correctIndex > 3
+    ) {
+      throw new Error("Malformed quiz question from AI");
+    }
+    return {
+      kind: q.kind === "translation" || q.kind === "vocab" || q.kind === "grammar" ? q.kind : "vocab",
+      prompt: q.prompt.trim(),
+      options: [
+        String(q.options[0]),
+        String(q.options[1]),
+        String(q.options[2]),
+        String(q.options[3]),
+      ],
+      correctIndex: q.correctIndex as 0 | 1 | 2 | 3,
+      explanation: typeof q.explanation === "string" ? q.explanation.trim() : "",
+    };
+  });
+
+  return { paragraphText: originalText, questions: cleaned };
+}

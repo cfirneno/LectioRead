@@ -231,6 +231,73 @@ paths:
         "404":
           description: Not found
 
+  /texts/{textId}/paragraphs/{index}/quiz:
+    post:
+      operationId: getQuiz
+      tags: [paragraphs]
+      summary: Generate or retrieve the cached quiz for a paragraph (6 MC questions)
+      parameters:
+        - name: textId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: index
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Quiz questions (without correct answers)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicQuiz"
+
+  /texts/{textId}/paragraphs/{index}/quiz/grade:
+    post:
+      operationId: gradeQuiz
+      tags: [paragraphs]
+      summary: Submit answers and receive a score plus per-question feedback
+      parameters:
+        - name: textId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: index
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QuizSubmission"
+      responses:
+        "200":
+          description: Graded result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuizResult"
+
+  /review:
+    get:
+      operationId: getReview
+      tags: [progress]
+      summary: Aggregated weak items and quiz statistics for the current user
+      responses:
+        "200":
+          description: Review summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReviewSummary"
+
   /texts/{textId}/paragraphs/{index}/scansion:
     post:
       operationId: getScansion
@@ -521,6 +588,133 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/VocabularyEntry"
+
+    PublicQuizQuestion:
+      type: object
+      required: [id, kind, prompt, options]
+      properties:
+        id:
+          type: integer
+        kind:
+          type: string
+          description: "translation | vocab | grammar"
+        prompt:
+          type: string
+        options:
+          type: array
+          items:
+            type: string
+
+    PublicQuiz:
+      type: object
+      required: [textId, paragraphIndex, paragraphText, questions]
+      properties:
+        textId:
+          type: integer
+        paragraphIndex:
+          type: integer
+        paragraphText:
+          type: string
+        questions:
+          type: array
+          items:
+            $ref: "#/components/schemas/PublicQuizQuestion"
+
+    QuizAnswer:
+      type: object
+      required: [id, chosenIndex]
+      properties:
+        id:
+          type: integer
+        chosenIndex:
+          type: integer
+
+    QuizSubmission:
+      type: object
+      required: [answers]
+      properties:
+        answers:
+          type: array
+          items:
+            $ref: "#/components/schemas/QuizAnswer"
+
+    QuizResultItem:
+      type: object
+      required: [id, kind, prompt, options, correctIndex, chosenIndex, correct, explanation]
+      properties:
+        id:
+          type: integer
+        kind:
+          type: string
+        prompt:
+          type: string
+        options:
+          type: array
+          items:
+            type: string
+        correctIndex:
+          type: integer
+        chosenIndex:
+          type: integer
+        correct:
+          type: boolean
+        explanation:
+          type: string
+
+    QuizResult:
+      type: object
+      required: [textId, paragraphIndex, score, total, items]
+      properties:
+        textId:
+          type: integer
+        paragraphIndex:
+          type: integer
+        score:
+          type: integer
+        total:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/QuizResultItem"
+
+    ReviewWeakItem:
+      type: object
+      required: [kind, prompt, missedCount, lastSeenAt]
+      properties:
+        kind:
+          type: string
+        prompt:
+          type: string
+        explanation:
+          type: string
+        correctAnswer:
+          type: string
+        missedCount:
+          type: integer
+        lastSeenAt:
+          type: string
+        textId:
+          type: integer
+        paragraphIndex:
+          type: integer
+        textTitle:
+          type: string
+
+    ReviewSummary:
+      type: object
+      required: [totalAttempts, totalScore, totalPossible, weakItems]
+      properties:
+        totalAttempts:
+          type: integer
+        totalScore:
+          type: integer
+        totalPossible:
+          type: integer
+        weakItems:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReviewWeakItem"
 
     WordLookupAnalysis:
       type: object
