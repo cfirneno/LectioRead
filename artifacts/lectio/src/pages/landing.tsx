@@ -38,7 +38,7 @@ export default function Landing() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
             <Link href="/sign-up">
               <Button size="lg" className="font-serif text-base h-12 px-8">
-                Start reading — $1/month
+                Start reading
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
@@ -49,7 +49,7 @@ export default function Landing() {
             </Link>
           </div>
           <p className="text-sm text-muted-foreground pt-2">
-            Cancel anytime. No free trial — just a real, low price.
+            $1/month to help support the site. Cancel anytime.
           </p>
         </section>
 
@@ -76,6 +76,45 @@ export default function Landing() {
               Anna Karenina in Russian, or Kokoro in Japanese, the way the author
               wrote it. Lectio makes that possible too — a quiet, beautiful place
               to spend twenty minutes a day with the books that matter.
+            </p>
+          </div>
+        </section>
+
+        <section className="border-t border-border/40 pt-16 space-y-6">
+          <h2 className="text-3xl md:text-4xl font-serif font-semibold text-primary tracking-tight text-center">
+            Why the original matters.
+          </h2>
+          <div className="max-w-2xl mx-auto space-y-5 text-muted-foreground font-serif text-base md:text-lg leading-relaxed">
+            <p>
+              You don't have to be a scholar to read the great works in their own
+              language. Even a slow, halting first encounter — original on one
+              side, translation on the other — gives you something no
+              translation alone can: the actual shape of the author's mind.
+            </p>
+            <p>
+              Take the death of Laocoön in Book II of the Aeneid. Virgil
+              writes:
+            </p>
+            <blockquote className="border-l-2 border-primary/40 pl-5 py-1 font-serif italic text-foreground text-lg md:text-xl leading-relaxed">
+              <span className="block">illum eōdem flātū tepefacta per ōra</span>
+              <span className="block">cruentō expulsa caede recessit</span>
+              <span className="block text-base not-italic text-muted-foreground mt-2">
+                (...two serpents coil around Laocoön and his sons, their bodies
+                literally wound through the line itself.)
+              </span>
+            </blockquote>
+            <p>
+              Because Latin is inflected — every noun and adjective marked for
+              case — Virgil could place the words almost anywhere he wanted and
+              still have the sentence make sense. So he <em>snakes</em> the
+              modifiers around their nouns the way the serpents snake around
+              their victims. The grammar enacts the horror. In English you can
+              describe the scene; in Latin you watch it happen on the page.
+            </p>
+            <p>
+              That's what reading in the original gives you, and it's why even
+              an imperfect attempt is worth the effort. Lectio is built to
+              make that attempt feel possible.
             </p>
           </div>
         </section>
@@ -114,12 +153,13 @@ export default function Landing() {
             <Sparkles className="h-6 w-6 text-primary" />
           </div>
           <h2 className="text-3xl font-serif font-semibold text-primary">
-            One dollar a month
+            Support the site
           </h2>
           <p className="text-muted-foreground font-serif max-w-xl mx-auto">
-            Lectio is supported by a single, honest price — about the cost of a
-            postcard. No ads, no tracking, no dark patterns. Cancel from your
-            account at any time.
+            Lectio is supported entirely by its readers — $1 a month, no ads,
+            no tracking, no investors. Every subscription goes directly into
+            adding more works, more languages, and new features like scansion,
+            grammar notes, and audio. Cancel from your account at any time.
           </p>
           <Link href="/sign-up">
             <Button size="lg" className="font-serif">
