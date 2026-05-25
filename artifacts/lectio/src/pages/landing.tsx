@@ -1,6 +1,27 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { BookOpen, Languages, Layers, ArrowRight, GraduationCap, Sparkles } from "lucide-react";
+import { BookOpen, Languages, Layers, ArrowRight, GraduationCap, Sparkles, ChevronDown } from "lucide-react";
+
+function scrollToWhyOriginal() {
+  document.getElementById("why-original")?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+const LAOCOON_LINES: Array<Array<{ la: string; en: string }>> = [
+  [
+    { la: "illum", en: "him" },
+    { la: "eōdem", en: "with the same" },
+    { la: "flātū", en: "breath" },
+    { la: "tepefacta", en: "warmed" },
+    { la: "per", en: "through" },
+    { la: "ōra", en: "mouths" },
+  ],
+  [
+    { la: "cruentō", en: "with bloody" },
+    { la: "expulsa", en: "driven out" },
+    { la: "caede", en: "slaughter" },
+    { la: "recessit", en: "withdrew" },
+  ],
+];
 
 export default function Landing() {
   return (
@@ -51,6 +72,16 @@ export default function Landing() {
           <p className="text-sm text-muted-foreground pt-2">
             $1/month to help support the site. Cancel anytime.
           </p>
+          <button
+            onClick={scrollToWhyOriginal}
+            className="group mx-auto mt-12 flex flex-col items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
+            aria-label="Scroll to Why in the original"
+          >
+            <span className="font-serif text-sm tracking-wide uppercase">
+              Why in the original
+            </span>
+            <ChevronDown className="h-6 w-6 animate-bounce group-hover:text-primary" />
+          </button>
         </section>
 
         <section className="border-t border-border/40 pt-16 space-y-8 text-center">
@@ -80,7 +111,7 @@ export default function Landing() {
           </div>
         </section>
 
-        <section className="border-t border-border/40 pt-16 space-y-6">
+        <section id="why-original" className="border-t border-border/40 pt-16 space-y-6 scroll-mt-20">
           <h2 className="text-3xl md:text-4xl font-serif font-semibold text-primary tracking-tight text-center">
             Why the original matters.
           </h2>
@@ -95,14 +126,26 @@ export default function Landing() {
               Take the death of Laocoön in Book II of the Aeneid. Virgil
               writes:
             </p>
-            <blockquote className="border-l-2 border-primary/40 pl-5 py-1 font-serif italic text-foreground text-lg md:text-xl leading-relaxed">
-              <span className="block">illum eōdem flātū tepefacta per ōra</span>
-              <span className="block">cruentō expulsa caede recessit</span>
-              <span className="block text-base not-italic text-muted-foreground mt-2">
+            <div className="border-l-2 border-primary/40 pl-5 py-2 space-y-5">
+              {LAOCOON_LINES.map((line, li) => (
+                <div key={li} className="flex flex-wrap gap-x-5 gap-y-3">
+                  {line.map((word, wi) => (
+                    <div key={wi} className="flex flex-col items-start">
+                      <span className="font-serif italic text-foreground text-lg md:text-xl leading-tight">
+                        {word.la}
+                      </span>
+                      <span className="font-sans text-xs md:text-sm text-primary tracking-wide mt-0.5">
+                        {word.en}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ))}
+              <p className="text-sm not-italic text-muted-foreground pt-1">
                 (...two serpents coil around Laocoön and his sons, their bodies
                 literally wound through the line itself.)
-              </span>
-            </blockquote>
+              </p>
+            </div>
             <p>
               Because Latin is inflected — every noun and adjective marked for
               case — Virgil could place the words almost anywhere he wanted and
