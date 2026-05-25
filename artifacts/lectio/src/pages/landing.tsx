@@ -188,11 +188,14 @@ export default function Landing() {
               same syllable the sentence does.<sup>1</sup>
             </p>
             <p className="text-sm text-muted-foreground/80 border-t border-border/30 pt-3">
-              <sup>1</sup> After a line reading given by W. R. ("Ralph")
-              Johnson in a two-person seminar on the Aeneid, University of
-              Chicago, Fall 1982. With gratitude to Dr. Johnson and to my
-              fellow student that term, the poet Vincent Katz — to whom this
-              little corner of the page is dedicated.
+              <sup>1</sup> The reading above — both the four linked pairs and
+              the closing observation on <em>recessit</em> as the verb in
+              which the snake's coils finally release — follows a line-by-line
+              analysis given by W. R. ("Ralph") Johnson in a two-person
+              seminar on the Aeneid, University of Chicago, Fall 1982. With
+              gratitude to Dr. Johnson and to my fellow student that term,
+              the poet Vincent Katz — to whom this little corner of the page
+              is dedicated.
             </p>
             <p>
               That's what reading in the original gives you, and it's why even
