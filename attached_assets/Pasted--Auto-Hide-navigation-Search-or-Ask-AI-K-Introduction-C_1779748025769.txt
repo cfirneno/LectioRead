@@ -1,0 +1,202 @@
+
+
+Auto
+
+
+Hide navigation
+
+Search or Ask AI
+⌘ K
+
+
+
+
+
+Introduction
+Configuration with eas.json
+EAS CLI
+
+AI
+MCP Server
+
+EAS Workflows
+Introduction
+Get started
+Pre-packaged jobs
+Syntax
+Automating EAS CLI commands
+REST API
+Limitations
+
+EAS Build
+Introduction
+Create your first build
+Configure with eas.json
+Internal distribution
+Automate submissions
+Using EAS Update
+Trigger builds from CI
+Trigger builds from GitHub App
+Expo Orbit
+
+EAS Submit
+Introduction
+Submit to the Google Play Store
+Submit to the Apple App Store
+Configure with eas.json
+
+EAS Hosting
+Introduction
+Get started with EAS Hosting
+Deployments and aliases
+Custom domain
+Monitor API routes
+Web deployments with EAS Workflows
+
+EAS Update
+Introduction
+Get started
+
+EAS Metadata
+Introduction
+Get started
+
+EAS Insights
+Introduction
+
+EAS Observe
+Introduction
+Get started
+Dashboard
+Configuration
+Expo Router
+
+Distribution
+Overview
+App stores best practices
+App transfers
+Understanding app size
+Reference
+Webhooks
+Archive
+
+Expo Snack
+
+
+Discord and Forums
+
+
+Newsletter
+
+EAS Build
+EAS Build is a hosted service for building app binaries for your Expo and React Native projects.
+
+
+Copy page
+
+For the complete documentation index, see llms.txt. Use this file to discover all available pages.
+EAS Build is a hosted Expo Application Services (EAS) service that builds app binaries (also called standalone apps) for your Expo and React Native projects.
+
+EAS Build makes building your apps for distribution simple and easy to automate by providing defaults that work well for Expo and React Native projects out of the box, and by handling your app signing credentials for you (if you wish). It also makes sharing builds with your team easier than ever with internal distribution (using ad hoc and/or enterprise "universal" provisioning), deeply integrates with EAS Submit for app store submissions, and has first-class support for the expo-updates library.
+
+EAS Build is also designed to work for any native project, whether or not you use Expo and React Native. It's the fastest way to get from npx create-expo-app or npx @react-native-community/cli@latest init to app stores.
+
+Quick start
+
+The eas commands below require EAS CLI. See How to install EAS CLI for more information.
+To build your app, run the following command:
+
+
+Terminal
+
+Copy
+eas build --platform all
+This command sends your project to EAS Build and produces installable binaries for Android and iOS. You can also build for one platform at a time by passing in --platform android or --platform ios as desired. For complete setup instructions, see Create your first build.
+
+Key features
+
+Cloud builds for Android and iOS with consistent environments
+Automatically provision and manage app signing credentials or use your own
+Share internal distribution builds with a URL
+Automate builds with build profiles in eas.json (named sets of build settings) and integrations with EAS Workflows or CI pipelines
+Auto-submit successful builds to app stores via --auto-submit and EAS Submit
+First-class expo-updates integration with per-profile channels and runtime version guidance
+Reuse development builds across your team. When two team members run eas build:dev and the project fingerprint matches, the existing build is downloaded from EAS instead of creating a new one
+Faster builds via dependency caching and custom cache paths
+Install builds and updates on devices with Expo Orbit
+When to use EAS Build
+
+Scenario	Recommendation
+Build production-ready binaries for app stores	
+Share builds with testers via internal distribution	
+Consistent builds across team members without local environment setup	
+Automate builds from CI or EAS Workflows	
+Managed app signing credentials	
+Debugging native code locally	
+Frequently asked questions
+
+
+How do I share builds with my team before submitting to app stores?
+
+Can I use EAS Build with existing React Native projects?
+
+Does EAS Build handle app signing credentials?
+
+Can I run builds locally instead of in the cloud?
+
+Can I use EAS Build with EAS Workflows or CI pipelines?
+
+What build server infrastructure does EAS Build use?
+Get started
+
+
+Create your first build
+It should only take a few minutes in total to get up and running for iOS and/or Android.
+
+
+Share your apps with internal testers
+EAS Build can help share preview builds of your app with a single URL.
+
+
+Automate submissions
+Learn how EAS Build can take your successful builds and handle uploading them to app stores automatically.
+
+
+App version management
+Automate version bumps so you never have to think about them again.
+
+
+Run builds locally or on your own infrastructure
+EAS Build is a hosted service, and it can also run on your own machine, for example, to debug or to comply with company security policies.
+
+
+Limitations
+EAS Build is new and rapidly evolving, so we recommend getting familiar with the current limitations.
+
+
+Previous (EAS Workflows - Examples)
+Run E2E tests
+Next (EAS Build)
+Create your first build
+
+Was this doc helpful?
+
+
+Share your feedback
+
+Ask a question on the forums
+
+Edit this page
+
+View llms.txt and llms-full.txt
+Last updated on March 01, 2026
+Sign up for the Expo Newsletter
+
+Sign Up
+Unsubscribe at any time. Read our privacy policy.
+
+Your Privacy Choices
+We use cookies to collect data and improve our services. Learn more
+Decline
+Accept
+Customize
