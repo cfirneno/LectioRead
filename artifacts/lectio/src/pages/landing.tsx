@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { BookOpen, Languages, Layers, ArrowRight, GraduationCap, Sparkles, ChevronDown } from "lucide-react";
+import { BookOpen, Languages, Layers, GraduationCap, Sparkles, ChevronDown } from "lucide-react";
 
 function scrollToWhyOriginal() {
   document.getElementById("why-original")?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -36,9 +36,6 @@ export default function Landing() {
             <Link href="/sign-in">
               <Button variant="ghost" className="font-serif">Sign in</Button>
             </Link>
-            <Link href="/sign-up">
-              <Button className="font-serif">Get started</Button>
-            </Link>
           </div>
         </div>
       </header>
@@ -56,25 +53,9 @@ export default function Landing() {
             Built for students and lifelong readers who want to meet Virgil, Homer, Dante,
             Tolstoy, and Sōseki on their own terms.
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
-            <Link href="/sign-up">
-              <Button size="lg" className="font-serif text-base h-12 px-8">
-                Start reading
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-            <Link href="/sign-in">
-              <Button size="lg" variant="ghost" className="font-serif text-base h-12">
-                I already have an account
-              </Button>
-            </Link>
-          </div>
-          <p className="text-sm text-muted-foreground pt-2">
-            $1/month to help support the site. Cancel anytime.
-          </p>
           <button
             onClick={scrollToWhyOriginal}
-            className="group mx-auto mt-12 flex flex-col items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
+            className="group mx-auto mt-16 flex flex-col items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
             aria-label="Scroll to Why in the original"
           >
             <span className="font-serif text-sm tracking-wide uppercase">
