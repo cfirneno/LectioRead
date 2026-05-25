@@ -6,12 +6,140 @@ import {
   useGetInterlinearTranslation, 
   useGetFullTranslation,
   useGetScansion,
-  useSaveProgress
+  useSaveProgress,
+  useLookupWord,
 } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ArrowLeft, Loader2, Home, Music, ExternalLink } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { getGrammarResource } from "@/lib/grammar-resources";
+import { getGrammarResource, type GrammarResource } from "@/lib/grammar-resources";
+
+function WordLookupPopover({
+  original,
+  translation,
+  transliteration,
+  grammar,
+  language,
+}: {
+  original: string;
+  translation: string;
+  transliteration?: string;
+  grammar: GrammarResource;
+  language: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const isPerseus = /Look up on Perseus/i.test(grammar.lookupLabel);
+
+  const { data, isFetching, error } = useLookupWord(
+    { lang: language, word: original },
+    {
+      query: {
+        enabled: open && isPerseus,
+        staleTime: 1000 * 60 * 60,
+        retry: 1,
+      } as never,
+    },
+  );
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          className="flex flex-col items-center group cursor-pointer hover:bg-secondary/40 rounded-md px-2 py-1 -mx-2 -my-1 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+          title={grammar.lookupLabel}
+        >
+          <span className="font-serif text-2xl md:text-3xl text-foreground mb-1 group-hover:text-primary transition-colors">
+            {original}
+          </span>
+          {transliteration && (
+            <span className="font-sans text-xs md:text-sm italic text-muted-foreground tracking-wide mb-1">
+              {transliteration}
+            </span>
+          )}
+          <span className="font-sans text-sm md:text-base font-medium text-primary tracking-wide">
+            {translation}
+          </span>
+        </button>
+      </PopoverTrigger>
+      <PopoverContent side="top" align="center" className="w-80 max-h-96 overflow-y-auto">
+        <div className="space-y-3">
+          <div className="border-b pb-2">
+            <div className="font-serif text-xl text-foreground">{original}</div>
+            <div className="font-sans text-sm text-primary">{translation}</div>
+          </div>
+
+          {!isPerseus && (
+            <div className="text-sm text-muted-foreground font-serif">
+              Detailed parse data isn't available for {grammar.language} yet.
+            </div>
+          )}
+
+          {isPerseus && isFetching && (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Loader2 className="w-3 h-3 animate-spin" />
+              Looking up on Perseus…
+            </div>
+          )}
+
+          {isPerseus && error && (
+            <div className="text-sm text-muted-foreground">
+              Couldn't reach Perseus. Try the link below.
+            </div>
+          )}
+
+          {isPerseus && data && data.analyses.length === 0 && !isFetching && (
+            <div className="text-sm text-muted-foreground font-serif italic">
+              No parse found on Perseus for this form.
+            </div>
+          )}
+
+          {isPerseus && data && data.analyses.length > 0 && (
+            <div className="space-y-3">
+              {data.analyses.map((a, i) => (
+                <div key={i} className="border-l-2 border-primary/40 pl-3">
+                  {a.lemma && (
+                    <div className="font-serif text-base text-foreground mb-1">
+                      {a.lemma}
+                    </div>
+                  )}
+                  <dl className="grid grid-cols-[auto,1fr] gap-x-3 gap-y-0.5 text-sm">
+                    {a.features.map((f, j) => (
+                      <React.Fragment key={j}>
+                        {f.label ? (
+                          <>
+                            <dt className="font-sans text-xs uppercase tracking-wide text-muted-foreground self-center">
+                              {f.label}
+                            </dt>
+                            <dd className="font-serif text-foreground">{f.value}</dd>
+                          </>
+                        ) : (
+                          <dd className="col-span-2 font-serif text-foreground">{f.value}</dd>
+                        )}
+                      </React.Fragment>
+                    ))}
+                  </dl>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="pt-2 border-t">
+            <a
+              href={data?.sourceUrl ?? grammar.lookupUrl(original)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+            >
+              Open full entry <ExternalLink className="w-3 h-3" />
+            </a>
+          </div>
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
 
 export default function Read() {
   const { textId, index } = useParams();
@@ -218,21 +346,21 @@ export default function Read() {
                 <div className="space-y-6">
                   <div className="flex flex-wrap justify-center gap-x-4 md:gap-x-6 gap-y-8 md:gap-y-12">
                     {interlinearData.words.map((wordPair: any, i: number) => {
-                      const lookupHref = grammar ? grammar.lookupUrl(wordPair.original) : null;
-                      const WordWrap: any = lookupHref ? "a" : "div";
-                      const wrapProps = lookupHref
-                        ? {
-                            href: lookupHref,
-                            target: "_blank",
-                            rel: "noopener noreferrer",
-                            title: grammar?.lookupLabel ?? "Look up",
-                            className:
-                              "flex flex-col items-center group cursor-pointer hover:bg-secondary/40 rounded-md px-2 py-1 -mx-2 -my-1 transition-colors",
-                          }
-                        : { className: "flex flex-col items-center group" };
+                      if (grammar && text) {
+                        return (
+                          <WordLookupPopover
+                            key={i}
+                            original={wordPair.original}
+                            translation={wordPair.translation}
+                            transliteration={wordPair.transliteration}
+                            grammar={grammar}
+                            language={text.language}
+                          />
+                        );
+                      }
                       return (
-                        <WordWrap key={i} {...wrapProps}>
-                          <span className="font-serif text-2xl md:text-3xl text-foreground mb-1 group-hover:text-primary transition-colors">
+                        <div key={i} className="flex flex-col items-center group">
+                          <span className="font-serif text-2xl md:text-3xl text-foreground mb-1">
                             {wordPair.original}
                           </span>
                           {wordPair.transliteration && (
@@ -243,13 +371,13 @@ export default function Read() {
                           <span className="font-sans text-sm md:text-base font-medium text-primary tracking-wide">
                             {wordPair.translation}
                           </span>
-                        </WordWrap>
+                        </div>
                       );
                     })}
                   </div>
                   {grammar && (
                     <p className="text-center text-xs text-muted-foreground font-serif italic pt-2">
-                      Click any word to {grammar.lookupLabel.toLowerCase()}.
+                      Tap any word to see its parse without leaving the page.
                     </p>
                   )}
                 </div>

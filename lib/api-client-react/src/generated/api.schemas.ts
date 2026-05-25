@@ -111,6 +111,25 @@ export interface VocabularyList {
   entries: VocabularyEntry[];
 }
 
+export type WordLookupAnalysisFeaturesItem = {
+  label: string;
+  value: string;
+};
+
+export interface WordLookupAnalysis {
+  lemma?: string;
+  features: WordLookupAnalysisFeaturesItem[];
+}
+
+export interface WordLookup {
+  word: string;
+  language: string;
+  /** perseus | wiktionary | none */
+  source: string;
+  sourceUrl: string;
+  analyses: WordLookupAnalysis[];
+}
+
 export interface InterlinearWord {
   original: string;
   translation: string;
@@ -158,4 +177,12 @@ export interface SubscriptionStatus {
 export interface CheckoutUrl {
   url: string | null;
 }
+
+export type LookupWordParams = {
+/**
+ * Language label as stored on the text (e.g. "Latin", "Ancient Greek")
+ */
+lang: string;
+word: string;
+};
 

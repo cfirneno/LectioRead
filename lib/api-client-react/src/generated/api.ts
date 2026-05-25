@@ -24,6 +24,7 @@ import type {
   FullTranslation,
   HealthStatus,
   InterlinearTranslation,
+  LookupWordParams,
   Paragraph,
   ParagraphSummary,
   Progress,
@@ -34,7 +35,8 @@ import type {
   TextSearchRequest,
   TextStats,
   TextWithProgress,
-  VocabularyList
+  VocabularyList,
+  WordLookup
 } from './api.schemas';
 
 import { customFetch } from '../custom-fetch';
@@ -577,6 +579,90 @@ export function useGetParagraph<TData = Awaited<ReturnType<typeof getParagraph>>
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getGetParagraphQueryOptions(textId,index,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getLookupWordUrl = (params: LookupWordParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/lookup?${stringifiedParams}` : `/api/lookup`
+}
+
+/**
+ * @summary Look up morphology / parse data for a single word (Perseus for Latin/Greek)
+ */
+export const lookupWord = async (params: LookupWordParams, options?: RequestInit): Promise<WordLookup> => {
+
+  return customFetch<WordLookup>(getLookupWordUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getLookupWordQueryKey = (params?: LookupWordParams,) => {
+    return [
+    `/api/lookup`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getLookupWordQueryOptions = <TData = Awaited<ReturnType<typeof lookupWord>>, TError = ErrorType<unknown>>(params: LookupWordParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof lookupWord>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getLookupWordQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof lookupWord>>> = ({ signal }) => lookupWord(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof lookupWord>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type LookupWordQueryResult = NonNullable<Awaited<ReturnType<typeof lookupWord>>>
+export type LookupWordQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Look up morphology / parse data for a single word (Perseus for Latin/Greek)
+ */
+
+export function useLookupWord<TData = Awaited<ReturnType<typeof lookupWord>>, TError = ErrorType<unknown>>(
+ params: LookupWordParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof lookupWord>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getLookupWordQueryOptions(params,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

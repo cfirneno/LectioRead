@@ -137,6 +137,29 @@ export const GetParagraphResponse = zod.object({
 
 
 /**
+ * @summary Look up morphology / parse data for a single word (Perseus for Latin/Greek)
+ */
+export const LookupWordQueryParams = zod.object({
+  "lang": zod.coerce.string().describe('Language label as stored on the text (e.g. \"Latin\", \"Ancient Greek\")'),
+  "word": zod.coerce.string()
+})
+
+export const LookupWordResponse = zod.object({
+  "word": zod.string(),
+  "language": zod.string(),
+  "source": zod.string().describe('perseus | wiktionary | none'),
+  "sourceUrl": zod.string(),
+  "analyses": zod.array(zod.object({
+  "lemma": zod.string().optional(),
+  "features": zod.array(zod.object({
+  "label": zod.string(),
+  "value": zod.string()
+}))
+}))
+})
+
+
+/**
  * @summary Generate or retrieve the interlinear (word-for-word) translation
  */
 export const GetInterlinearTranslationParams = zod.object({

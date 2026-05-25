@@ -154,6 +154,31 @@ paths:
         "404":
           description: Not found
 
+  /lookup:
+    get:
+      operationId: lookupWord
+      tags: [paragraphs]
+      summary: Look up morphology / parse data for a single word (Perseus for Latin/Greek)
+      parameters:
+        - name: lang
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Language label as stored on the text (e.g. "Latin", "Ancient Greek")
+        - name: word
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Lookup result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WordLookup"
+
   /texts/{textId}/paragraphs/{index}/interlinear:
     post:
       operationId: getInterlinearTranslation
@@ -496,6 +521,41 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/VocabularyEntry"
+
+    WordLookupAnalysis:
+      type: object
+      required: [features]
+      properties:
+        lemma:
+          type: string
+        features:
+          type: array
+          items:
+            type: object
+            required: [label, value]
+            properties:
+              label:
+                type: string
+              value:
+                type: string
+
+    WordLookup:
+      type: object
+      required: [word, language, source, sourceUrl, analyses]
+      properties:
+        word:
+          type: string
+        language:
+          type: string
+        source:
+          type: string
+          description: "perseus | wiktionary | none"
+        sourceUrl:
+          type: string
+        analyses:
+          type: array
+          items:
+            $ref: "#/components/schemas/WordLookupAnalysis"
 
     InterlinearWord:
       type: object
