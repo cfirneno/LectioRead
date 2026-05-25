@@ -41,6 +41,12 @@
     "experiments": {
       "typedRoutes": false,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "d1ade69f-2c57-45a2-9542-69388b508db7"
+      }
+    },
+    "owner": "cfirneno"
   }
 }
