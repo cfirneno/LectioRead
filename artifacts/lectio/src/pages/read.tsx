@@ -9,8 +9,9 @@ import {
   useSaveProgress
 } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Loader2, Home, Music } from "lucide-react";
+import { ArrowLeft, Loader2, Home, Music, ExternalLink } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
+import { getGrammarResource } from "@/lib/grammar-resources";
 
 export default function Read() {
   const { textId, index } = useParams();
@@ -45,6 +46,7 @@ export default function Read() {
   }, [id, pIndex]);
 
   const supportsScansion = !!text && /latin|greek|ἑλλην|ελλην/i.test(text.language);
+  const grammar = text ? getGrammarResource(text.language) : null;
 
   const handleToggleScansion = () => {
     if (showScansion) {
@@ -213,22 +215,43 @@ export default function Read() {
 
               {/* STAGE 2: Interlinear */}
               {stage === 2 && interlinearData && (
-                <div className="flex flex-wrap justify-center gap-x-4 md:gap-x-6 gap-y-8 md:gap-y-12">
-                  {interlinearData.words.map((wordPair: any, i: number) => (
-                    <div key={i} className="flex flex-col items-center group">
-                      <span className="font-serif text-2xl md:text-3xl text-foreground mb-1">
-                        {wordPair.original}
-                      </span>
-                      {wordPair.transliteration && (
-                        <span className="font-sans text-xs md:text-sm italic text-muted-foreground tracking-wide mb-1">
-                          {wordPair.transliteration}
-                        </span>
-                      )}
-                      <span className="font-sans text-sm md:text-base font-medium text-primary tracking-wide">
-                        {wordPair.translation}
-                      </span>
-                    </div>
-                  ))}
+                <div className="space-y-6">
+                  <div className="flex flex-wrap justify-center gap-x-4 md:gap-x-6 gap-y-8 md:gap-y-12">
+                    {interlinearData.words.map((wordPair: any, i: number) => {
+                      const lookupHref = grammar ? grammar.lookupUrl(wordPair.original) : null;
+                      const WordWrap: any = lookupHref ? "a" : "div";
+                      const wrapProps = lookupHref
+                        ? {
+                            href: lookupHref,
+                            target: "_blank",
+                            rel: "noopener noreferrer",
+                            title: grammar?.lookupLabel ?? "Look up",
+                            className:
+                              "flex flex-col items-center group cursor-pointer hover:bg-secondary/40 rounded-md px-2 py-1 -mx-2 -my-1 transition-colors",
+                          }
+                        : { className: "flex flex-col items-center group" };
+                      return (
+                        <WordWrap key={i} {...wrapProps}>
+                          <span className="font-serif text-2xl md:text-3xl text-foreground mb-1 group-hover:text-primary transition-colors">
+                            {wordPair.original}
+                          </span>
+                          {wordPair.transliteration && (
+                            <span className="font-sans text-xs md:text-sm italic text-muted-foreground tracking-wide mb-1">
+                              {wordPair.transliteration}
+                            </span>
+                          )}
+                          <span className="font-sans text-sm md:text-base font-medium text-primary tracking-wide">
+                            {wordPair.translation}
+                          </span>
+                        </WordWrap>
+                      );
+                    })}
+                  </div>
+                  {grammar && (
+                    <p className="text-center text-xs text-muted-foreground font-serif italic pt-2">
+                      Click any word to {grammar.lookupLabel.toLowerCase()}.
+                    </p>
+                  )}
                 </div>
               )}
 

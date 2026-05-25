@@ -2,8 +2,9 @@ import React from "react";
 import { Link, useParams } from "wouter";
 import { useGetText, useListParagraphs, useGetTextStats } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, CheckCircle2, Circle, BookOpen } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Circle, BookOpen, GraduationCap } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getGrammarResource } from "@/lib/grammar-resources";
 
 export default function TextToc() {
   const { textId } = useParams();
@@ -35,6 +36,7 @@ export default function TextToc() {
   }
 
   const firstUnread = paragraphs.find(p => !p.completed)?.index ?? 0;
+  const grammar = getGrammarResource(text.language);
 
   return (
     <div className="min-h-[100dvh] bg-background">
@@ -73,7 +75,21 @@ export default function TextToc() {
                 </Button>
               </Link>
             )}
+            {grammar && (
+              <a href={grammar.grammarUrl} target="_blank" rel="noopener noreferrer">
+                <Button size="lg" variant="outline" className="rounded-full px-6 font-serif text-lg gap-2">
+                  <GraduationCap className="h-4 w-4" />
+                  Grammar
+                </Button>
+              </a>
+            )}
           </div>
+          {grammar && (
+            <p className="text-xs text-muted-foreground font-serif pt-1">
+              Reference: <a href={grammar.grammarUrl} target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground">{grammar.grammarTitle}</a>
+              {grammar.grammarNote ? ` — ${grammar.grammarNote}` : ""}
+            </p>
+          )}
         </div>
 
         <div className="space-y-1">
