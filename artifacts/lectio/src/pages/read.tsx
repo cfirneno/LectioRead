@@ -5,10 +5,11 @@ import {
   useGetParagraph, 
   useGetInterlinearTranslation, 
   useGetFullTranslation,
+  useGetScansion,
   useSaveProgress
 } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Loader2, Home } from "lucide-react";
+import { ArrowLeft, Loader2, Home, Music } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 
 export default function Read() {
@@ -27,16 +28,46 @@ export default function Read() {
   
   const interlinearMutation = useGetInterlinearTranslation();
   const fullTranslationMutation = useGetFullTranslation();
+  const scansionMutation = useGetScansion();
   const saveProgress = useSaveProgress();
 
   const [interlinearData, setInterlinearData] = useState<any>(null);
   const [fullTransData, setFullTransData] = useState<any>(null);
+  const [scannedText, setScannedText] = useState<string | null>(null);
+  const [showScansion, setShowScansion] = useState(false);
 
   useEffect(() => {
     setStage(1);
     setInterlinearData(null);
     setFullTransData(null);
+    setScannedText(null);
+    setShowScansion(false);
   }, [id, pIndex]);
+
+  const supportsScansion = !!text && /latin|greek|ἑλλην|ελλην/i.test(text.language);
+
+  const handleToggleScansion = () => {
+    if (showScansion) {
+      setShowScansion(false);
+      return;
+    }
+    if (scannedText) {
+      setShowScansion(true);
+      return;
+    }
+    const requestedId = id;
+    const requestedIndex = pIndex;
+    scansionMutation.mutate(
+      { textId: id, index: pIndex },
+      {
+        onSuccess: (data) => {
+          if (requestedId !== id || requestedIndex !== pIndex) return;
+          setScannedText(data.scannedText);
+          setShowScansion(true);
+        },
+      }
+    );
+  };
 
   const advanceStage = useCallback(() => {
     if (stage === 1) {
@@ -58,13 +89,25 @@ export default function Read() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        if (stage < 5 && !interlinearMutation.isPending && !fullTranslationMutation.isPending) {
-          advanceStage();
-        } else if (stage === 5) {
-          handleGotIt();
+      if (e.key !== "Enter") return;
+      const target = e.target as HTMLElement | null;
+      if (target) {
+        const tag = target.tagName;
+        if (
+          tag === "BUTTON" ||
+          tag === "INPUT" ||
+          tag === "TEXTAREA" ||
+          tag === "SELECT" ||
+          target.isContentEditable
+        ) {
+          return;
         }
+      }
+      e.preventDefault();
+      if (stage < 5 && !interlinearMutation.isPending && !fullTranslationMutation.isPending) {
+        advanceStage();
+      } else if (stage === 5) {
+        handleGotIt();
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -143,10 +186,28 @@ export default function Read() {
               
               {/* STAGE 1, 3, 5: Original text only */}
               {(stage === 1 || stage === 3 || stage === 5) && (
-                <div className="text-center max-w-3xl mx-auto">
-                  <p className="font-serif text-3xl md:text-4xl leading-[1.6] text-foreground">
-                    {paragraph.originalText}
+                <div className="text-center max-w-3xl mx-auto space-y-6">
+                  <p className="font-serif text-3xl md:text-4xl leading-[1.6] text-foreground whitespace-pre-wrap">
+                    {showScansion && scannedText ? scannedText : paragraph.originalText}
                   </p>
+                  {supportsScansion && (
+                    <div className="pt-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleToggleScansion}
+                        disabled={scansionMutation.isPending}
+                        className="font-serif text-sm text-muted-foreground hover:text-foreground gap-2"
+                      >
+                        {scansionMutation.isPending ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Music className="h-4 w-4" />
+                        )}
+                        {showScansion ? "Hide scansion" : "Show scansion"}
+                      </Button>
+                    </div>
+                  )}
                 </div>
               )}
 

@@ -28,6 +28,7 @@ import type {
   ParagraphSummary,
   Progress,
   ProgressInput,
+  Scansion,
   SubscriptionStatus,
   Text,
   TextSearchRequest,
@@ -730,6 +731,78 @@ export const useGetFullTranslation = <TError = ErrorType<void>,
         TContext
       > => {
       return useMutation(getGetFullTranslationMutationOptions(options));
+    }
+
+export const getGetScansionUrl = (textId: number,
+    index: number,) => {
+
+
+
+
+  return `/api/texts/${textId}/paragraphs/${index}/scansion`
+}
+
+/**
+ * @summary Generate or retrieve scansion marks (macrons/breves) for a verse paragraph
+ */
+export const getScansion = async (textId: number,
+    index: number, options?: RequestInit): Promise<Scansion> => {
+
+  return customFetch<Scansion>(getGetScansionUrl(textId,index),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+export const getGetScansionMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getScansion>>, TError,{textId: number;index: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof getScansion>>, TError,{textId: number;index: number}, TContext> => {
+
+const mutationKey = ['getScansion'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof getScansion>>, {textId: number;index: number}> = (props) => {
+          const {textId,index} = props ?? {};
+
+          return  getScansion(textId,index,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type GetScansionMutationResult = NonNullable<Awaited<ReturnType<typeof getScansion>>>
+
+    export type GetScansionMutationError = ErrorType<void>
+
+    /**
+ * @summary Generate or retrieve scansion marks (macrons/breves) for a verse paragraph
+ */
+export const useGetScansion = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getScansion>>, TError,{textId: number;index: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof getScansion>>,
+        TError,
+        {textId: number;index: number},
+        TContext
+      > => {
+      return useMutation(getGetScansionMutationOptions(options));
     }
 
 export const getGetTextStatsUrl = (textId: number,) => {

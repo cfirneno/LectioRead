@@ -6,10 +6,12 @@ import {
   GetParagraphParams,
   GetInterlinearTranslationParams,
   GetFullTranslationParams,
+  GetScansionParams,
 } from "@workspace/api-zod";
 import {
   generateInterlinearTranslation,
   generateFullTranslation,
+  generateScansion,
 } from "../lib/ai";
 import { requireSubscribedUser, type AuthedRequest } from "../lib/subscriptionGuard";
 import { beginForeground } from "../lib/foregroundGate";
@@ -239,6 +241,75 @@ router.post(
       paragraphId: paragraph.id,
       originalText: paragraph.originalText,
       translatedText,
+    });
+  }
+);
+
+router.post(
+  "/texts/:textId/paragraphs/:index/scansion",
+  async (req, res): Promise<void> => {
+    const params = GetScansionParams.safeParse(req.params);
+    if (!params.success) {
+      res.status(400).json({ error: params.error.message });
+      return;
+    }
+
+    const [paragraph] = await db
+      .select()
+      .from(paragraphsTable)
+      .where(
+        and(
+          eq(paragraphsTable.textId, params.data.textId),
+          eq(paragraphsTable.index, params.data.index)
+        )
+      );
+
+    if (!paragraph) {
+      res.status(404).json({ error: "Paragraph not found" });
+      return;
+    }
+
+    if (paragraph.scansion) {
+      res.json({
+        paragraphId: paragraph.id,
+        originalText: paragraph.originalText,
+        scannedText: paragraph.scansion,
+      });
+      return;
+    }
+
+    const [text] = await db
+      .select()
+      .from(textsTable)
+      .where(eq(textsTable.id, params.data.textId));
+
+    if (!text) {
+      res.status(404).json({ error: "Text not found" });
+      return;
+    }
+
+    if (!/latin|greek|ἑλλην|ελλην/i.test(text.language)) {
+      res.status(400).json({ error: "Scansion is only available for Latin and Greek texts" });
+      return;
+    }
+
+    const releaseForeground = beginForeground();
+    let scannedText: string;
+    try {
+      scannedText = await generateScansion(paragraph.originalText, text.language);
+    } finally {
+      releaseForeground();
+    }
+
+    await db
+      .update(paragraphsTable)
+      .set({ scansion: scannedText })
+      .where(eq(paragraphsTable.id, paragraph.id));
+
+    res.json({
+      paragraphId: paragraph.id,
+      originalText: paragraph.originalText,
+      scannedText,
     });
   }
 );

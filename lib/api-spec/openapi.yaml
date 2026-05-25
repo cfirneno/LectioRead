@@ -206,6 +206,32 @@ paths:
         "404":
           description: Not found
 
+  /texts/{textId}/paragraphs/{index}/scansion:
+    post:
+      operationId: getScansion
+      tags: [paragraphs]
+      summary: Generate or retrieve scansion marks (macrons/breves) for a verse paragraph
+      parameters:
+        - name: textId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: index
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Scansion-marked text
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Scansion"
+        "404":
+          description: Not found
+
   /texts/{textId}/stats:
     get:
       operationId: getTextStats
@@ -505,6 +531,17 @@ components:
         originalText:
           type: string
         translatedText:
+          type: string
+
+    Scansion:
+      type: object
+      required: [paragraphId, originalText, scannedText]
+      properties:
+        paragraphId:
+          type: integer
+        originalText:
+          type: string
+        scannedText:
           type: string
 
     Progress:

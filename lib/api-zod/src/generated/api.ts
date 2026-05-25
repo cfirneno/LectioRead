@@ -171,6 +171,21 @@ export const GetFullTranslationResponse = zod.object({
 
 
 /**
+ * @summary Generate or retrieve scansion marks (macrons/breves) for a verse paragraph
+ */
+export const GetScansionParams = zod.object({
+  "textId": zod.coerce.number(),
+  "index": zod.coerce.number()
+})
+
+export const GetScansionResponse = zod.object({
+  "paragraphId": zod.number(),
+  "originalText": zod.string(),
+  "scannedText": zod.string()
+})
+
+
+/**
  * @summary Get reading stats for a text
  */
 export const GetTextStatsParams = zod.object({

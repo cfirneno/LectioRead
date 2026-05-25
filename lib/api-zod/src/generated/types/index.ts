@@ -15,6 +15,7 @@ export * from './paragraph';
 export * from './paragraphSummary';
 export * from './progress';
 export * from './progressInput';
+export * from './scansion';
 export * from './subscriptionStatus';
 export * from './text';
 export * from './textSearchRequest';

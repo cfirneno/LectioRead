@@ -130,6 +130,12 @@ export interface FullTranslation {
   translatedText: string;
 }
 
+export interface Scansion {
+  paragraphId: number;
+  originalText: string;
+  scannedText: string;
+}
+
 export interface Progress {
   id: number;
   textId: number;

@@ -161,6 +161,38 @@ Rules:
   return JSON.parse(jsonMatch[0]) as InterlinearWord[];
 }
 
+export async function generateScansion(
+  originalText: string,
+  sourceLanguage: string
+): Promise<string> {
+  const isGreek = /greek|ἑλλην|ελλην/i.test(sourceLanguage);
+  const meterHint = isGreek
+    ? "For Ancient/Koine Greek hexameter (Homer) or other Greek meters, mark long vowels and long-by-position syllables. Preserve original Greek diacritics (breathings, accents) and add macrons (ᾱ ῑ ῡ) on naturally long alphas/iotas/upsilons."
+    : "For Latin dactylic hexameter, elegiac couplets, hendecasyllables, etc., mark each vowel: long vowels get macrons (ā ē ī ō ū ȳ), short vowels get breves (ă ĕ ĭ ŏ ŭ y̆). Indicate elision by enclosing the elided final vowel in parentheses, e.g. 'multum ill(e) et terris'.";
+
+  const response = await openai.chat.completions.create({
+    model: "gpt-5-mini",
+    max_completion_tokens: 4096,
+    reasoning_effort: "minimal",
+    messages: [
+      {
+        role: "system",
+        content: `You are a classical-meter scholar producing scansion-marked versions of verse passages. ${meterHint} Return ONLY the scanned text — same line breaks as the input, no commentary, no JSON wrapper.`,
+      },
+      {
+        role: "user",
+        content: `Add scansion marks (macrons on long vowels, breves on short vowels, parenthesized elisions where appropriate) to this ${sourceLanguage} passage. Preserve every word and line break exactly. If a line is prose rather than verse, return it unchanged.
+
+${originalText}`,
+      },
+    ],
+  });
+
+  const content = response.choices[0]?.message?.content?.trim();
+  if (!content) throw new Error("No scansion response from AI");
+  return content;
+}
+
 export async function lookupEnglishTitles(
   books: Array<{ id: number; title: string; author: string; language: string }>
 ): Promise<Map<number, { englishTitle: string | null; englishAuthor: string | null }>> {
