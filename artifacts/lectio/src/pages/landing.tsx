@@ -200,7 +200,7 @@ export default function Landing() {
             <p>
               That's what reading in the original gives you, and it's why even
               an imperfect attempt is worth the effort. Lectio is built to
-              make that attempt feel possible.
+              make that attempt worthwhile.
             </p>
           </div>
         </section>
