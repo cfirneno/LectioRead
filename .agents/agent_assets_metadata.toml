@@ -1,0 +1,8 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "E3nv9K_0fU7wq7NVuhMu0"
+uri = "file://artifacts/lectio-mobile/assets/images/icon.png"
+type = "image"
+title = "lectio app icon"

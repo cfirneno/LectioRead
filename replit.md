@@ -30,7 +30,8 @@ A structured immersion reader for learning classical languages by working throug
 - `lib/db/src/schema/` — DB schema: `texts.ts`, `paragraphs.ts`, `progress.ts`
 - `artifacts/api-server/src/routes/` — Express routes: `texts.ts`, `paragraphs.ts`, `progress.ts`
 - `artifacts/api-server/src/lib/ai.ts` — AI helpers: text search, interlinear + full translation
-- `artifacts/lectio/src/` — React frontend
+- `artifacts/lectio/src/` — React frontend (web)
+- `artifacts/lectio-mobile/app/` — Expo Router native mobile app (iOS/Android)
 - `lib/integrations-openai-ai-server/` — OpenAI server SDK wrapper
 
 ## Architecture decisions
