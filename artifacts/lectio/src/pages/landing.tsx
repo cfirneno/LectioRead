@@ -176,6 +176,24 @@ export default function Landing() {
               Latin you watch it happen on the page.
             </p>
             <p>
+              And then Virgil closes the knot. The final word — <em>recessit</em>,
+              "withdrew" — is a third-person singular perfect, a single verb
+              that gathers every loose strand of the sentence into one
+              completed action. The breath (<em>flātū</em>) that warmed the
+              mouths, the slaughter (<em>caede</em>) that drove the serpent
+              out, the venom (<em>venēnō</em>) and the gore (<em>saniē</em>)
+              — all of them resolve into that one perfect tense at the end of
+              the line. The coils that have been winding through four lines
+              of hyperbaton finally release, and the snake slips away on the
+              same syllable the sentence does.<sup>1</sup>
+            </p>
+            <p className="text-sm text-muted-foreground/80 border-t border-border/30 pt-3">
+              <sup>1</sup> On Virgil's word-order as a kind of physical
+              choreography in the Laocoön episode, see W. R. Johnson,{" "}
+              <em>Darkness Visible: A Study of Vergil's Aeneid</em>{" "}
+              (University of California Press, 1976).
+            </p>
+            <p>
               That's what reading in the original gives you, and it's why even
               an imperfect attempt is worth the effort. Lectio is built to
               make that attempt feel possible.
