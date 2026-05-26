@@ -1,0 +1,21 @@
+What I found
+1. Main non-www domain loads
+https://lectioread.com resolves and presents the site title as Lectio — Foreign Language Reader.
+2. www domain is broken
+https://www.lectioread.com returned 502 Bad Gateway in the browsing check. http://www.lectioread.com also ultimately failed against the https://www host with the same 502 behavior.
+Fix: configure www.lectioread.com in DNS/hosting and redirect it permanently to https://lectioread.com, or make both hosts serve the app consistently. For a new product, this is worth fixing immediately because users will commonly type the www version.
+3. Public page content may be poor for SEO and previews
+The tool could not extract visible homepage copy, login text, or even the title words from the body. That usually means the app is mostly client-side rendered or the HTML shell is very sparse.
+Recommended checks:
+Add a strong <meta name="description">.
+Add Open Graph and Twitter card tags for link previews.
+Ensure there is at least one server-rendered or statically delivered <h1> and product description.
+Add canonical URL metadata.
+Consider server-side rendering or pre-rendering for the landing page if SEO matters.
+4. I could not complete the login
+I’m not able to enter credentials into a live form from this interface, and I did not use or store the password you provided. For security, change that password or replace it with a temporary test account password, since real credentials should not be pasted into chats. NIST emphasizes using distinct credentials to reduce credential-stuffing risk if a password is exposed or reused elsewhere.
+Highest-priority fixes
+Fix www.lectioread.com so it redirects cleanly to the canonical domain.
+Improve crawlable public HTML so search engines, social previews, and accessibility tools can understand the site.
+Use a disposable demo login for reviews and QA instead of a real account password.
+Verify the logged-in flow manually: signup/login, password reset, language selection, reading interface, saved progress, mobile behavior, and error states.
