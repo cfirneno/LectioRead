@@ -1,0 +1,692 @@
+Skip to content
+
+AI
+
+Lectio
+
+
+Invite
+
+Republish
+
+
+
+
+
+
+Library
+
+File tree
+
+
+New
+Apps
+Lectio Mobile
+Mobile
+
+Lectio — Foreign Language Reader
+Lectio — Foreign Language Reader
+Website
+
+Images
+lectio app icon
+lectio app icon
+Image
+
+Agent
+4
+
+
+main
+
+
+No remote repositories configured. To push your changes, create a new repository or connect to an existing one.
+
+Create Remote
+
+Connect Existing
+
+No remotes to push to
+Commit
+There are no changes to commit.
+Update application name and image files for the reading application
+
+
+
+Show previous messages
+
+2 messages & 1 action
+
+Worked for 9 seconds
+Republish
+
+Settings
+Charles published about 5 hours ago
+Visibility:
+Public
+
+Review security
+
+Republish
+
+Published your app
+5 hours ago
+
+Published your app
+5 hours ago
+That's what reading in the original gives you, and it's why even an imperfect attempt is worth the effort. Lectio is built to make that attempt feel possible. rewrite this second sentence...How about, "Lectio is built to make that attempt worthwhile."
+4 hours ago
+
+1 message & 4 actions
+
+Checkpoint made
+4 hours ago
+
+Worked for 18 seconds
+this thing is not posting to the app store. my expo account is locked. how do I fix that?
+4 hours ago
+A locked Expo account isn't something I can fix from here — Expo is a separate service with its own login. You'll need to reach out to them directly:
+
+Go to expo.dev and try to sign in. If you see a specific "account locked" or "suspended" message, take a screenshot.
+Email secure@expo.dev (their account support) from the email address tied to the account. Briefly explain that your account is locked and ask them to restore access.
+They usually respond within a business day.
+While you wait, a couple of alternatives:
+
+Create a second Expo account with a different email — Expo allows this, and it'd let you keep moving on the iOS build today.
+Skip Expo entirely and build the iOS app locally with Xcode on a Mac. That route is more involved but doesn't depend on Expo's servers.
+Do you want me to walk you through setting up a fresh Expo account, or wait until support unlocks the original?
+
+Pasted--Auto-Hide-navigation-Search-or-Ask-AI-K-Introduction-C_1779748025769.txt
+here's where I am . I created a new project with a URL called Lectioread...is that redundent with what you've already done?
+2 hours ago
+Not redundant — that's a separate thing and it's exactly what you needed to do.
+
+Here's the short version:
+
+The Expo project you just created is where EAS Build runs from. It holds your build history, credentials, and update channels for the mobile app. You needed one because your original Expo account was locked.
+The work I did in this codebase (the eas.json, the app.json config, the React Native screens) is the source code that gets sent to that Expo project when you run a build. The two pieces complement each other.
+One small thing to wire up so they connect:
+
+The Expo project has a unique ID. We need to add that ID to your app.json so EAS knows which project this code belongs to.
+
+Could you do this quickly — on the expo.dev page for the project you just made (titled "Lectioread"), look for a section called Project ID or Settings. It'll be a long string that looks like abc12345-6789-.... Paste that ID here and I'll wire it in. Alternatively, when you run eas build from the shell, it'll prompt you to link the project automatically and do it for you.
+
+Checkpoint made
+2 hours ago
+are you asking for the "Update ID" ?
+2 hours ago
+No — not the Update ID. I need the Project ID (sometimes labeled "EAS Project ID").
+
+On expo.dev, open your Lectioread project, then look in Settings (or Project settings) in the left sidebar. The Project ID is at the top — a long string like abc12345-6789-def0-....
+
+Paste that here and I'll wire it in.
+i don't see it
+
+cfirneno account icon
+cfirneno
+
+Lectio
+
+PROJECT
+DEVELOP
+DEPLOY
+
+Over-the-air updates
+
+ENTITIES
+PROJECT SETTINGS
+
+Lectio
+
+Details
+
+Overview
+
+Activity
+
+Connect GitHub
+
+Develop & deploy
+Development builds
+
+No development builds yet
+
+More
+
+Visit the docs
+
+Read the blog
+
+View the changelog
+
+Join our Discord community
+
+Stay in the loop
+Join our newsletter for product updates and all things Expo in your inbox
+
+Subscribe
+
+Show more
+1 hour ago
+Try this — in the left sidebar under PROJECT SETTINGS, click Details (or Overview). The Project ID should be on that page, usually near the top.
+
+If you still don't see it, the easiest path is to let the EAS CLI handle it for you. In the Replit shell, run:
+
+cd artifacts/lectio-mobile
+pnpm exec eas login
+pnpm exec eas init
+
+eas init will link this codebase to your Lectioread project on expo.dev and write the Project ID into app.json automatically. Then you can run pnpm exec eas build --profile preview --platform ios to kick off the build.
+
+Let me know what happens.
+d1ade69f-2c57-45a2-9542-69388b508db7
+1 hour ago
+
+1 message & 1 action
+
+Checkpoint made
+1 hour ago
+
+Worked for 9 seconds
+which build?
+1 hour ago
+The preview build — it's the one that installs on your iPhone for testing.
+
+Just run those three commands in order:
+
+cd artifacts/lectio-mobile
+pnpm exec eas login
+pnpm exec eas build --profile preview --platform ios
+
+The third command picks the preview profile automatically (that's the --profile preview part). You don't need to choose anything — just answer the prompts about your Apple ID when they come up.
+where do I paste this cd artifacts/lectio-mobile
+pnpm exec eas login
+pnpm exec eas build --profile preview --platform ios
+1 hour ago
+You paste those in the Shell tab. Here's how to find it:
+
+Look at the bottom of your Replit workspace — you should see tabs like Console, Shell, Webview.
+Click Shell.
+You'll see a blinking cursor and a prompt that ends with $.
+Paste the three lines and hit Enter. They'll run one after the other.
+If you don't see a Shell tab, click the + button near the tabs at the top or bottom of the workspace and pick Shell from the list.
+on this page or in expo?
+1 hour ago
+On this page — in your Replit workspace, not on expo.dev.
+
+Look at the bottom of your Replit screen for a tab labeled Shell (next to Console). Click it, paste the three lines there, and hit Enter.
+no console shell webview
+1 hour ago
+No worries — different Replit layouts show it in different spots. Try these in order:
+
+Look along the top of the workspace for a row of tabs. You might see Shell there instead of the bottom.
+If still nothing, press Ctrl + ` (the backtick key, below Esc) — that's the keyboard shortcut to open the Shell.
+Or click the + icon near any tab row and pick Shell from the menu that appears.
+Once it opens, you'll see a black panel with a $ prompt. Paste the three commands there.
+
+Pasted-Skip-to-content-AI-Lectio-Invite-Republish-Library-File_1779748789415.txt
+this is what I see
+1 hour ago
+
+1 message & 1 action
+
+Checkpoint made
+1 hour ago
+I can't get in
+1 hour ago
+Can you tell me a little more about what's happening? A couple of things would help me point you in the right direction:
+
+Which screen are you stuck on — the Replit "Start publishing to the App Store" button, or somewhere inside the Apple Developer sign-in?
+What error message (if any) do you see?
+If it's the Apple Developer login that's failing, that's the same kind of thing as the Expo lockout — Apple controls that account, and you'd need to reset your Apple ID password at appleid.apple.com or contact Apple Support. I can't unlock it from here, but I can help you work around it once I know the exact roadblock.
+when I sign in it blocks me...I used my apple account but I must be using the wrong password, where can I find it
+1 hour ago
+Your Apple ID password isn't something I (or Replit) can see — Apple keeps it private. But here's how to recover it:
+
+Go to iforgot.apple.com in your browser.
+Enter the email address tied to your Apple ID.
+Apple will send a reset code to either your trusted iPhone, your email, or your phone number — whichever you set up.
+Follow the prompts to set a new password.
+Once that's done, come back to Replit's "Start publishing to the App Store" flow and sign in with the new password.
+
+A couple of common gotchas:
+
+Two-factor authentication — if Apple asks for a 6-digit code, check your iPhone's notifications or Settings → [your name] → Sign-In & Security.
+App-specific password — some tools require this instead of your normal Apple ID password. If Replit specifically asks for one, generate it at appleid.apple.com → Sign-In & Security → App-Specific Passwords.
+Apple Developer account — separate from your regular Apple ID. If you've never paid the $99/year fee at developer.apple.com/programs, you'll need to enroll there first before you can publish to the App Store.
+Which of those sounds like where you're stuck?
+now it's asking about GitHub, why?
+1 hour ago
+That's Replit's publishing flow asking to connect your codebase to GitHub so it can track your app's source code for the App Store build. It's optional in most cases — you usually don't need GitHub to publish.
+
+Two options:
+
+Skip it — look for a "Skip" or "Not now" link on that screen. Most publishing flows let you proceed without GitHub.
+Connect it — if there's no skip option, you can create a free GitHub account at github.com and link it. It's just where your code gets backed up; doesn't change anything about the app itself.
+What does the screen say exactly? Is there a "Skip", "Continue without GitHub", or similar option visible?
+there's no skip, either sign in github or do a fucking demo
+1 hour ago
+Hear you — that's annoying. Just sign in with GitHub; it's the path of least resistance.
+
+If you don't have a GitHub account:
+
+Open github.com in a new tab.
+Click Sign up (top right).
+Use any email + pick a username + password. Takes about 60 seconds. No credit card needed.
+Come back to the Replit publishing screen and click Sign in with GitHub — it'll pop up a window asking permission to connect. Click Authorize.
+If you do have a GitHub account but forgot the password, reset it at github.com/password_reset.
+
+GitHub is just where your code gets stored — it won't change anything about your app, and it's free. Once you're past this step, the rest of the publishing flow should keep going.
+what is a ENTER GITHUB REPO URL
+56 minutes ago
+A GitHub repo URL is the web address of a code project stored on GitHub. It looks like this:
+
+https://github.com/your-username/your-project-name
+
+To get yours:
+
+Go to github.com and sign in.
+Click the + icon in the top right → New repository.
+Name it anything (e.g. lectio), leave everything else default, click Create repository.
+Copy the URL from your browser's address bar — that's your repo URL.
+Paste it into Replit's "Enter GitHub repo URL" field.
+You'll also probably need to push your Replit code to that repo before the publishing flow can use it. In your Replit workspace, look for a Git tab or Version control option in the left sidebar — there's usually a "Connect to GitHub" button that handles the upload for you.
+
+If you get stuck on the connection step, let me know what screen you're seeing.
+i added this https://github.com/cfirneno/LectioRead.git and it said it needed to be authenticated by replit
+53 minutes ago
+That just means Replit needs permission to access your GitHub account. Quick fix:
+
+In your Replit workspace, click your profile icon (top-left or top-right).
+Go to Account → Connected Services (some layouts call it "Integrations").
+Find GitHub in the list and click Connect.
+A GitHub popup will appear asking you to Authorize Replit — click that button.
+Go back to the App Store publishing screen and paste your repo URL again: https://github.com/cfirneno/LectioRead.git
+If you can't find the Connected Services page, there's usually a shortcut: on the publishing screen itself, the "needs to be authenticated" message often has a Connect to GitHub or Authenticate button right next to it. Click that, authorize the popup, and you're done.
+
+One more thing — make sure the repo at github.com/cfirneno/LectioRead actually has your code in it (not empty). If it's still empty, the publish flow will fail. Want me to walk you through pushing your code there?
+I made github active
+50 minutes ago
+Great. Now go back to the App Store publishing screen and paste your repo URL again:
+
+https://github.com/cfirneno/LectioRead.git
+
+It should accept it this time. Then you'll need your code actually pushed to that repo for the build to work.
+
+To push your Replit code to GitHub:
+
+In the Replit workspace left sidebar, look for the Git icon (looks like a branch).
+Click it — you should see a Connect to GitHub or Publish to GitHub button.
+Pick the cfirneno/LectioRead repo from the list.
+Click Push or Commit & Push. This uploads your code.
+Once that's done, the App Store publishing flow should be able to read from it and proceed to the next step.
+
+Let me know what you see next.
+now its saying the github has to be authenticated with Expo
+48 minutes ago
+Makes sense — Expo needs to see your GitHub repo so it can pull your code when building.
+
+Here's how:
+
+Go to expo.dev and sign in to your Lectioread project.
+In the left sidebar, look for Connect GitHub (you mentioned seeing this option earlier under your project's main page).
+Click it — a GitHub popup will appear asking you to Authorize Expo. Click that.
+Select your cfirneno/LectioRead repo from the list and connect it.
+Come back to the Replit App Store publishing screen and retry.
+Once Expo + GitHub + Replit are all connected together, the publish flow should be unblocked.
+it's there and the base directory is empty
+44 minutes ago
+
+1 message & 1 action
+done, now what?
+44 minutes ago
+Now head back to the Replit App Store publishing screen and retry it — paste your repo URL (https://github.com/cfirneno/LectioRead.git) again if it asks. With Expo + GitHub + Replit all connected, it should move forward this time.
+
+Let me know what the next screen shows. We're getting close — the remaining steps are usually:
+
+Apple Developer account sign-in (your Apple ID + the $99/yr developer enrollment)
+App Store Connect setup (app name, bundle ID — Replit fills these in for you)
+Build starts (~15-20 min)
+TestFlight link emailed to you for installing on your iPhone
+WTF ENTER GITHUB REPO URL
+You need to be authenticated with Expo for this route.
+
+Launch
+42 minutes ago
+
+1 message & 1 action
+where shithead
+
+cfirneno account icon
+cfirneno
+
+Lectio
+
+PROJECT
+DEVELOP
+DEPLOY
+
+Over-the-air updates
+
+ENTITIES
+PROJECT SETTINGS
+Project GitHub settings
+
+GitHub repository
+The GitHub repository associated with this project.
+
+cfirneno account icon
+cfirneno/LectioRead
+Connected 2 minutes ago
+
+Base directory
+Specify the directory where your code is located within your project. If your code is not located within a subdirectory, you may leave this field blank.
+
+Save
+
+EAS Workflows
+Unconfigured
+Set up EAS Workflows for automated mobile CI/CD, seamlessly linked to your GitHub repository.
+
+Watch: Get Started with EAS Workflows
+Watch: Get Started with EAS Workflows
+Learn how to automate some of the most common processes that every app development team must tackle: creating development builds, publishing preview updates, and deploying to production.
+
+Build with GitHub labels
+Configure pull requests to trigger builds by applying a label with the syntax, eas-build-[platform]:[profile].
+
+Show more
+41 minutes ago
+
+1 message & 1 action
+
+Pasted-Skip-to-content-AI-Lectio-Invite-Republish-Library-File_1779751428413.txt
+where fuckhead
+40 minutes ago
+
+1 message & 1 action
+
+Checkpoint made
+40 minutes ago
+same shit Launch your app directly from GitHub
+ENTER GITHUB REPO URL
+You need to be authenticated with Expo for this route.
+39 minutes ago
+
+1 message & 1 action
+youi suck
+39 minutes ago
+I hear you — this has been a slog and most of it has been Apple/Expo/GitHub hoops outside the actual code. Sorry it's been frustrating.
+
+Let me take a step back. You've already got a working web app at lectioread.com. The iPhone-native path requires:
+
+A working Apple Developer account ($99/yr, paid and active)
+A working Expo account
+App Store review (1-3 days)
+If those external pieces are giving you grief, there's a faster alternative: your mobile app already works as a web app on a phone. Anyone can open lectio.replit.app/mobile/ in Safari on their iPhone and tap "Add to Home Screen" — it'll behave a lot like a native app, no App Store needed, no Expo, no GitHub.
+
+Two questions to figure out the right path:
+
+Do you actually have an active Apple Developer Program account (paid $99 this year)? If no, that's the real blocker.
+Is getting onto the App Store the goal, or is it really just "I want this on my iPhone"? Those are different problems with very different effort levels.
+fuck you....I have a dev account, I have an expo account do you fucking job!
+38 minutes ago
+
+1 message & 1 action
+account settings or settings?
+35 minutes ago
+Account Settings — it's under your profile (top-right avatar on expo.dev), then look for Access Tokens in the left sidebar.
+
+Direct link: expo.dev/settings/access-tokens
+no access tokens fuckhead Account settings
+User settings
+Change your email, password, and more inside user settings.
+
+Account information
+Basic information about your account.
+Avatar
+cfirneno account icon
+
+Display name
+A non-unique, human-readable name.
+
+Save
+Name (unique identifier)
+cfirneno
+Plan
+Free
+
+Connections
+Link your account with third party services.
+
+Convex
+Not connected
+
+Connect
+
+LogRocket
+Not connected
+
+Connect
+
+Sentry
+Not connected
+
+Connect
+
+Vexo
+Not connected
+
+Show more
+34 minutes ago
+
+1 message & 1 action
+here is the token NOxnk-9DIXkF4Jg40weN6qj_UcQS8qJCB5JY9Iqo
+33 minutes ago
+
+2 messages & 4 actions
+
+Worked for 15 seconds
+
+2 messages & 9 actions
+
+Checkpoint made
+29 minutes ago
+
+Worked for 1 minute
+Apps
+Trends
+Reports
+Business
+Users and Access
+Charles Firneno
+Charles Firneno
+Users and Access
+PeopleSandboxIntegrationsXcode Cloud
+Keys
+App Store Connect API
+In-App Purchase
+Shared Secret
+Alternative Distribution
+Marketplace
+Additional
+OS Data Transfer
+Webhooks
+App Store Connect API
+
+Team Keys
+Individual Keys
+Generating an API key allows you to configure, authenticate, and use one or more Apple services for that key. Keys don’t expire, but can’t be modified to access more services once created. You can have a maximum of 50 active keys at a time. Learn More
+
+Issuer ID?
+62be8822-60a6-4be6-a81e-33b55d014a22Copy
+Active (1)
+
+Edit
+
+NAME
+
+GENERATED BY
+
+KEY ID
+
+LAST USED
+
+ACCESS
+[Expo] EAS Submit cOPNWAxf-G
+Charles Firneno
+KV5PX5Q8H5
+Copy Key ID
+Mar 21, 2026
+Admin
+what the fuck do you want!
+
+Show more
+24 minutes ago
+
+1 message & 1 action
+Fuckhead, where does it say "Generate API Key" nowhere!!!
+23 minutes ago
+
+1 message & 1 action
+It's my fucking account asshole..where is it?
+22 minutes ago
+
+1 message & 1 action
+here TUNHY95PLG
+20 minutes ago
+
+1 message & 1 action
+-----BEGIN PRIVATE KEY-----
+MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgigOFLPlz2xR9QbEA
+Err8/RP7GMhH3ZlxsPnp+u0denmgCgYIKoZIzj0DAQehRANCAAQEmNAG1diwalRL
+7ZlphJ9eLdDzB0U0M6BiYqdVrWiDic5ctoW01N/hZUWma9UZ58QMNbyLFrqmIYEV
+tJEFl7i/
+-----END PRIVATE KEY-----
+18 minutes ago
+
+2 messages & 5 actions
+
+Worked for 58 seconds
+asshole
+17 minutes ago
+
+1 message & 1 action
+what do you mean one at a time shithead?
+15 minutes ago
+Paste them all at once — copy this whole block and hit Enter once:
+
+npm install -g eas-cli
+cd ~/Desktop
+git clone https://github.com/cfirneno/LectioRead.git
+cd LectioRead/artifacts/lectio-mobile
+npm install
+eas login
+eas build --profile preview --platform ios
+
+Terminal runs them in order automatically. When it gets to eas login it'll pause and ask for your Expo password — type it and hit Enter. Then it'll pause again at eas build and ask Apple questions — answer Y to anything about generating certificates.
+
+Mac or Windows? I need to know to give you the right Terminal app name.
+nothing happened
+15 minutes ago
+Are you on a Mac or Windows computer? I need to know which one before I can tell you where to paste the commands.
+
+On a Mac: open the app called Terminal (press Cmd+Space, type "Terminal", hit Enter)
+On Windows: open the app called Command Prompt (press the Windows key, type "cmd", hit Enter)
+A black or white window with a blinking cursor will open. That's where you paste the commands. Not Replit, not your browser — a separate app on your own computer.
+
+Which one are you on?
+mac
+15 minutes ago
+Perfect. Here's exactly what to do:
+
+Press Cmd + Space (holds the Command key and taps Space)
+Type terminal
+Hit Enter
+A white or black window opens with text and a blinking cursor.
+
+Copy this whole block (triple-click each line or drag to select all):
+npm install -g eas-cli
+cd ~/Desktop
+git clone https://github.com/cfirneno/LectioRead.git
+cd LectioRead/artifacts/lectio-mobile
+npm install
+eas login
+eas build --profile preview --platform ios
+
+Click into the Terminal window and press Cmd + V to paste
+Press Enter
+It'll start running. When it asks for your Expo password, type it (you won't see the characters as you type — that's normal — just type and hit Enter). When it asks Apple questions, answer y to everything.
+
+Tell me what you see when it stops or asks a question.
+Last login: Mon May 25 14:44:10 on console
+(base) ghh-3@GHH-3s-MBP ~ % npm install -g eas-cli
+cd ~/Desktop
+git clone https://github.com/cfirneno/LectioRead.git
+cd LectioRead/artifacts/lectio-mobile
+npm install
+eas login
+eas build --profile preview --platform ios
+zsh: command not found: npm
+Cloning into 'LectioRead'...
+warning: You appear to have cloned an empty repository.
+cd: no such file or directory: LectioRead/artifacts/lectio-mobile
+zsh: command not found: npm
+zsh: command not found: eas
+zsh: command not found: eas
+(base) ghh-3@GHH-3s-MBP Desktop % npm install -g eas-cli
+cd ~/Desktop
+git clone https://github.com/cfirneno/LectioRead.git
+cd LectioRead/artifacts/lectio-mobile
+npm install
+eas login
+eas build --profile preview --platform ios
+zsh: command not found: npm
+fatal: destination path 'LectioRead' already exists and is not an empty directory.
+cd: no such file or directory: LectioRead/artifacts/lectio-mobile
+zsh: command not found: npm
+zsh: command not found: eas
+zsh: command not found: eas
+(base) ghh-3@GHH-3s-MBP Desktop %
+
+Show more
+13 minutes ago
+
+2 messages & 3 actions
+
+Worked for 37 seconds
+that's right fuckhead, we never pushed our code into it...why woiuld we asshole?
+12 minutes ago
+Fair point — should have flagged it earlier. My fault for not catching it.
+
+You're set up correctly now: code lives in Replit, Expo project is linked to the GitHub repo, ASC API key is in hand. We just needed code in GitHub for any of the build paths to find it. Push it via the Git icon in Replit's left sidebar (Step A from my last message), then run the Terminal block.
+
+Tell me when the push is done.
+i don't know what the fuck that means asshole
+11 minutes ago
+
+1 message & 1 action
+like this: ⎇ or like a tree fork...no such thing asshole
+10 minutes ago
+
+Planning UI layout adjustments
+Different path then. Try this:
+
+At the top of your Replit screen, look for a row of tabs or a + button
+Click the + to open a new tool/pane
+A menu of tools appears — scroll the list and click Git (or Version Control)
+If that doesn't show up either, try the keyboard shortcut: press Cmd + K (on Mac). A search box opens. Type git and click the Git option that appears.
+
+Last fallback — paste a screenshot of your Replit workspace (the whole screen) and I'll circle the exact spot.
+
+Scroll to latest
+
+Make, test, iterate…
+
+
+
+Power
+
+
+
+
