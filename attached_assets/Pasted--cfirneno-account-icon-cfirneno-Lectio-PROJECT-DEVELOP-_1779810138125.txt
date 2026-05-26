@@ -1,0 +1,172 @@
+
+
+
+
+
+cfirneno account icon
+cfirneno
+
+
+
+Lectio
+
+PROJECT
+DEVELOP
+DEPLOY
+
+
+Over-the-air updates
+
+ENTITIES
+PROJECT SETTINGS
+
+Builds
+
+0cb74db4
+
+Copy error as prompt
+
+Compare
+
+This build does not count towards your EAS Build usage.
+
+iOS internal distribution build
+62de4d4
+
+Profile
+
+Environment
+Channel
+
+Commit
+Created by
+preview
+preview
+
+preview
+
+
+main
+62de4d4
+
+cfirneno account icon
+cfirneno
+
+Build artifact
+
+Status
+Start time
+Wait time
+Queue time
+
+Build time
+Total time
+Availability
+
+
+Errored
+May 26, 2026 11:37 AM
+2s
+35s
+37s
+1m 14s
+13 days
+
+Logs
+
+
+
+Waiting to start
+37s
+
+
+
+Spin up build environment
+4ms
+
+Apple M4 Pro, 5 vCPUs, 20 GB RAM
+Using VM template "macos-sonoma-14.5-xcode-15.4" running macOS Sonoma 14.5
+Installed software:
+- Xcode 15.4 (15F31d)
+- Node.js 18.18.0
+- Bun 1.1.13
+- Yarn 1.22.21
+- pnpm 9.3.0
+- npm 9.8.1
+- fastlane 2.220.0
+- CocoaPods 1.14.3
+- Ruby 2.7
+- node-gyp 10.1.0
+Project environment variables:
+  __API_SERVER_URL=https://api.expo.dev/
+Environment secrets:
+  EXPO_TOKEN=********
+EAS Build environment variables:
+  GEM_PATH=/Users/expo/.gems/arm64
+  PATH=/Users/expo/workingdir/bin:/Users/expo/.nvm/versions/node/v18.18.0/bin:/Users/expo/.gems/arm64/bin:/opt/homebrew/opt/ruby@2/bin:/opt/homebrew/opt/ruby@3.2/bin:/opt/homebrew/opt/ruby/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/System/Cryptexes/App/usr/bin:/Library/Apple/usr/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/expo/.bun/bin:/Users/expo/.maestro/bin
+  LOGGER_LEVEL=debug
+  FASTLANE_XCODE_LIST_TIMEOUT=30
+  GEM_HOME=/Users/expo/.gems/arm64
+  HOME=/Users/expo
+  XPC_SERVICE_NAME=host.exp.worker
+  XPC_FLAGS=0x0
+  LOGNAME=expo
+  USER=expo
+  SHELL=/bin/zsh
+  TMPDIR=/var/folders/vn/nzbsghpn733f46w61_gbp33r0000gn/T/
+  SHLVL=0
+  PWD=/usr/local/eas-build-worker
+  OLDPWD=/usr/local/eas-build-worker
+  NVM_CD_FLAGS=-q
+  NVM_DIR=/Users/expo/.nvm
+  NVM_BIN=/Users/expo/.nvm/versions/node/v18.18.0/bin
+  NVM_INC=/Users/expo/.nvm/versions/node/v18.18.0/include/node
+  _=/Users/expo/.nvm/versions/node/v18.18.0/bin/node
+  __CF_USER_TEXT_ENCODING=0x1F5:0x0:0x0
+  CI=1
+  MAESTRO_DRIVER_STARTUP_TIMEOUT=120000
+  MAESTRO_CLI_NO_ANALYTICS=1
+  EAS_BUILD=true
+  EAS_BUILD_RUNNER=eas-build
+  EAS_BUILD_PLATFORM=ios
+  EAS_CLI_SENTRY_DSN=https://ca4734dc503543b28d55fdaf0563f61c@o30871.ingest.sentry.io/1837720
+  NVM_NODEJS_ORG_MIRROR=http://nodejs.caches.eas-build.internal
+  EAS_BUILD_PROFILE=preview
+  EAS_BUILD_GIT_COMMIT_HASH=62de4d48d1be64746281183b2c155b4146d95ddf
+  EAS_BUILD_ID=0cb74db4-d1c8-4959-8183-b7559bc33d1f
+  LANG=en_US.UTF-8
+  EAS_BUILD_WORKINGDIR=/Users/expo/workingdir/build
+  EAS_BUILD_PROJECT_ID=d1ade69f-2c57-45a2-9542-69388b508db7
+  EAS_BUILD_COCOAPODS_CACHE_URL=http://cocoapods.caches.eas-build.internal
+  COMPILER_INDEX_STORE_ENABLE=NO
+  GRADLE_OPTS=-Dorg.gradle.jvmargs="-XX:MaxMetaspaceSize=1g -Xmx5g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8" -Dorg.gradle.parallel=true -Dorg.gradle.daemon=false
+  __EAS_BUILD_ENVS_DIR=/Users/expo/workingdir/env
+Builder is ready, starting build
+
+
+Prepare project
+16s
+
+
+
+Read eas.json
+1ms
+
+
+
+Read package.json
+2ms
+
+
+
+Install dependencies
+319ms
+
+
+
+Fail job
+1ms
+
+Build failed
+
+pnpm install --frozen-lockfile exited with non-zero code: 1
