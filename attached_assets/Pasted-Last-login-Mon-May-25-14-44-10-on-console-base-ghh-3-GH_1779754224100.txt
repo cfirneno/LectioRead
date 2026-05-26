@@ -1,0 +1,69 @@
+Last login: Mon May 25 14:44:10 on console
+(base) ghh-3@GHH-3s-MBP ~ % npm install -g eas-cli
+cd ~/Desktop
+git clone https://github.com/cfirneno/LectioRead.git
+cd LectioRead/artifacts/lectio-mobile
+npm install
+eas login
+eas build --profile preview --platform ios
+zsh: command not found: npm
+Cloning into 'LectioRead'...
+warning: You appear to have cloned an empty repository.
+cd: no such file or directory: LectioRead/artifacts/lectio-mobile
+zsh: command not found: npm
+zsh: command not found: eas
+zsh: command not found: eas
+(base) ghh-3@GHH-3s-MBP Desktop % npm install -g eas-cli
+cd ~/Desktop
+git clone https://github.com/cfirneno/LectioRead.git
+cd LectioRead/artifacts/lectio-mobile
+npm install
+eas login
+eas build --profile preview --platform ios
+zsh: command not found: npm
+fatal: destination path 'LectioRead' already exists and is not an empty directory.
+cd: no such file or directory: LectioRead/artifacts/lectio-mobile
+zsh: command not found: npm
+zsh: command not found: eas
+zsh: command not found: eas
+(base) ghh-3@GHH-3s-MBP Desktop % cd ~/Desktop
+rm -rf LectioRead
+git clone https://github.com/cfirneno/LectioRead.git
+cd LectioRead/artifacts/lectio-mobile
+npm install
+npx eas login
+npx eas build --profile preview --platform ios
+Cloning into 'LectioRead'...
+remote: Enumerating objects: 1070, done.
+remote: Counting objects: 100% (1070/1070), done.
+remote: Compressing objects: 100% (442/442), done.
+remote: Total 1070 (delta 602), reused 1070 (delta 602), pack-reused 0 (from 0)
+Receiving objects: 100% (1070/1070), 1.23 MiB | 13.25 MiB/s, done.
+Resolving deltas: 100% (602/602), done.
+zsh: command not found: npm
+zsh: command not found: npx
+zsh: command not found: npx
+(base) ghh-3@GHH-3s-MBP lectio-mobile % cd ~/Desktop
+rm -rf LectioRead
+git clone https://github.com/cfirneno/LectioRead.git
+cd LectioRead/artifacts/lectio-mobile
+npm install
+npx eas login
+npx eas build --profile preview --platform ios
+Cloning into 'LectioRead'...
+remote: Enumerating objects: 1070, done.
+remote: Counting objects: 100% (1070/1070), done.
+remote: Compressing objects: 100% (442/442), done.
+remote: Total 1070 (delta 602), reused 1070 (delta 602), pack-reused 0 (from 0)
+Receiving objects: 100% (1070/1070), 1.23 MiB | 11.34 MiB/s, done.
+Resolving deltas: 100% (602/602), done.
+zsh: command not found: npm
+zsh: command not found: npx
+zsh: command not found: npx
+(base) ghh-3@GHH-3s-MBP lectio-mobile % cd ~/Desktop
+rm -rf LectioRead
+git clone https://github.com/cfirneno/LectioRead.git
+cd LectioRead/artifacts/lectio-mobile
+npm install
+npx eas login
+npx eas build --profile preview --platform ios
