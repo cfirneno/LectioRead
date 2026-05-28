@@ -1,0 +1,2 @@
+- [EAS iOS credentials wall](eas-ios-credentials.md) — Apple Developer Portal sign-in requires real password + 2FA; app-specific passwords and ASC API keys alone are not enough.
+- [Corepack hijacks pnpm on Mac](mac-corepack-pnpm.md) — `npm install -g pnpm` works but `pnpm` command is intercepted by corepack; call `~/.npm-global/bin/pnpm` directly.

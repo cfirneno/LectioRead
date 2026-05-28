@@ -1,0 +1,181 @@
+
+
+
+
+
+cfirneno account icon
+cfirneno
+
+
+
+Lectio
+
+PROJECT
+DEVELOP
+DEPLOY
+
+
+Over-the-air updates
+
+ENTITIES
+PROJECT SETTINGS
+
+Builds
+
+83537e1f
+
+Compare
+
+iOS App Store build
+c51deb4 · Update project configuration with new package versions Adjust package versions and dependencies within the project configuration files. Replit-Commit-Author: Agent Replit-Commit-Session-Id: 39f98603-5f0b-471a-9a7c-3f1f65e1bfa2 Replit-Commit-Checkpoint-Type: full_checkpoint Replit-Commit-Event-Id: 1ed4b394-1930-4be9-affb-72a0412a6574 Replit-Commit-Screenshot-Url: https://storage.googleapis.com/screenshot-production-us-central1/96440aa6-a63e-4090-86d3-7a1266f35d5e/39f98603-5f0b-471a-9a7c-3f1f65e1bfa2/q81Seyl Replit-Helium-Checkpoint-Created: true
+
+Profile
+
+Environment
+SDK version
+Version
+Fingerprint
+Commit
+Created by
+production
+production
+54.0.0
+ 1.0.0 (3)
+
+2bd2591
+c51deb4
+
+cfirneno account icon
+cfirneno
+
+Build artifact
+
+Notify me
+
+
+
+Status: Build in progress
+Elapsed time:
+2m 41s
+
+Logs
+
+
+
+Waiting to start
+40s
+
+
+
+Spin up build environment
+5ms
+
+
+
+Prepare project
+875ms
+
+
+
+Pre-install hook
+2s
+
+
+
+Read eas.json
+1ms
+
+
+
+Read package.json
+1ms
+
+
+
+Install dependencies
+23s
+
+
+
+Read app config
+384ms
+
+
+
+Prepare credentials
+3s
+
+
+
+Prebuild
+4s
+
+
+
+Install pods
+30s
+
+
+
+Configure Xcode project
+76ms
+
+
+
+Bundle JavaScript
+14s
+
+
+
+Run fastlane
+36s
+› Executing react-native Pods/React-RCTFBReactNativeSpec » [CP-User] [RN]Check FBReactNativeSpec
+› Executing @workspace/lectio-mobile Pods/ReactCodegen » [CP-User] Generate Specs
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » safeareacontextJSI-generated.cpp
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » safeareacontext-generated.mm
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » rnworkletsJSI-generated.cpp
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » rnworklets-generated.mm
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » rnsvgJSI-generated.cpp
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » rnsvg-generated.mm
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » rnscreensJSI-generated.cpp
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » rnscreens-generated.mm
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » rnreanimatedJSI-generated.cpp
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » rnreanimated-generated.mm
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » rngesturehandler_codegenJSI-generated.cpp
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » rngesturehandler_codegen-generated.mm
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » rnasyncstorageJSI-generated.cpp
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » rnasyncstorage-generated.mm
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » reactnativekeyboardcontrollerJSI-generated.cpp
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » reactnativekeyboardcontroller-generated.mm
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » States.cpp
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » States.cpp
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » States.cpp
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » States.cpp
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » States.cpp
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » ShadowNodes.cpp
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » ShadowNodes.cpp
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » ShadowNodes.cpp
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » ShadowNodes.cpp
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » ShadowNodes.cpp
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » RCTUnstableModulesRequiringMainQueueSetupProvider.mm
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » RCTThirdPartyComponentsProvider.mm
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » RCTModulesConformingToProtocolsProvider.mm
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » RCTModuleProviders.mm
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » Props.cpp
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » Props.cpp
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » Props.cpp
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » Props.cpp
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » Props.cpp
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » EventEmitters.cpp
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » EventEmitters.cpp
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » EventEmitters.cpp
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » EventEmitters.cpp
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » EventEmitters.cpp
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » ComponentDescriptors.cpp
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » ComponentDescriptors.cpp
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » ComponentDescriptors.cpp
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » ComponentDescriptors.cpp
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » ComponentDescriptors.cpp
+› Compiling @workspace/lectio-mobile Pods/ReactCodegen » ReactCodegen-dummy.m
+› Compiling react-native-safe-area-context Pods/react-native-safe-area-context » RNCSafeAreaViewState.cpp
+› Compiling react-native-safe-area-context Pods/react-native-safe-area-context » RNCSafeAreaViewShadowNode.cpp
