@@ -1,0 +1,139 @@
+
+
+
+
+
+cfirneno account icon
+cfirneno
+
+
+
+Lectio
+
+PROJECT
+DEVELOP
+DEPLOY
+
+
+Over-the-air updates
+
+ENTITIES
+PROJECT SETTINGS
+
+Builds
+
+b1096cd4
+
+Copy error as prompt
+
+Compare
+
+iOS internal distribution build
+c51deb4
+
+Profile
+
+Environment
+Channel
+
+Commit
+Created by
+preview
+preview
+
+preview
+
+
+main
+c51deb4
+
+cfirneno account icon
+cfirneno
+
+Build artifact
+
+Status
+Start time
+Wait time
+Queue time
+
+Build time
+Total time
+Availability
+
+
+Errored
+May 28, 2026 8:00 AM
+1s
+33s
+1m 3s
+1m 39s
+13 days
+
+Logs
+
+
+
+Waiting to start
+35s
+
+
+
+Spin up build environment
+4ms
+
+
+
+Prepare project
+15s
+
+
+
+Pre-install hook
+794ms
+
+
+
+Read eas.json
+0ms
+
+
+
+Read package.json
+1ms
+
+
+
+Install dependencies
+20s
+
+
+
+Read app config
+279ms
+
+
+
+Resolve build configuration
+4s
+
+Found eas-cli in your project dependencies.
+It's recommended to use the "cli.version" field in eas.json to enforce the eas-cli version for your project.
+Learn more: https://github.com/expo/eas-cli#enforcing-eas-cli-version-for-your-project
+Resolved "preview" environment for the build. Learn more: https://docs.expo.dev/eas/environment-variables/#setting-the-environment-for-your-builds
+No environment variables with visibility "Plain text" and "Sensitive" found for the "preview" environment on EAS.
+The build profile "preview" has specified the channel "preview", but the "expo-updates" package hasn't been installed. To use channels for your builds, install the "expo-updates" package by running "npx expo install expo-updates" followed by "eas update:configure".
+ios.buildNumber field in app config is ignored when version source is set to remote, but this value will still be in the manifest available via expo-constants. It's recommended to remove this value from app config.
+✔ Using remote iOS credentials (Expo server)
+Failed to set up credentials.
+You're in non-interactive mode. EAS CLI couldn't find any credentials suitable for internal distribution. Run this command again in interactive mode.
+Error: build:internal command failed.
+Failed to run eas build:internal
+
+
+Fail job
+1ms
+
+Build failed
+
+Failed to run eas build:internal
