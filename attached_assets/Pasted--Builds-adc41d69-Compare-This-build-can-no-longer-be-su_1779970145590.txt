@@ -1,0 +1,130 @@
+
+
+
+
+
+
+
+Builds
+
+adc41d69
+
+Compare
+
+This build can no longer be submitted to the App Store
+Starting April 28, 2026, Apple requires apps submitted to the App Store to be built with Xcode 26 or newer. This build used Xcode 15. Rebuild on a newer EAS Build image to submit. Learn more.
+
+iOS App Store build
+c51deb4
+
+Profile
+
+Environment
+Channel
+
+Commit
+Created by
+production
+production
+
+production
+
+main
+c51deb4
+
+cfirneno account icon
+cfirneno
+
+Build artifact
+
+Status
+Start time
+Wait time
+Queue time
+
+Build time
+Total time
+Availability
+
+
+Errored
+May 28, 2026 8:05 AM
+3s
+32s
+1m 3s
+1m 39s
+29 days
+
+Logs
+
+
+
+Waiting to start
+36s
+
+
+
+Spin up build environment
+3ms
+
+
+
+Prepare project
+15s
+
+
+
+Pre-install hook
+804ms
+
+
+
+Read eas.json
+2ms
+
+
+
+Read package.json
+1ms
+
+
+
+Install dependencies
+19s
+
+
+
+Read app config
+285ms
+
+
+
+Resolve build configuration
+4s
+
+Found eas-cli in your project dependencies.
+It's recommended to use the "cli.version" field in eas.json to enforce the eas-cli version for your project.
+Learn more: https://github.com/expo/eas-cli#enforcing-eas-cli-version-for-your-project
+⚠️ Detected that your app uses Expo Go for development, this is not recommended when building production apps.
+Learn more: https://expo.fyi/why-not-build-expo-go-for-production
+To suppress this warning, set EAS_BUILD_NO_EXPO_GO_WARNING=true.
+Resolved "production" environment for the build. Learn more: https://docs.expo.dev/eas/environment-variables/#setting-the-environment-for-your-builds
+No environment variables with visibility "Plain text" and "Sensitive" found for the "production" environment on EAS.
+- Incrementing buildNumber from 1 to 2.
+✔ Incremented buildNumber from 1 to 2.
+The build profile "production" has specified the channel "production", but the "expo-updates" package hasn't been installed. To use channels for your builds, install the "expo-updates" package by running "npx expo install expo-updates" followed by "eas update:configure".
+ios.buildNumber field in app config is ignored when version source is set to remote, but this value will still be in the manifest available via expo-constants. It's recommended to remove this value from app config.
+✔ Using remote iOS credentials (Expo server)
+Distribution Certificate is not validated for non-interactive builds.
+Failed to set up credentials.
+Credentials are not set up. Run this command again in interactive mode.
+Error: build:internal command failed.
+Failed to run eas build:internal
+
+
+Fail job
+1ms
+
+Build failed
+
+Failed to run eas build:internal
