@@ -1,0 +1,868 @@
+Skip to content
+
+AI
+
+Lectio
+
+
+Invite
+
+Republish
+
+
+
+
+
+
+Library
+
+File tree
+Search
+
+New
+Apps
+Lectio Mobile
+Mobile
+
+Lectio — Foreign Language Reader
+Lectio — Foreign Language Reader
+Website
+
+Images
+lectio app icon
+lectio app icon
+Image
+
+
+Agent
+4
+
+main
+
+
+Remote Updates
+cfirneno/LectioRead
+origin/main•upstream
+last fetched just now
+
+
+Sync Changes
+
+Pull
+
+Push
+Commit
+There are no changes to commit.
+Published your App
+
+
+
+Show previous messages
+
+Pasted-What-I-found-1-Main-non-www-domain-loads-https-lectiore_1779806699888.txt
+comments from ChatGBT...adress them
+
+1 day ago
+
+1 message & 10 actions
+
+Checkpoint made
+1 day ago
+
+Worked for 48 seconds
+what host name and record and "type"
+
+1 day ago
+
+1 message & 1 action
+It is asking for the "Record", what is it?
+
+1 day ago
+
+1 message & 1 action
+
+Pasted-Skip-to-content-AI-Lectio-Invite-Republish-Library-File_1779806976718.txt
+are you blind, it want the "Record"
+
+1 day ago
+
+1 message & 1 action
+
+Checkpoint made
+1 day ago
+ok I addded it, what now?
+
+1 day ago
+Now wait. DNS changes take 5-15 minutes to spread across the internet (sometimes up to an hour).
+
+To check if it's working:
+
+Open a new browser tab
+Go to https://www.lectioread.com
+If it loads your site (instead of a 502 error), it worked
+While you wait, republish your app so the SEO fixes I made earlier go live:
+
+Click the Republish button (top right of Replit)
+Confirm
+Wait ~1-2 min for it to finish
+After republishing, your site will have:
+
+Proper search/social previews when shared
+Better Google indexing
+A sitemap for search engines
+That covers everything from the ChatGPT review except the password change (you have to do that yourself by signing in and going to your account settings).
+
+Anything else you want to tackle?
+
+https://www.lectioread.com doesn't open
+
+1 day ago
+
+1 message & 5 actions
+
+Worked for 17 seconds
+can you check it?
+
+1 day ago
+
+1 message & 5 actions
+
+Worked for 19 seconds
+can yoiu check on the status of the Iphone app version?
+
+1 day ago
+
+1 message & 5 actions
+
+Worked for 26 seconds
+it says "No builds found for the selected filters
+
+1 day ago
+
+1 message & 1 action
+it says "Build from GitHub
+
+1 day ago
+That's the right screen. Click Build from GitHub.
+
+It'll then ask you to:
+
+Authorize Expo to access your GitHub (popup) — click Authorize
+Pick the repository: cfirneno/LectioRead
+Pick the branch: main
+Set Base directory: artifacts/lectio-mobile
+Pick Build profile: preview
+Pick Platform: iOS
+Click Create build (or Start build)
+Then it'll prompt for Apple sign-in — use your Apple Developer ID, approve any 2FA code on your iPhone, click through.
+
+Tell me what shows up next.
+
+i hit confirm...it's spinning
+
+1 day ago
+Good — that means it accepted everything and is queuing the build. Spinning is normal at this stage.
+
+What happens next (over the next 15-25 minutes):
+
+"Queued" status — waiting for a build machine (usually 1-5 min)
+"In progress" — actually building (10-20 min). You'll see live logs scroll if you watch
+"Finished" ✓ — success, with an "Install" button and QR code
+If it asks for Apple credentials mid-way (it might), it'll pause and show a prompt — sign in with your Apple Developer Apple ID, approve the 2FA code on your iPhone.
+
+You don't have to babysit it — close the tab and come back later. Expo will email you when it finishes (success or fail).
+
+When it's done, on your iPhone:
+
+Open the email Expo sends, OR scan the QR code on the build page
+Tap Install
+iOS may say "Untrusted Developer" — go to Settings → General → VPN & Device Management → tap your dev profile → Trust
+App appears on your home screen
+Tell me when it finishes or if it pauses asking for anything.
+
+did we load our code into github earlier in this build?
+
+1 day ago
+
+1 message & 3 actions
+
+Worked for 15 seconds
+how long will this pin for?
+
+1 day ago
+The "spinning" icon stays until the build either finishes or fails — typically 15-25 minutes total from when you clicked Confirm.
+
+Rough timeline:
+
+0-5 min: Queued (waiting for a build machine)
+5-20 min: Building (compiling, signing)
+20-25 min: Finished — you'll see a green ✓ and an "Install" button
+You can close the tab and walk away. Expo will email you (at your Expo account email) when it's done, success or fail. You can also come back to expo.dev → your Lectio project → Builds anytime to see live status.
+
+If it pauses and asks for your Apple Developer login, it'll just sit there waiting — that's the only thing that would make it take longer than 25 min.
+
+is this done?
+Builds
+
+Build from GitHub
+Platform
+
+iOS
+
+Channel
+
+All
+
+Runtime
+
+All
+
+Profile
+
+All
+
+Mode
+
+All
+
+Reset Filters
+Build
+Git ref
+Profile
+
+Runtime
+Channel
+Created by
+
+iOS internal distribution build
+
+less than a minute ago
+
+main
+62de4d4
+preview
+None
+
+preview
+cfirneno account icon
+cfirneno
+
+
+Show more
+1 day ago
+
+1 message & 1 action
+
+Pasted--cfirneno-account-icon-cfirneno-Lectio-PROJECT-DEVELOP-_1779810024518.txt
+here's where we're at:
+
+1 day ago
+
+2 messages & 15 actions
+
+Checkpoint made
+1 day ago
+
+Worked for 1 minute
+
+Pasted--cfirneno-account-icon-cfirneno-Lectio-PROJECT-DEVELOP-_1779810138125.txt
+1 day ago
+
+1 message & 1 action
+
+Checkpoint made
+1 day ago
+install dependencies
+319ms
+
+We detected that 'artifacts/lectio-mobile' is a pnpm workspace
+Running "pnpm install --frozen-lockfile" in /Users/expo/workingdir/build directory
+Scope: all 12 workspace projects
+ERR_PNPM_LOCKFILE_CONFIG_MISMATCH  Cannot proceed with the frozen installation. The current "overrides" configuration doesn't match the value found in the lockfile
+Update your lockfile using "pnpm install --no-frozen-lockfile"
+pnpm install --frozen-lockfile exited with non-zero code: 1
+
+1 day ago
+
+2 messages & 13 actions
+
+Checkpoint made
+1 day ago
+
+Worked for 2 minutes
+where is this: Replit Git panel → Sync Changes
+
+1 day ago
+Look at the left sidebar of your Replit window. You'll see a column of icons. Find the one that looks like a branching tree (three dots connected by lines) — that's the Git icon. Click it.
+
+A panel opens showing:
+
+A list of changed files at the top
+A text box for a commit message
+A button labeled Commit & Push (or Sync, Push, or similar)
+Type anything in the message box (e.g. fix build) and click that button.
+
+If you don't see a Git icon in the sidebar:
+
+Click the + (Add Tab) at the top of the workspace
+Type "Git" in the search → open it
+Tell me what you see when you open it.
+
+ok, synced, now what?
+
+1 day ago
+Now go to expo.dev in your browser:
+
+Open your Lectio project page
+Click Builds in the left sidebar
+Click Build from GitHub (top right)
+Same settings as before:
+Platform: iOS
+Profile: preview
+Branch: main
+Base directory: artifacts/lectio-mobile
+Click Create Build
+Then wait — first part (queue + spin up) takes ~1-2 min, then the install step. Paste whatever happens next.
+
+by profile do you mean the EAS Build Profile?
+
+1 day ago
+Yes — EAS Build Profile. Set it to preview.
+
+iOS internal distribution build
+
+less than a minute ago
+
+main
+bd797c1
+preview
+None
+
+preview
+cfirneno account icon
+cfirneno
+
+1 day ago
+Build is queued (commit bd797c1 — has my fix). Wait for it to progress through:
+
+Waiting to start
+Spin up build environment (~30s)
+Prepare project
+Install dependencies ← this is where it failed before
+Run fastlane / build IPA (~15-25 min if it gets past install)
+Paste whatever shows up next, especially if anything turns red.
+
+does this look right?
+
+cfirneno account icon
+cfirneno
+
+Lectio
+
+PROJECT
+DEVELOP
+DEPLOY
+
+Over-the-air updates
+
+ENTITIES
+PROJECT SETTINGS
+
+Builds
+
+Build from GitHub
+Platform
+
+iOS
+
+Channel
+
+All
+
+Runtime
+
+All
+
+Profile
+
+All
+
+Mode
+
+All
+
+Reset Filters
+Build
+Git ref
+Profile
+
+Runtime
+Channel
+Created by
+
+iOS internal distribution build
+
+1 minute ago
+
+main
+bd797c1
+preview
+None
+
+preview
+cfirneno account icon
+cfirneno
+
+iOS internal distribution build
+
+14 minutes ago
+
+37s
+
+main
+62de4d4
+preview
+None
+
+preview
+cfirneno account icon
+cfirneno
+
+iOS internal distribution build
+
+18 minutes ago
+
+37s
+
+main
+62de4d4
+preview
+None
+
+preview
+cfirneno account icon
+cfirneno
+
+
+Show more
+1 day ago
+Yes — top row is your new build (commit bd797c1, 1 min ago, still running, no time shown yet because it hasn't finished).
+
+Click on it to open the build detail page. Watch the steps the same as before. Paste back what happens at "Install dependencies."
+
+another error
+
+cfirneno account icon
+cfirneno
+
+Lectio
+
+PROJECT
+DEVELOP
+DEPLOY
+
+Over-the-air updates
+
+ENTITIES
+PROJECT SETTINGS
+
+Builds
+
+118577f4
+
+Copy error as prompt
+
+Compare
+
+This build does not count towards your EAS Build usage.
+
+iOS internal distribution build
+bd797c1
+
+Profile
+
+Environment
+Channel
+
+Commit
+Created by
+preview
+preview
+
+preview
+
+main
+bd797c1
+
+cfirneno account icon
+cfirneno
+
+Build artifact
+
+Status
+Start time
+Wait time
+Queue time
+
+Build time
+Total time
+Availability
+
+Errored
+May 26, 2026 11:51 AM
+3s
+34s
+39s
+1m 17s
+13 days
+
+Logs
+
+Waiting to start
+37s
+
+Spin up build environment
+7ms
+
+Prepare project
+18s
+
+Pre-install hook
+727ms
+
+Fail job
+1ms
+
+Build failed
+
+pnpm run eas-build-pre-install exited with non-zero code: 1
+
+
+Show more
+1 day ago
+
+2 messages & 2 actions
+
+Checkpoint made
+1 day ago
+
+Worked for 12 seconds
+Script 'eas-build-pre-install' is present in package.json, running it...
+
+@workspace/lectio-mobile@0.0.0 eas-build-pre-install /Users/expo/workingdir/build/artifacts/lectio-mobile
+cd ../.. && corepack enable && pnpm install --frozen-lockfile
+node:internal/errors:496
+ErrorCaptureStackTrace(err);
+^
+TypeError [ERR_VM_DYNAMIC_IMPORT_CALLBACK_MISSING]: A dynamic import callback was not specified.
+at new NodeError (node:internal/errors:405:5)
+at importModuleDynamicallyCallback (node:internal/process/esm_loader:40:9)
+at Object.<anonymous> (/Users/expo/.cache/node/corepack/pnpm/11.3.0/bin/pnpm.cjs:3:1)
+at Module2._compile (/Users/expo/.nvm/versions/node/v18.18.0/lib/node_modules/corepack/dist/lib/corepack.cjs:36246:34)
+at Module._extensions..js (node:internal/modules/cjs/loader:1310:10)
+at Module.load (node:internal/modules/cjs/loader:1119:32)
+at Module._load (node:internal/modules/cjs/loader:960:12)
+at executeUserEntryPoint (node:internal/modules/run_main:86:12)
+at process.processTicksAndRejections (node:internal/process/task_queues:81:21) {
+code: 'ERR_VM_DYNAMIC_IMPORT_CALLBACK_MISSING'
+}
+Node.js v18.18.0
+ELIFECYCLE  Command failed with exit code 1.
+WARN  Local package.json exists, but node_modules missing, did you mean to install?
+pnpm run eas-build-pre-install exited with non-zero code: 1
+
+
+Show more
+1 day ago
+
+1 message & 1 action
+are these the right settings?
+Configure credentials before building
+You don't have any iOS build credentials stored in EAS for this app. Without sufficient credentials, this build will fail. You can configure credentials by running credentials, this build will fail. You can configure credentials by running eas build in your terminal, using the credentials settings page, or configuring local credentials accessible to your GitHub repo.
+GitHub Repository
+cfirneno account icon
+cfirneno/LectioRead
+Connected about 17 hours ago
+
+Base directory
+Specify the directory where your code is located within your project. If your code is not located within a subdirectory, you may leave this field blank.
+
+Platform
+
+All
+
+Android
+
+iOS
+Git ref
+Commit hash, branch, or tag.
+
+EAS Build profile
+
+Environment
+
+Default
+
+Production
+
+Development
+
+Preview
+EAS Submit
+EAS Submit profile
+
+
+Show more
+1 day ago
+
+1 message & 1 action
+Lectio
+
+cfirneno/LectioRead
+
+Build from GitHub
+
+Details
+
+Overview
+
+Activity
+
+cfirneno account icon
+cfirneno
+created an iOS build
+·
+May 26, 2026 12:57 PM
+Build
+
+iOS App Store build
+Git ref:
+main
+Profile:
+production
+
+production
+
+cfirneno account icon
+cfirneno
+created an Android build
+·
+May 26, 2026 12:57 PM
+Build
+
+Android Play Store build
+Git ref:
+main
+Profile:
+production
+
+production
+
+cfirneno account icon
+cfirneno
+created an iOS build
+·
+May 26, 2026 11:56 AM
+Build
+
+iOS internal distribution build
+Git ref:
+main
+Profile:
+
+
+Show more
+1 day ago
+
+1 message & 1 action
+Is this right Builds
+
+Build from GitHub
+Platform
+
+iOS
+
+Channel
+
+preview
+
+Runtime
+
+All
+
+Profile
+
+preview
+
+Mode
+
+Build
+
+Reset Filters
+
+
+Show more
+1 day ago
+
+1 message & 1 action
+But they all failed
+
+1 day ago
+
+1 message & 1 action
+We detected that 'artifacts/lectio-mobile' is a pnpm workspace
+Running "pnpm install --frozen-lockfile" in /Users/expo/workingdir/build directory
+Scope: all 12 workspace projects
+ERR_PNPM_LOCKFILE_CONFIG_MISMATCH  Cannot proceed with the frozen installation. The current "overrides" configuration doesn't match the value found in the lockfile
+
+Update your lockfile using "pnpm install --no-frozen-lockfile"
+
+1 day ago
+
+2 messages & 5 actions
+
+Checkpoint made
+1 day ago
+
+Worked for 56 seconds
+
+Published your app
+1 day ago
+what's up with the Iphone app?
+
+4 minutes ago
+
+1 message & 1 action
+I just synced again...its a waste of time
+
+3 minutes ago
+I hear you. One more retry with the synced fix — go to expo.dev → Builds → Build from GitHub → iOS / Preview / artifacts/lectio-mobile / main.
+
+If install fails again with the same lockfile error, I'm switching strategy: I'll have you use npm or rip the workspace setup out of the mobile app entirely so it can install standalone, no monorepo gymnastics. But let's see this one first since the lockfile + pnpm pin are now both in.
+
+Tell me what the new build does.
+
+same shit
+
+cfirneno account icon
+cfirneno
+
+Lectio
+
+PROJECT
+DEVELOP
+DEPLOY
+
+Over-the-air updates
+
+ENTITIES
+PROJECT SETTINGS
+
+Builds
+
+e576cc33
+
+Copy error as prompt
+
+Compare
+
+This build does not count towards your EAS Build usage.
+
+This build can no longer be submitted to the App Store
+Starting April 28, 2026, Apple requires apps submitted to the App Store to be built with Xcode 26 or newer. This build used Xcode 15. Rebuild on a newer EAS Build image to submit. Learn more.
+
+iOS App Store build
+56b3b56
+
+Profile
+
+Environment
+Channel
+
+Commit
+Created by
+production
+production
+
+production
+
+main
+56b3b56
+
+cfirneno account icon
+cfirneno
+
+Build artifact
+
+Status
+Start time
+Wait time
+Queue time
+
+Build time
+Total time
+Availability
+
+Errored
+May 26, 2026 12:57 PM
+312ms
+35s
+42s
+1m 18s
+28 days
+
+Logs
+
+Waiting to start
+36s
+
+Spin up build environment
+5ms
+
+Prepare project
+19s
+
+Read eas.json
+2ms
+
+Read package.json
+4ms
+
+Install dependencies
+339ms
+
+Fail job
+0ms
+
+Build failed
+
+pnpm install --frozen-lockfile exited with non-zero code: 1
+
+
+Show more
+1 minute ago
+
+Clarifying build context and sync status
+Look at the build header: commit 56b3b56 — that's an old commit. My latest fix is 87e9cb7. The sync didn't push my new commit, OR you triggered the build before the sync finished.
+
+Also, that's an App Store / production build, not Preview. We want Preview.
+
+Do this carefully:
+
+Replit Git panel — does it still show pending changes to sync? If yes, click Sync again and wait until the changes list is fully empty.
+Once empty, on expo.dev → Build from GitHub → set Git ref: 87e9cb7 explicitly (so we know we're building the right commit) → Profile: Preview (not production) → Base directory artifacts/lectio-mobile → iOS.
+Submit.
+Confirm the git ref shows 87e9cb7 before clicking create. That commit has the pnpm pin + regenerated lockfile.
+
+
+Scroll to latest
+
+Make, test, iterate…
+
+
+
+Power
+
+
+
+Loading... - Replit
