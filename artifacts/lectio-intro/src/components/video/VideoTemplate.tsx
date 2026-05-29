@@ -61,7 +61,7 @@ export default function VideoTemplate({
   muted?: boolean;
   onSceneChange?: (sceneKey: string) => void;
 } = {}) {
-  const { currentSceneKey } = useVideoPlayer({ durations, loop });
+  const { currentSceneKey, hasEnded } = useVideoPlayer({ durations, loop });
 
   useEffect(() => {
     onSceneChange?.(currentSceneKey);
@@ -102,6 +102,28 @@ export default function VideoTemplate({
       <AnimatePresence mode="popLayout">
         {SceneComponent && <SceneComponent key={currentSceneKey} />}
       </AnimatePresence>
+
+      {hasEnded && !loop && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, ease: 'easeOut' }}
+          className="absolute inset-0 z-40 flex flex-col items-center justify-center gap-6 bg-black/75 px-6 text-center backdrop-blur-sm"
+        >
+          <p className="font-serif text-2xl md:text-3xl text-white/90 max-w-xl leading-snug">
+            That's the introduction. Continue in the reading room for the rest of the lesson.
+          </p>
+          <a
+            href="/app/continue"
+            target="_top"
+            rel="noopener"
+            className="inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 font-serif text-lg font-semibold text-black transition-transform hover:scale-105"
+          >
+            Continue in the reading room
+            <span aria-hidden="true">→</span>
+          </a>
+        </motion.div>
+      )}
 
       <audio
         ref={audioRef}
