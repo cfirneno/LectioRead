@@ -1,21 +1,8 @@
 import { Link } from "wouter";
-import { BookOpen, ArrowLeft } from "lucide-react";
+import { BookOpen, ArrowLeft, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-const VIDEOS = [
-  {
-    title: "The Aeneid — Opening",
-    description:
-      "Meet Virgil's epic. The host sets the scene, then reads the opening lines aloud with a word-by-word translation.",
-    src: "/lectio-intro/",
-  },
-  {
-    title: "The Laocoön Warning",
-    description:
-      'Trust no Trojan horse. A short tale from Book 2, ending with "Equo ne credite, Teucri" read aloud and broken down word by word.',
-    src: "/lectio-laocoon/",
-  },
-];
+import { Card, CardContent } from "@/components/ui/card";
+import { VIDEOS } from "@/lib/videos";
 
 export default function Videos() {
   return (
@@ -37,7 +24,7 @@ export default function Videos() {
         </div>
       </header>
 
-      <main className="container max-w-3xl mx-auto px-4 py-10 space-y-12">
+      <main className="container max-w-4xl mx-auto px-4 py-10 space-y-10">
         <section className="text-center max-w-2xl mx-auto space-y-3">
           <h1 className="text-4xl md:text-5xl font-serif font-semibold text-primary tracking-tight">
             Watch & Listen
@@ -48,24 +35,24 @@ export default function Videos() {
           </p>
         </section>
 
-        <section className="space-y-12">
+        <section className="grid gap-5 sm:grid-cols-2">
           {VIDEOS.map((video) => (
-            <article key={video.src} className="space-y-3">
-              <div className="space-y-1">
-                <h2 className="text-2xl font-serif font-semibold text-foreground">{video.title}</h2>
-                <p className="text-muted-foreground">{video.description}</p>
-              </div>
-              <div className="overflow-hidden rounded-xl border border-border/60 bg-black shadow-sm">
-                <div className="aspect-video w-full">
-                  <iframe
-                    src={video.src}
-                    title={video.title}
-                    className="h-full w-full border-0"
-                    allow="autoplay; fullscreen"
-                  />
+            <Link key={video.slug} href={`/app/videos/${video.slug}`}>
+              <Card className="group cursor-pointer overflow-hidden border-border/60 transition-colors hover:border-primary/50">
+                <div className="relative flex aspect-video items-center justify-center bg-gradient-to-br from-primary/15 via-background to-background">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/90 text-primary-foreground shadow-md transition-transform group-hover:scale-110">
+                    <Play className="h-6 w-6 translate-x-0.5 fill-current" />
+                  </div>
                 </div>
-              </div>
-            </article>
+                <CardContent className="space-y-1 p-4">
+                  <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                    {video.subtitle}
+                  </p>
+                  <h2 className="font-serif text-xl font-semibold text-foreground">{video.title}</h2>
+                  <p className="text-sm text-muted-foreground line-clamp-2">{video.description}</p>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </section>
       </main>

@@ -13,6 +13,7 @@ import Vocabulary from "@/pages/vocabulary";
 import Flashcards from "@/pages/flashcards";
 import Review from "@/pages/review";
 import Videos from "@/pages/videos";
+import VideoWatch from "@/pages/video-watch";
 import Subscribe from "@/pages/subscribe";
 import CheckoutSuccess from "@/pages/checkout-success";
 import { Loader2 } from "lucide-react";
@@ -109,6 +110,11 @@ function Router() {
       <Route path="/app/videos">
         <RequireSubscription>
           <Videos />
+        </RequireSubscription>
+      </Route>
+      <Route path="/app/videos/:slug">
+        <RequireSubscription>
+          <VideoWatch />
         </RequireSubscription>
       </Route>
       <Route path="/texts/:textId/read/:index">
