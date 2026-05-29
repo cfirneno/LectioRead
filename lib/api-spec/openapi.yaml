@@ -324,6 +324,32 @@ paths:
         "404":
           description: Not found
 
+  /texts/{textId}/paragraphs/{index}/audio:
+    post:
+      operationId: getParagraphAudio
+      tags: [paragraphs]
+      summary: Generate or retrieve spoken audio of a paragraph in its original language
+      parameters:
+        - name: textId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: index
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Spoken audio of the paragraph
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ParagraphAudio"
+        "404":
+          description: Not found
+
   /texts/{textId}/stats:
     get:
       operationId: getTextStats
@@ -796,6 +822,17 @@ components:
         originalText:
           type: string
         scannedText:
+          type: string
+
+    ParagraphAudio:
+      type: object
+      required: [paragraphId, format, audioBase64]
+      properties:
+        paragraphId:
+          type: integer
+        format:
+          type: string
+        audioBase64:
           type: string
 
     Progress:

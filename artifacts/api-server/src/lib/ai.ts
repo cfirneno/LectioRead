@@ -1,4 +1,5 @@
 import { openai } from "@workspace/integrations-openai-ai-server";
+import { textToSpeech } from "@workspace/integrations-openai-ai-server/audio";
 
 export interface InterlinearWord {
   original: string;
@@ -448,4 +449,16 @@ Rules:
   });
 
   return { paragraphText: originalText, questions: cleaned };
+}
+
+/**
+ * Generate spoken audio of a paragraph in its original language.
+ * Returns base64-encoded MP3 so it can be cached as text and played in the browser.
+ */
+export async function generateSpeech(originalText: string): Promise<string> {
+  const audioBuffer = await textToSpeech(originalText, "alloy", "mp3");
+  if (!audioBuffer || audioBuffer.length === 0) {
+    throw new Error("No audio returned from text-to-speech");
+  }
+  return audioBuffer.toString("base64");
 }

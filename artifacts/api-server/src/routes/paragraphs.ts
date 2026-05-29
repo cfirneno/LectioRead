@@ -7,11 +7,13 @@ import {
   GetInterlinearTranslationParams,
   GetFullTranslationParams,
   GetScansionParams,
+  GetParagraphAudioParams,
 } from "@workspace/api-zod";
 import {
   generateInterlinearTranslation,
   generateFullTranslation,
   generateScansion,
+  generateSpeech,
 } from "../lib/ai";
 import { requireSubscribedUser, type AuthedRequest } from "../lib/subscriptionGuard";
 import { beginForeground } from "../lib/foregroundGate";
@@ -310,6 +312,60 @@ router.post(
       paragraphId: paragraph.id,
       originalText: paragraph.originalText,
       scannedText,
+    });
+  }
+);
+
+router.post(
+  "/texts/:textId/paragraphs/:index/audio",
+  async (req, res): Promise<void> => {
+    const params = GetParagraphAudioParams.safeParse(req.params);
+    if (!params.success) {
+      res.status(400).json({ error: params.error.message });
+      return;
+    }
+
+    const [paragraph] = await db
+      .select()
+      .from(paragraphsTable)
+      .where(
+        and(
+          eq(paragraphsTable.textId, params.data.textId),
+          eq(paragraphsTable.index, params.data.index)
+        )
+      );
+
+    if (!paragraph) {
+      res.status(404).json({ error: "Paragraph not found" });
+      return;
+    }
+
+    if (paragraph.audio) {
+      res.json({
+        paragraphId: paragraph.id,
+        format: "mp3",
+        audioBase64: paragraph.audio,
+      });
+      return;
+    }
+
+    const releaseForeground = beginForeground();
+    let audioBase64: string;
+    try {
+      audioBase64 = await generateSpeech(paragraph.originalText);
+    } finally {
+      releaseForeground();
+    }
+
+    await db
+      .update(paragraphsTable)
+      .set({ audio: audioBase64 })
+      .where(eq(paragraphsTable.id, paragraph.id));
+
+    res.json({
+      paragraphId: paragraph.id,
+      format: "mp3",
+      audioBase64,
     });
   }
 );

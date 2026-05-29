@@ -6,12 +6,13 @@ import {
   useGetInterlinearTranslation, 
   useGetFullTranslation,
   useGetScansion,
+  useGetParagraphAudio,
   useSaveProgress,
   useLookupWord,
 } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { ArrowLeft, Loader2, Home, Music, ExternalLink, GraduationCap } from "lucide-react";
+import { ArrowLeft, Loader2, Home, Music, ExternalLink, GraduationCap, Volume2 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { getGrammarResource, type GrammarResource } from "@/lib/grammar-resources";
 import { QuizOverlay } from "@/components/quiz-overlay";
@@ -160,12 +161,28 @@ export default function Read() {
   const interlinearMutation = useGetInterlinearTranslation();
   const fullTranslationMutation = useGetFullTranslation();
   const scansionMutation = useGetScansion();
+  const audioMutation = useGetParagraphAudio();
   const saveProgress = useSaveProgress();
 
   const [interlinearData, setInterlinearData] = useState<any>(null);
   const [fullTransData, setFullTransData] = useState<any>(null);
   const [scannedText, setScannedText] = useState<string | null>(null);
   const [showScansion, setShowScansion] = useState(false);
+  const audioRef = React.useRef<HTMLAudioElement | null>(null);
+  const audioUrlRef = React.useRef<string | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const cleanupAudio = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+    if (audioUrlRef.current) {
+      URL.revokeObjectURL(audioUrlRef.current);
+      audioUrlRef.current = null;
+    }
+    setIsPlaying(false);
+  }, []);
 
   useEffect(() => {
     setStage(1);
@@ -173,7 +190,43 @@ export default function Read() {
     setFullTransData(null);
     setScannedText(null);
     setShowScansion(false);
-  }, [id, pIndex]);
+    cleanupAudio();
+  }, [id, pIndex, cleanupAudio]);
+
+  useEffect(() => cleanupAudio, [cleanupAudio]);
+
+  const playBase64Mp3 = (base64: string) => {
+    cleanupAudio();
+    const byteChars = atob(base64);
+    const bytes = new Uint8Array(byteChars.length);
+    for (let i = 0; i < byteChars.length; i++) bytes[i] = byteChars.charCodeAt(i);
+    const blob = new Blob([bytes], { type: "audio/mpeg" });
+    const url = URL.createObjectURL(blob);
+    audioUrlRef.current = url;
+    const audio = new Audio(url);
+    audioRef.current = audio;
+    audio.onended = () => setIsPlaying(false);
+    audio.onpause = () => setIsPlaying(false);
+    audio.play().then(() => setIsPlaying(true)).catch(() => setIsPlaying(false));
+  };
+
+  const handleListen = () => {
+    if (isPlaying) {
+      if (audioRef.current) audioRef.current.pause();
+      return;
+    }
+    const requestedId = id;
+    const requestedIndex = pIndex;
+    audioMutation.mutate(
+      { textId: id, index: pIndex },
+      {
+        onSuccess: (data) => {
+          if (requestedId !== id || requestedIndex !== pIndex) return;
+          playBase64Mp3(data.audioBase64);
+        },
+      }
+    );
+  };
 
   const supportsScansion = !!text && /latin|greek|ἑλλην|ελλην/i.test(text.language);
   const grammar = text ? getGrammarResource(text.language) : null;
@@ -322,8 +375,23 @@ export default function Read() {
                   <p className="font-serif text-3xl md:text-4xl leading-[1.6] text-foreground whitespace-pre-wrap">
                     {showScansion && scannedText ? scannedText : paragraph.originalText}
                   </p>
-                  {supportsScansion && (
-                    <div className="pt-2">
+                  <div className="pt-2 flex items-center justify-center gap-2 flex-wrap">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleListen}
+                      disabled={audioMutation.isPending}
+                      className="font-serif text-sm text-muted-foreground hover:text-foreground gap-2"
+                      title="Hear this paragraph read aloud"
+                    >
+                      {audioMutation.isPending ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Volume2 className="h-4 w-4" />
+                      )}
+                      {isPlaying ? "Stop" : "Listen"}
+                    </Button>
+                    {supportsScansion && (
                       <Button
                         variant="ghost"
                         size="sm"
@@ -338,8 +406,8 @@ export default function Read() {
                         )}
                         {showScansion ? "Hide scansion" : "Show scansion"}
                       </Button>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               )}
 

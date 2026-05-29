@@ -10,6 +10,7 @@ export const paragraphsTable = pgTable("paragraphs", {
   interlinearTranslation: text("interlinear_translation"),
   fullTranslation: text("full_translation"),
   scansion: text("scansion"),
+  audio: text("audio"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
