@@ -1,5 +1,4 @@
 uploads = []
-outputs = []
 
 [[generated]]
 id = "E3nv9K_0fU7wq7NVuhMu0"
@@ -42,3 +41,15 @@ id = "E_CzaqxR_tRR5nldBd5Lg"
 uri = "file://artifacts/lectio-laocoon/public/images/gates.png"
 type = "image"
 title = "Massive ancient city gates"
+
+[[outputs]]
+id = "jLGHvVJhEE9oTNwUDidhh"
+uri = "file://attached_assets/generated_videos/serpents_rising_sea_v1.mp4"
+type = "video"
+title = "Serpents rising — Variation 1"
+
+[[outputs]]
+id = "g7d4ZG_VA-lTL9op6Hu6n"
+uri = "file://attached_assets/generated_videos/serpents_rising_sea_v2.mp4"
+type = "video"
+title = "Serpents rising — Variation 2"
