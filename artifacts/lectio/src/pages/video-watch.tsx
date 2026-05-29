@@ -25,10 +25,6 @@ export default function VideoWatch() {
     }
   };
 
-  const fullscreenSupported =
-    typeof document !== "undefined" &&
-    (document.fullscreenEnabled || "webkitRequestFullscreen" in document.createElement("iframe"));
-
   const others = VIDEOS.filter((v) => v.slug !== video.slug);
 
   return (
@@ -74,14 +70,12 @@ export default function VideoWatch() {
               />
             </div>
           </div>
-          {fullscreenSupported && (
-            <div className="flex justify-end">
-              <Button variant="outline" size="sm" className="font-serif" onClick={goFullscreen}>
-                <Maximize className="h-4 w-4 mr-1.5" />
-                Fullscreen
-              </Button>
-            </div>
-          )}
+          <div className="flex justify-end">
+            <Button variant="outline" size="sm" className="font-serif" onClick={goFullscreen}>
+              <Maximize className="h-4 w-4 mr-1.5" />
+              Fullscreen
+            </Button>
+          </div>
         </div>
 
         {others.length > 0 && (
