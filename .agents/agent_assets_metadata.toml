@@ -53,3 +53,15 @@ id = "g7d4ZG_VA-lTL9op6Hu6n"
 uri = "file://attached_assets/generated_videos/serpents_rising_sea_v2.mp4"
 type = "video"
 title = "Serpents rising — Variation 2"
+
+[[outputs]]
+id = "OVB2v7PgrK80rpWEMbzKD"
+uri = "file://attached_assets/generated_videos/serpents_two_heads_a.mp4"
+type = "video"
+title = "Serpents (two) — Take A"
+
+[[outputs]]
+id = "1ASFMqH9wTKkH7kSxwHAH"
+uri = "file://attached_assets/generated_videos/serpents_two_heads_b.mp4"
+type = "video"
+title = "Serpents (two) — Take B"
