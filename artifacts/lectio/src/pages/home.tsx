@@ -158,6 +158,38 @@ function groupByLanguage(texts: CatalogText[]): Record<string, CatalogText[]> {
   return groups;
 }
 
+const ROMAN_VALUES: Record<string, number> = { I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 };
+
+function romanToInt(raw: string): number | null {
+  if (!/^[IVXLCDM]+$/i.test(raw)) return null;
+  const s = raw.toUpperCase();
+  let total = 0;
+  for (let i = 0; i < s.length; i++) {
+    const cur = ROMAN_VALUES[s[i]];
+    const next = ROMAN_VALUES[s[i + 1]];
+    if (next && cur < next) total -= cur;
+    else total += cur;
+  }
+  return total;
+}
+
+// Splits a title like "Aeneis IV" into its work base ("Aeneis") and book number (4).
+// Titles with no book numeral (e.g. "Aeneis") are treated as book 1 of their work.
+function workParts(title: string): { base: string; book: number } {
+  const tokens = title.split(/\s+/);
+  for (let i = tokens.length - 1; i >= 0; i--) {
+    const m = tokens[i].match(/^([IVXLCDM]+)\b/i);
+    if (m) {
+      const n = romanToInt(m[1]);
+      if (n) {
+        const base = tokens.slice(0, i).join(" ").trim();
+        return { base: base || title, book: n };
+      }
+    }
+  }
+  return { base: title, book: 1 };
+}
+
 export default function Home() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
@@ -194,10 +226,24 @@ export default function Home() {
     libraryByLanguage[lang].push(t);
   }
   for (const lang of Object.keys(libraryByLanguage)) {
-    libraryByLanguage[lang].sort((a, b) => {
-      const ya = a.publicationYear ?? Number.POSITIVE_INFINITY;
-      const yb = b.publicationYear ?? Number.POSITIVE_INFINITY;
+    const items = libraryByLanguage[lang];
+    // Each work appears at its earliest book's year, so all books of a work stay
+    // together even if the AI assigned them slightly different years.
+    const workYear = new Map<string, number>();
+    for (const t of items) {
+      const { base } = workParts(t.title);
+      const y = t.publicationYear ?? Number.POSITIVE_INFINITY;
+      const prev = workYear.get(base);
+      if (prev === undefined || y < prev) workYear.set(base, y);
+    }
+    items.sort((a, b) => {
+      const pa = workParts(a.title);
+      const pb = workParts(b.title);
+      const ya = workYear.get(pa.base) ?? Number.POSITIVE_INFINITY;
+      const yb = workYear.get(pb.base) ?? Number.POSITIVE_INFINITY;
       if (ya !== yb) return ya - yb;
+      if (pa.base !== pb.base) return pa.base.localeCompare(pb.base);
+      if (pa.book !== pb.book) return pa.book - pb.book;
       return a.title.localeCompare(b.title);
     });
   }
