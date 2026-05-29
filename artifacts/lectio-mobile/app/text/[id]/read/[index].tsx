@@ -73,12 +73,12 @@ function Reader() {
         { onSuccess: (d) => { setInterlinear(d); setStage(2); } },
       );
     } else if (stage === 2) {
-      setStage(3);
-    } else if (stage === 3) {
       fullTransMut.mutate(
         { textId, index: pIndex },
-        { onSuccess: (d) => { setFullTrans(d); setStage(4); } },
+        { onSuccess: (d) => { setFullTrans(d); setStage(3); } },
       );
+    } else if (stage === 3) {
+      setStage(4);
     } else if (stage === 4) {
       setStage(5);
     }
@@ -147,7 +147,7 @@ function Reader() {
           </View>
         ) : (
           <>
-            {(stage === 1 || stage === 3 || stage === 5) && (
+            {(stage === 1 || stage === 4 || stage === 5) && (
               <Text style={[styles.originalText, { color: colors.foreground }]}>
                 {paragraph.data.originalText}
               </Text>
@@ -173,7 +173,7 @@ function Reader() {
               </View>
             )}
 
-            {stage === 4 && fullTrans && (
+            {stage === 3 && fullTrans && (
               <View>
                 <Text style={[styles.sideLabel, { color: colors.mutedForeground }]}>
                   {text.data?.language?.toUpperCase()}
@@ -204,9 +204,9 @@ function Reader() {
       >
         {!isGenerating && stage < 5 && (
           <View style={styles.footerRow}>
-            {(stage === 2 || stage === 4) && (
+            {(stage === 2 || stage === 3) && (
               <Pressable
-                onPress={() => setStage(stage === 2 ? 1 : 3)}
+                onPress={() => setStage(stage === 2 ? 1 : 2)}
                 style={({ pressed }) => [styles.backBtn, pressed && { opacity: 0.6 }]}
                 hitSlop={8}
               >

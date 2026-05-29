@@ -282,12 +282,12 @@ export default function Read() {
         { onSuccess: (data) => { setInterlinearData(data); setStage(3); } }
       );
     } else if (stage === 3) {
-      setStage(4);
-    } else if (stage === 4) {
       fullTranslationMutation.mutate(
         { textId: id, index: pIndex },
-        { onSuccess: (data) => { setFullTransData(data); setStage(5); } }
+        { onSuccess: (data) => { setFullTransData(data); setStage(4); } }
       );
+    } else if (stage === 4) {
+      setStage(5);
     } else if (stage === 5) {
       setStage(6);
     }
@@ -390,12 +390,12 @@ export default function Read() {
           ) : (
             <div className="w-full max-w-4xl animate-in fade-in zoom-in duration-500">
               
-              {/* STAGE 1, 4, 6: Original text (read by eye, read aloud, read again) */}
-              {(stage === 1 || stage === 4 || stage === 6) && (
+              {/* STAGE 1, 5, 6: Original text (read by eye, read aloud, read again) */}
+              {(stage === 1 || stage === 5 || stage === 6) && (
                 <div className="text-center max-w-3xl mx-auto space-y-6">
                   <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
                     {stage === 1 && "Read it through once"}
-                    {stage === 4 && "Now read it aloud yourself"}
+                    {stage === 5 && "Now read it aloud yourself"}
                     {stage === 6 && "Read it through one more time"}
                   </p>
                   <p className="font-serif text-3xl md:text-4xl leading-[1.6] text-foreground whitespace-pre-wrap">
@@ -517,8 +517,8 @@ export default function Read() {
                 </div>
               )}
 
-              {/* STAGE 5: Side-by-side */}
-              {stage === 5 && fullTransData && (
+              {/* STAGE 4: Side-by-side */}
+              {stage === 4 && fullTransData && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16">
                   <div>
                     <h3 className="text-xs font-semibold tracking-widest text-muted-foreground uppercase mb-6">{text?.language}</h3>
@@ -543,11 +543,11 @@ export default function Read() {
         <div className="shrink-0 flex justify-center py-8">
           {!isGenerating && stage < 6 && (
             <div className="flex items-center gap-4">
-              {(stage === 3 || stage === 5) && (
+              {(stage === 3 || stage === 4) && (
                 <Button
                   size="lg"
                   variant="ghost"
-                  onClick={() => setStage(stage === 3 ? 2 : 4)}
+                  onClick={() => setStage(stage === 3 ? 2 : 3)}
                   className="rounded-full px-8 h-14 font-serif text-lg text-muted-foreground hover:text-foreground"
                 >
                   ← Back
