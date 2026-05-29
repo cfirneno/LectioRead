@@ -1,0 +1,31 @@
+kind = "video"
+previewPath = "/lectio-intro/"
+title = "Lectio — Aeneid Intro"
+version = "1.0.0"
+id = "artifacts/lectio-intro"
+router = "path"
+
+[[integratedSkills]]
+name = "video-js"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/lectio-intro/" ]
+localPort = 22087
+
+[services.development]
+run = "pnpm --filter @workspace/lectio-intro run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/lectio-intro", "run", "build" ]
+publicDir = "artifacts/lectio-intro/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "22087"
+BASE_PATH = "/lectio-intro/"

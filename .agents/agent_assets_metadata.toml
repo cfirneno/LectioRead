@@ -6,3 +6,9 @@ id = "E3nv9K_0fU7wq7NVuhMu0"
 uri = "file://artifacts/lectio-mobile/assets/images/icon.png"
 type = "image"
 title = "lectio app icon"
+
+[[generated]]
+id = "SsdwgUZGYq34KRZjQ1wk0"
+uri = "file://artifacts/lectio-intro/public/images/parchment.png"
+type = "image"
+title = "Ancient parchment texture"
