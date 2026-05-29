@@ -42,7 +42,7 @@ export function Scene5() {
           transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
           style={{ textShadow: '0 4px 20px rgba(0,0,0,0.9)' }}
         >
-          From the calm sea, two enormous serpents rise and surge toward the shore...
+          From the calm sea, two enormous serpents rise and surge toward the shore, straight for Laocoön and his sons.
         </motion.p>
       </div>
     </motion.div>

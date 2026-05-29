@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
+import { CoilingSerpents } from '../CoilingSerpents';
 
 export function Scene6() {
   const [phase, setPhase] = useState(0);
@@ -44,7 +45,17 @@ export function Scene6() {
         />
       </motion.div>
 
-      <div className="relative z-10 w-full text-center px-[10vw]">
+      {/* Two serpents winding into a coil */}
+      <motion.div
+        className="absolute inset-0 flex items-center justify-center pointer-events-none"
+        initial={{ opacity: 0, scale: 0.85 }}
+        animate={phase >= 1 ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.85 }}
+        transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
+      >
+        <CoilingSerpents className="h-[78vh] w-[78vh] max-w-[90vw] drop-shadow-[0_20px_60px_rgba(0,0,0,0.7)]" />
+      </motion.div>
+
+      <div className="relative z-20 w-full text-center px-[10vw]">
         <motion.h2 
           className="text-[4.5vw] font-display text-text-inverse leading-tight tracking-tight uppercase font-bold"
           initial={{ opacity: 0, y: 50, rotateX: 20 }}

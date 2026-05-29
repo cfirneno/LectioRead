@@ -55,7 +55,7 @@ export function Scene4() {
           transition={{ duration: 1, type: 'spring', bounce: 0.4 }}
           style={{ textShadow: '0 10px 30px rgba(0,0,0,0.8)' }}
         >
-          A hollow sound echoes from within...
+          A hollow sound echoes from within — arms clash in the hollow dark.
         </motion.h2>
       </div>
     </motion.div>
