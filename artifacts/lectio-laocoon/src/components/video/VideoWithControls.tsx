@@ -170,7 +170,7 @@ export default function VideoWithControls() {
     toggleLock,
   } = useSceneControls(SCENE_DURATIONS);
 
-  const [muted, setMuted] = useState(true);
+  const [muted, setMuted] = useState(false);
 
   const sensorRef = useRef<HTMLDivElement | null>(null);
   const [collapsed, setCollapsed] = useState(false);
