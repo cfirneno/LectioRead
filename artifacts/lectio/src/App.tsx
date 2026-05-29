@@ -12,6 +12,7 @@ import Read from "@/pages/read";
 import Vocabulary from "@/pages/vocabulary";
 import Flashcards from "@/pages/flashcards";
 import Review from "@/pages/review";
+import ContinueReading from "@/pages/continue";
 import Videos from "@/pages/videos";
 import VideoWatch from "@/pages/video-watch";
 import Subscribe from "@/pages/subscribe";
@@ -100,6 +101,11 @@ function Router() {
       <Route path="/app">
         <RequireSubscription>
           <Home />
+        </RequireSubscription>
+      </Route>
+      <Route path="/app/continue">
+        <RequireSubscription>
+          <ContinueReading />
         </RequireSubscription>
       </Route>
       <Route path="/app/review">

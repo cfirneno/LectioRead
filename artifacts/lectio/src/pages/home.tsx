@@ -4,8 +4,6 @@ import { UserButton } from "@clerk/react";
 import { useSearchText, useListTexts, useGetRecentTexts, useCreateBillingPortalSession } from "@workspace/api-client-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { BookOpen, Search, Loader2, Clock, ChevronDown, ChevronUp, CreditCard, Sparkles, Film } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -270,6 +268,14 @@ export default function Home() {
             </div>
           </Link>
           <div className="flex items-center gap-2">
+            {recentTexts && recentTexts.length > 0 && (
+              <Link href="/app/continue">
+                <Button variant="ghost" size="sm" className="font-serif text-muted-foreground">
+                  <Clock className="h-4 w-4 mr-1.5" />
+                  Continue
+                </Button>
+              </Link>
+            )}
             <Link href="/app/videos">
               <Button variant="ghost" size="sm" className="font-serif text-muted-foreground">
                 <Film className="h-4 w-4 mr-1.5" />
@@ -319,45 +325,6 @@ export default function Home() {
             Choose a text below to begin. Read slowly.
           </p>
         </section>
-
-        {recentTexts && recentTexts.length > 0 && (
-          <section className="space-y-5">
-            <div className="flex items-center gap-2 text-lg font-serif font-medium text-foreground">
-              <Clock className="h-4 w-4 text-muted-foreground" />
-              <h2>Continue Reading</h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {recentTexts.map((text) => {
-                const percent = Math.round((text.completedCount / text.paragraphCount) * 100) || 0;
-                const nextIndex =
-                  text.lastParagraphIndex !== undefined && text.lastParagraphIndex !== null
-                    ? text.lastParagraphIndex
-                    : 0;
-                return (
-                  <Link href={`/texts/${text.id}/read/${nextIndex}`} key={text.id}>
-                    <Card className="h-full hover:border-primary/50 transition-colors cursor-pointer bg-card/50">
-                      <CardContent className="p-5 space-y-3">
-                        <div>
-                          <h3 className="font-serif text-lg font-semibold leading-snug">{text.title}</h3>
-                          <p className="text-sm text-muted-foreground">{text.author}</p>
-                        </div>
-                        <div className="space-y-1.5">
-                          <div className="flex justify-between text-xs text-muted-foreground">
-                            <span>{text.language}</span>
-                            <span>
-                              {percent}% · {text.completedCount}/{text.paragraphCount} paragraphs
-                            </span>
-                          </div>
-                          <Progress value={percent} className="h-1" />
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </Link>
-                );
-              })}
-            </div>
-          </section>
-        )}
 
         <section className="space-y-4">
           {(allTexts ?? []).length === 0 ? (
