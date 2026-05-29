@@ -7,6 +7,8 @@ import { Scene3 } from './video_scenes/Scene3';
 import { Scene4 } from './video_scenes/Scene4';
 import { Scene5 } from './video_scenes/Scene5';
 import { Scene6 } from './video_scenes/Scene6';
+import { Scene7 } from './video_scenes/Scene7';
+import { Scene8 } from './video_scenes/Scene8';
 
 export const SCENE_DURATIONS = {
   scene1: 5000,
@@ -15,6 +17,8 @@ export const SCENE_DURATIONS = {
   scene4: 7000,
   scene5: 5000,
   scene6: 5000,
+  scene7: 22000,
+  scene8: 12000,
 };
 
 const SCENE_COMPONENTS: Record<string, React.ComponentType> = {
@@ -24,6 +28,8 @@ const SCENE_COMPONENTS: Record<string, React.ComponentType> = {
   scene4: Scene4,
   scene5: Scene5,
   scene6: Scene6,
+  scene7: Scene7,
+  scene8: Scene8,
 };
 
 const SCENE_START_SEC: Record<string, number> = (() => {
@@ -93,7 +99,7 @@ export default function VideoTemplate({
 
       <audio
         ref={audioRef}
-        src={`${import.meta.env.BASE_URL}audio/host_narration.mp3`}
+        src={`${import.meta.env.BASE_URL}audio/host_narration_full.mp3`}
         preload="auto"
         autoPlay
         muted={muted}

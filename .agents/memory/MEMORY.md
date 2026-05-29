@@ -1,2 +1,3 @@
 - [Production migrations gap](prod-migrations.md) — drizzle push only hits dev; every new table/column/index must also be added as idempotent SQL in api-server migrate.ts or prod crashes.
 - [Audio credits fallback](media-audio-credits.md) — when media-generation TTS/music callbacks 401 with insufficient_credits, route voiceover through OpenAI gpt-audio; no fallback for music (ship voiceover-only).
+- [Lectio video narration](lectio-video-narration.md) — extending a narrated video's audio: keep base mp3 untouched, ffmpeg-concat into a separate _full file (idempotent), size tail scenes to the new audio offsets.
