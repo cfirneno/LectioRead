@@ -451,6 +451,97 @@ Rules:
   return { paragraphText: originalText, questions: cleaned };
 }
 
+export interface VocabEnrichmentInput {
+  word: string;
+  translation: string;
+}
+
+export interface VocabEnrichment {
+  word: string;
+  important: boolean;
+  icon: string;
+  definition: string;
+  inflection: string;
+}
+
+/**
+ * Enrich a batch of vocabulary words with a memory emoji, a clean definition,
+ * the grammatical inflection of the form, and whether the word is "important"
+ * vocabulary (false for common function words like and/the/is).
+ */
+export async function enrichVocabulary(
+  language: string,
+  words: VocabEnrichmentInput[]
+): Promise<VocabEnrichment[]> {
+  if (words.length === 0) return [];
+
+  const listing = words
+    .map((w, i) => `${i + 1}. "${w.word}" — rough gloss: "${w.translation}"`)
+    .join("\n");
+
+  const response = await openai.chat.completions.create({
+    model: "gpt-5-mini",
+    max_completion_tokens: 8192,
+    reasoning_effort: "minimal",
+    messages: [
+      {
+        role: "system",
+        content: `You are a ${language} teacher building vocabulary flashcards for students. Return ONLY valid JSON.`,
+      },
+      {
+        role: "user",
+        content: `For each ${language} word below, return a flashcard object.
+
+${listing}
+
+Return ONLY a JSON array, one object per word, in the same order:
+[
+  {
+    "word": "the exact original word as given",
+    "important": true,
+    "icon": "a single emoji that best evokes the word's meaning as a memory hook",
+    "definition": "a short, clear English definition (the dictionary/headword meaning), a few words",
+    "inflection": "the grammatical form of this word (e.g. 'accusative singular noun', '3rd person singular present indicative', 'adverb'); empty string if not applicable"
+  },
+  ...
+]
+
+Rules:
+- "important": set to false for common function words with little standalone meaning (articles, conjunctions, prepositions, particles, common pronouns, the verb 'to be'); true for content words worth memorizing (nouns, verbs, adjectives, meaningful adverbs).
+- "icon": exactly one emoji. Pick the most evocative; for abstract words choose a sensible symbolic emoji.
+- "definition": concise headword meaning, no punctuation needed.
+- "inflection": describe the morphology of the given form in plain words; use an empty string for indeclinable words.
+- Return exactly ${words.length} objects, in order. No commentary outside the JSON.`,
+      },
+    ],
+  });
+
+  const content = response.choices[0]?.message?.content;
+  if (!content) throw new Error("No vocabulary enrichment response from AI");
+
+  const jsonMatch = content.match(/\[[\s\S]*\]/);
+  if (!jsonMatch) throw new Error("Could not parse vocabulary enrichment JSON");
+
+  const parsed = JSON.parse(jsonMatch[0]) as Array<Partial<VocabEnrichment>>;
+  // Return only well-formed entries carrying their own word, so callers can
+  // correlate by word identity rather than by array position. Reordered or
+  // partial responses then simply yield fewer matches (retried later) instead
+  // of binding wrong definitions to the wrong word.
+  const out: VocabEnrichment[] = [];
+  for (const p of parsed) {
+    if (typeof p.word !== "string" || !p.word.trim()) continue;
+    if (typeof p.definition !== "string" || !p.definition.trim()) continue;
+    out.push({
+      word: p.word.trim(),
+      important: p.important !== false,
+      icon: typeof p.icon === "string" && p.icon.trim() ? p.icon.trim() : "📝",
+      definition: p.definition.trim(),
+      inflection: typeof p.inflection === "string" ? p.inflection.trim() : "",
+    });
+  }
+  return out;
+}
+
 /**
  * Generate spoken audio of a paragraph in its original language.
  * Returns base64-encoded MP3 so it can be cached as text and played in the browser.

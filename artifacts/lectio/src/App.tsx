@@ -10,6 +10,7 @@ import Home from "@/pages/home";
 import TextToc from "@/pages/text-toc";
 import Read from "@/pages/read";
 import Vocabulary from "@/pages/vocabulary";
+import Flashcards from "@/pages/flashcards";
 import Review from "@/pages/review";
 import Subscribe from "@/pages/subscribe";
 import CheckoutSuccess from "@/pages/checkout-success";
@@ -112,6 +113,11 @@ function Router() {
       <Route path="/texts/:textId/vocabulary">
         <RequireSubscription>
           <Vocabulary />
+        </RequireSubscription>
+      </Route>
+      <Route path="/texts/:textId/flashcards">
+        <RequireSubscription>
+          <Flashcards />
         </RequireSubscription>
       </Route>
       <Route path="/texts/:textId">

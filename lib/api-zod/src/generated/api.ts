@@ -333,6 +333,27 @@ export const GetTextVocabularyResponse = zod.object({
 
 
 /**
+ * @summary Vocabulary flashcards for words seen so far in this text
+ */
+export const GetTextFlashcardsParams = zod.object({
+  "textId": zod.coerce.number()
+})
+
+export const GetTextFlashcardsResponse = zod.object({
+  "textId": zod.number(),
+  "throughParagraphIndex": zod.number().describe('Highest paragraph index included (-1 if none)'),
+  "cards": zod.array(zod.object({
+  "word": zod.string().describe('The word as it appears in the text'),
+  "definition": zod.string().describe('Short English definition (headword meaning)'),
+  "icon": zod.string().describe('A single emoji memory hook'),
+  "inflection": zod.string().describe('Grammatical form of the word (may be empty)'),
+  "count": zod.number(),
+  "firstParagraphIndex": zod.number()
+}))
+})
+
+
+/**
  * @summary List all reading progress records
  */
 export const ListProgressResponseItem = zod.object({

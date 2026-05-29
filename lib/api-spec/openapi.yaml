@@ -388,6 +388,25 @@ paths:
               schema:
                 $ref: "#/components/schemas/VocabularyList"
 
+  /texts/{textId}/flashcards:
+    get:
+      operationId: getTextFlashcards
+      tags: [texts]
+      summary: Vocabulary flashcards for words seen so far in this text
+      parameters:
+        - name: textId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Flashcard deck
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FlashcardDeck"
+
   /progress:
     get:
       operationId: listProgress
@@ -614,6 +633,41 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/VocabularyEntry"
+
+    Flashcard:
+      type: object
+      required: [word, definition, icon, inflection, count, firstParagraphIndex]
+      properties:
+        word:
+          type: string
+          description: The word as it appears in the text
+        definition:
+          type: string
+          description: Short English definition (headword meaning)
+        icon:
+          type: string
+          description: A single emoji memory hook
+        inflection:
+          type: string
+          description: Grammatical form of the word (may be empty)
+        count:
+          type: integer
+        firstParagraphIndex:
+          type: integer
+
+    FlashcardDeck:
+      type: object
+      required: [textId, throughParagraphIndex, cards]
+      properties:
+        textId:
+          type: integer
+        throughParagraphIndex:
+          type: integer
+          description: Highest paragraph index included (-1 if none)
+        cards:
+          type: array
+          items:
+            $ref: "#/components/schemas/Flashcard"
 
     PublicQuizQuestion:
       type: object

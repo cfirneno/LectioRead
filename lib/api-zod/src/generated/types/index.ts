@@ -7,6 +7,8 @@
  */
 
 export * from './checkoutUrl';
+export * from './flashcard';
+export * from './flashcardDeck';
 export * from './fullTranslation';
 export * from './healthStatus';
 export * from './interlinearTranslation';

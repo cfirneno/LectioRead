@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { eq, desc, ilike, and, lte, isNotNull } from "drizzle-orm";
+import { eq, desc, ilike, and } from "drizzle-orm";
 import { db, textsTable, paragraphsTable, progressTable } from "@workspace/db";
 import {
   SearchTextBody,
@@ -10,6 +10,7 @@ import {
 import { searchAndFetchText, CopyrightedTextError } from "../lib/ai";
 import { requireSubscribedUser, type AuthedRequest } from "../lib/subscriptionGuard";
 import { beginForeground } from "../lib/foregroundGate";
+import { aggregateVocabulary } from "../lib/vocab";
 
 const router: IRouter = Router();
 
@@ -258,108 +259,17 @@ router.get("/texts/:textId/vocabulary", async (req: AuthedRequest, res): Promise
     return;
   }
 
-  const completed = await db
-    .select({ paragraphIndex: progressTable.paragraphIndex })
-    .from(progressTable)
-    .where(
-      and(
-        eq(progressTable.userId, req.userId!),
-        eq(progressTable.textId, params.data.textId),
-        eq(progressTable.completed, true)
-      )
-    );
-
-  const maxCompleted = completed.reduce((m, r) => Math.max(m, r.paragraphIndex), -1);
-
-  if (maxCompleted < 0) {
-    res.json({ textId: params.data.textId, throughParagraphIndex: -1, entries: [] });
-    return;
-  }
-
-  const paragraphs = await db
-    .select({
-      index: paragraphsTable.index,
-      interlinearTranslation: paragraphsTable.interlinearTranslation,
-    })
-    .from(paragraphsTable)
-    .where(
-      and(
-        eq(paragraphsTable.textId, params.data.textId),
-        lte(paragraphsTable.index, maxCompleted),
-        isNotNull(paragraphsTable.interlinearTranslation)
-      )
-    )
-    .orderBy(paragraphsTable.index);
-
-  type Entry = {
-    original: string;
-    normalized: string;
-    translations: Map<string, number>;
-    count: number;
-    firstParagraphIndex: number;
-  };
-  const map = new Map<string, Entry>();
-
-  // Diacritic-insensitive: decompose, strip combining marks, lowercase, trim punctuation.
-  const normalize = (s: string): string =>
-    s
-      .normalize("NFKD")
-      .replace(/\p{M}+/gu, "")
-      .toLocaleLowerCase()
-      .replace(/^[\p{P}\p{S}\s]+|[\p{P}\p{S}\s]+$/gu, "")
-      .trim();
-
-  for (const p of paragraphs) {
-    if (!p.interlinearTranslation) continue;
-    let words: Array<{ original: string; translation: string }>;
-    try {
-      words = JSON.parse(p.interlinearTranslation);
-    } catch {
-      continue;
-    }
-    for (const w of words) {
-      const norm = normalize(w.original ?? "");
-      if (!norm || norm.length < 2) continue;
-      const tr = (w.translation ?? "").trim();
-      if (!tr) continue;
-      const existing = map.get(norm);
-      if (existing) {
-        existing.count += 1;
-        existing.translations.set(tr, (existing.translations.get(tr) ?? 0) + 1);
-      } else {
-        const translations = new Map<string, number>();
-        translations.set(tr, 1);
-        map.set(norm, {
-          original: w.original.trim(),
-          normalized: norm,
-          translations,
-          count: 1,
-          firstParagraphIndex: p.index,
-        });
-      }
-    }
-  }
-
-  const entries = Array.from(map.values())
-    .map((e) => {
-      let best = "";
-      let bestN = 0;
-      for (const [t, n] of e.translations) {
-        if (n > bestN) { best = t; bestN = n; }
-      }
-      return {
-        original: e.original,
-        translation: best,
-        count: e.count,
-        firstParagraphIndex: e.firstParagraphIndex,
-      };
-    })
-    .sort((a, b) => b.count - a.count || a.original.localeCompare(b.original));
+  const { throughParagraphIndex, entries } = await aggregateVocabulary(req.userId!, params.data.textId);
 
   res.json({
     textId: params.data.textId,
-    throughParagraphIndex: maxCompleted,
-    entries,
+    throughParagraphIndex,
+    entries: entries.map((e) => ({
+      original: e.original,
+      translation: e.translation,
+      count: e.count,
+      firstParagraphIndex: e.firstParagraphIndex,
+    })),
   });
 });
 

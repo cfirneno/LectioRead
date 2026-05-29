@@ -21,6 +21,7 @@ import type {
 
 import type {
   CheckoutUrl,
+  FlashcardDeck,
   FullTranslation,
   HealthStatus,
   InterlinearTranslation,
@@ -1331,6 +1332,83 @@ export function useGetTextVocabulary<TData = Awaited<ReturnType<typeof getTextVo
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getGetTextVocabularyQueryOptions(textId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getGetTextFlashcardsUrl = (textId: number,) => {
+
+
+
+
+  return `/api/texts/${textId}/flashcards`
+}
+
+/**
+ * @summary Vocabulary flashcards for words seen so far in this text
+ */
+export const getTextFlashcards = async (textId: number, options?: RequestInit): Promise<FlashcardDeck> => {
+
+  return customFetch<FlashcardDeck>(getGetTextFlashcardsUrl(textId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetTextFlashcardsQueryKey = (textId: number,) => {
+    return [
+    `/api/texts/${textId}/flashcards`
+    ] as const;
+    }
+
+
+export const getGetTextFlashcardsQueryOptions = <TData = Awaited<ReturnType<typeof getTextFlashcards>>, TError = ErrorType<unknown>>(textId: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getTextFlashcards>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetTextFlashcardsQueryKey(textId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getTextFlashcards>>> = ({ signal }) => getTextFlashcards(textId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: textId !== null && textId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getTextFlashcards>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetTextFlashcardsQueryResult = NonNullable<Awaited<ReturnType<typeof getTextFlashcards>>>
+export type GetTextFlashcardsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Vocabulary flashcards for words seen so far in this text
+ */
+
+export function useGetTextFlashcards<TData = Awaited<ReturnType<typeof getTextFlashcards>>, TError = ErrorType<unknown>>(
+ textId: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getTextFlashcards>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetTextFlashcardsQueryOptions(textId,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

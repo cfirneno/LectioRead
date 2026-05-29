@@ -111,6 +111,26 @@ export interface VocabularyList {
   entries: VocabularyEntry[];
 }
 
+export interface Flashcard {
+  /** The word as it appears in the text */
+  word: string;
+  /** Short English definition (headword meaning) */
+  definition: string;
+  /** A single emoji memory hook */
+  icon: string;
+  /** Grammatical form of the word (may be empty) */
+  inflection: string;
+  count: number;
+  firstParagraphIndex: number;
+}
+
+export interface FlashcardDeck {
+  textId: number;
+  /** Highest paragraph index included (-1 if none) */
+  throughParagraphIndex: number;
+  cards: Flashcard[];
+}
+
 export interface PublicQuizQuestion {
   id: number;
   /** translation | vocab | grammar */

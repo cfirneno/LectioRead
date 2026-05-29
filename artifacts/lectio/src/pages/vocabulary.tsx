@@ -1,7 +1,7 @@
 import { Link, useParams } from "wouter";
 import { useGetText, useGetTextVocabulary } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, BookOpen, Home } from "lucide-react";
+import { ArrowLeft, BookOpen, Home, Layers } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
@@ -53,8 +53,16 @@ export default function Vocabulary() {
               </Button>
             </Link>
           </div>
-          <div className="text-sm font-serif text-muted-foreground">
-            {vocab ? `${vocab.entries.length} words` : ""}
+          <div className="flex items-center gap-3">
+            <Link href={`/texts/${id}/flashcards`}>
+              <Button variant="ghost" size="sm" className="font-serif gap-2 text-muted-foreground hover:text-foreground">
+                <Layers className="h-4 w-4" />
+                Flashcards
+              </Button>
+            </Link>
+            <div className="text-sm font-serif text-muted-foreground">
+              {vocab ? `${vocab.entries.length} words` : ""}
+            </div>
           </div>
         </div>
       </header>

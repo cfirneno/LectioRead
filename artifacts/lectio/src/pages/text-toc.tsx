@@ -2,7 +2,7 @@ import React from "react";
 import { Link, useParams } from "wouter";
 import { useGetText, useListParagraphs, useGetTextStats } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, CheckCircle2, Circle, BookOpen, GraduationCap } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Circle, BookOpen, GraduationCap, Layers } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getGrammarResource } from "@/lib/grammar-resources";
 
@@ -79,6 +79,14 @@ export default function TextToc() {
                 <Button size="lg" variant="outline" className="rounded-full px-6 font-serif text-lg gap-2">
                   <BookOpen className="h-4 w-4" />
                   Vocabulary
+                </Button>
+              </Link>
+            )}
+            {stats && stats.completedParagraphs > 0 && (
+              <Link href={`/texts/${text.id}/flashcards`}>
+                <Button size="lg" variant="outline" className="rounded-full px-6 font-serif text-lg gap-2">
+                  <Layers className="h-4 w-4" />
+                  Flashcards
                 </Button>
               </Link>
             )}
