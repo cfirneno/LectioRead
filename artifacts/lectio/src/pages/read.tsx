@@ -242,6 +242,7 @@ export default function Read() {
     );
     return () => {
       cancelled = true;
+      cleanupAudio();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stage, id, pIndex]);
@@ -389,12 +390,11 @@ export default function Read() {
           ) : (
             <div className="w-full max-w-4xl animate-in fade-in zoom-in duration-500">
               
-              {/* STAGE 1, 2, 4, 6: Original text (read by eye, listen, read aloud, read again) */}
-              {(stage === 1 || stage === 2 || stage === 4 || stage === 6) && (
+              {/* STAGE 1, 4, 6: Original text (read by eye, read aloud, read again) */}
+              {(stage === 1 || stage === 4 || stage === 6) && (
                 <div className="text-center max-w-3xl mx-auto space-y-6">
                   <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
                     {stage === 1 && "Read it through once"}
-                    {stage === 2 && "Listen as it's read aloud"}
                     {stage === 4 && "Now read it aloud yourself"}
                     {stage === 6 && "Read it through one more time"}
                   </p>
@@ -433,6 +433,44 @@ export default function Read() {
                         {showScansion ? "Hide scansion" : "Show scansion"}
                       </Button>
                     )}
+                  </div>
+                </div>
+              )}
+
+              {/* STAGE 2: Listen */}
+              {stage === 2 && (
+                <div className="text-center max-w-3xl mx-auto space-y-8">
+                  <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
+                    Listen as it's read aloud
+                  </p>
+                  <div className="flex flex-col items-center gap-5">
+                    <button
+                      onClick={handleListen}
+                      disabled={audioMutation.isPending}
+                      className="relative flex items-center justify-center w-24 h-24 rounded-full bg-primary text-primary-foreground shadow-md hover:bg-primary/90 transition-colors disabled:opacity-70"
+                      title={isPlaying ? "Stop" : "Play audio"}
+                    >
+                      {isPlaying && (
+                        <span className="absolute inset-0 rounded-full bg-primary/30 animate-ping" />
+                      )}
+                      {audioMutation.isPending ? (
+                        <Loader2 className="h-10 w-10 animate-spin" />
+                      ) : (
+                        <Volume2 className="h-10 w-10 relative" />
+                      )}
+                    </button>
+                    <p className="font-serif text-sm text-muted-foreground">
+                      {audioMutation.isPending
+                        ? "Loading audio…"
+                        : isPlaying
+                          ? "Playing — follow along below"
+                          : "Tap to play again"}
+                    </p>
+                  </div>
+                  <div className="rounded-2xl border border-border/40 bg-secondary/20 px-6 py-8">
+                    <p className="font-serif text-2xl md:text-3xl leading-[1.6] text-foreground/90 whitespace-pre-wrap">
+                      {paragraph.originalText}
+                    </p>
                   </div>
                 </div>
               )}
