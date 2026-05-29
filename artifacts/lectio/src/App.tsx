@@ -13,6 +13,7 @@ import Vocabulary from "@/pages/vocabulary";
 import Flashcards from "@/pages/flashcards";
 import Review from "@/pages/review";
 import ContinueReading from "@/pages/continue";
+import StartReading from "@/pages/start";
 import Videos from "@/pages/videos";
 import VideoWatch from "@/pages/video-watch";
 import Subscribe from "@/pages/subscribe";
@@ -106,6 +107,11 @@ function Router() {
       <Route path="/app/continue">
         <RequireSubscription>
           <ContinueReading />
+        </RequireSubscription>
+      </Route>
+      <Route path="/app/start/:catalogKey">
+        <RequireSubscription>
+          <StartReading />
         </RequireSubscription>
       </Route>
       <Route path="/app/review">

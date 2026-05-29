@@ -534,6 +534,9 @@ components:
         englishAuthor:
           type: ["string", "null"]
           description: "Author's name in Latin script as commonly used in English (e.g. 'Fyodor Dostoevsky')"
+        catalogKey:
+          type: ["string", "null"]
+          description: "Stable catalog identifier for seeded texts (e.g. 'Aeneis'), used for deep links"
         createdAt:
           type: string
 

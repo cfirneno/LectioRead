@@ -119,6 +119,7 @@ router.get("/texts", async (_req: AuthedRequest, res): Promise<void> => {
       publicationYear: t.publicationYear,
       englishTitle: t.englishTitle,
       englishAuthor: t.englishAuthor,
+      catalogKey: t.catalogKey,
       createdAt: t.createdAt.toISOString(),
     }))
   );

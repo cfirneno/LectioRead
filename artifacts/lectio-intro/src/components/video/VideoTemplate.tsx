@@ -111,15 +111,15 @@ export default function VideoTemplate({
           className="absolute inset-0 z-40 flex flex-col items-center justify-center gap-6 bg-black/75 px-6 text-center backdrop-blur-sm"
         >
           <p className="font-serif text-2xl md:text-3xl text-white/90 max-w-xl leading-snug">
-            That's the introduction. Continue in the reading room for the rest of the lesson.
+            That's the introduction. Continue with the Aeneid in the reading room.
           </p>
           <a
-            href="/app/continue"
+            href="/app/start/Aeneis"
             target="_top"
             rel="noopener"
             className="inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 font-serif text-lg font-semibold text-black transition-transform hover:scale-105"
           >
-            Continue in the reading room
+            Start reading the Aeneid
             <span aria-hidden="true">→</span>
           </a>
         </motion.div>

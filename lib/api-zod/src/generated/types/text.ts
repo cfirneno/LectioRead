@@ -40,5 +40,10 @@ export interface Text {
      * @nullable
      */
   englishAuthor?: string | null;
+  /**
+     * Stable catalog identifier for seeded texts (e.g. 'Aeneis'), used for deep links
+     * @nullable
+     */
+  catalogKey?: string | null;
   createdAt: string;
 }
