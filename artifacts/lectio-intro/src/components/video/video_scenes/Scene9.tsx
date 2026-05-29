@@ -7,15 +7,15 @@ const LINES = [
   'litora.',
 ];
 
-export function Scene7() {
+export function Scene9() {
   const [phase, setPhase] = useState(0);
 
   useEffect(() => {
     const timers = [
       setTimeout(() => setPhase(1), 300),
-      setTimeout(() => setPhase(2), 2600),
-      setTimeout(() => setPhase(3), 4200),
-      setTimeout(() => setPhase(4), 5600),
+      setTimeout(() => setPhase(2), 1400),
+      setTimeout(() => setPhase(3), 2200),
+      setTimeout(() => setPhase(4), 3000),
     ];
     return () => timers.forEach((t) => clearTimeout(t));
   }, []);
@@ -34,7 +34,7 @@ export function Scene7() {
         animate={phase >= 1 ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
         transition={{ duration: 1 }}
       >
-        Listen — the opening of the Aeneid
+        Now — listen once more
       </motion.h3>
 
       <div className="flex flex-col items-center gap-4 max-w-[80vw]">
@@ -48,7 +48,7 @@ export function Scene7() {
                 ? { opacity: 1, y: 0, filter: 'blur(0px)' }
                 : { opacity: 0, y: 24, filter: 'blur(8px)' }
             }
-            transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
           >
             {line}
           </motion.p>

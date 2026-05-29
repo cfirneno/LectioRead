@@ -32,7 +32,7 @@ export function Scene8() {
         animate={phase >= 1 ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
         transition={{ duration: 1 }}
       >
-        Laocoön's Warning · Aeneid II
+        Listen — Laocoön's warning · Aeneid II
       </motion.h3>
 
       <div className="flex flex-col items-center gap-6 max-w-[80vw] border-l-4 border-primary pl-10">

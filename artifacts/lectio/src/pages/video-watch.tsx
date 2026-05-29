@@ -1,15 +1,33 @@
+import { useRef } from "react";
 import { Link, useParams, Redirect } from "wouter";
-import { BookOpen, ArrowLeft } from "lucide-react";
+import { BookOpen, ArrowLeft, Maximize } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { VIDEOS, getVideoBySlug } from "@/lib/videos";
 
 export default function VideoWatch() {
   const params = useParams();
   const video = getVideoBySlug(params.slug);
+  const frameRef = useRef<HTMLIFrameElement | null>(null);
 
   if (!video) {
     return <Redirect to="/app/videos" />;
   }
+
+  const goFullscreen = () => {
+    const el = frameRef.current as
+      | (HTMLIFrameElement & { webkitRequestFullscreen?: () => void })
+      | null;
+    if (!el) return;
+    if (el.requestFullscreen) {
+      el.requestFullscreen().catch(() => {});
+    } else if (el.webkitRequestFullscreen) {
+      el.webkitRequestFullscreen();
+    }
+  };
+
+  const fullscreenSupported =
+    typeof document !== "undefined" &&
+    (document.fullscreenEnabled || "webkitRequestFullscreen" in document.createElement("iframe"));
 
   const others = VIDEOS.filter((v) => v.slug !== video.slug);
 
@@ -43,16 +61,27 @@ export default function VideoWatch() {
           <p className="text-muted-foreground pt-1">{video.description}</p>
         </div>
 
-        <div className="overflow-hidden rounded-xl border border-border/60 bg-black shadow-sm">
-          <div className="aspect-video w-full">
-            <iframe
-              src={video.src}
-              title={video.title}
-              className="h-full w-full border-0"
-              allow="autoplay; fullscreen"
-              allowFullScreen
-            />
+        <div className="space-y-3">
+          <div className="overflow-hidden rounded-xl border border-border/60 bg-black shadow-sm">
+            <div className="aspect-video w-full">
+              <iframe
+                ref={frameRef}
+                src={video.src}
+                title={video.title}
+                className="h-full w-full border-0"
+                allow="autoplay; fullscreen"
+                allowFullScreen
+              />
+            </div>
           </div>
+          {fullscreenSupported && (
+            <div className="flex justify-end">
+              <Button variant="outline" size="sm" className="font-serif" onClick={goFullscreen}>
+                <Maximize className="h-4 w-4 mr-1.5" />
+                Fullscreen
+              </Button>
+            </div>
+          )}
         </div>
 
         {others.length > 0 && (

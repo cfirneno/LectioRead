@@ -10,6 +10,8 @@ import { Scene6 } from './video_scenes/Scene6';
 import { Scene7 } from './video_scenes/Scene7';
 import { Scene8 } from './video_scenes/Scene8';
 import { Scene9 } from './video_scenes/Scene9';
+import { Scene10 } from './video_scenes/Scene10';
+import { Scene11 } from './video_scenes/Scene11';
 
 export const SCENE_DURATIONS = {
   scene1: 4000,
@@ -20,7 +22,9 @@ export const SCENE_DURATIONS = {
   scene6: 8000,
   scene7: 8000,
   scene8: 18000,
-  scene9: 12000,
+  scene9: 13000,
+  scene10: 15000,
+  scene11: 6000,
 };
 
 const SCENE_COMPONENTS: Record<string, React.ComponentType> = {
@@ -33,6 +37,8 @@ const SCENE_COMPONENTS: Record<string, React.ComponentType> = {
   scene7: Scene7,
   scene8: Scene8,
   scene9: Scene9,
+  scene10: Scene10,
+  scene11: Scene11,
 };
 
 const SCENE_START_SEC: Record<string, number> = (() => {
