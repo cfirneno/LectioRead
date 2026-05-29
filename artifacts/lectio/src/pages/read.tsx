@@ -150,7 +150,7 @@ export default function Read() {
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
 
-  const [stage, setStage] = useState<1 | 2 | 3 | 4 | 5>(1);
+  const [stage, setStage] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
   const [quizOpen, setQuizOpen] = useState(false);
 
   const { data: text } = useGetText(id);
@@ -228,6 +228,24 @@ export default function Read() {
     );
   };
 
+  useEffect(() => {
+    if (stage !== 2) return;
+    let cancelled = false;
+    audioMutation.mutate(
+      { textId: id, index: pIndex },
+      {
+        onSuccess: (data) => {
+          if (cancelled) return;
+          playBase64Mp3(data.audioBase64);
+        },
+      }
+    );
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stage, id, pIndex]);
+
   const supportsScansion = !!text && /latin|greek|ἑλλην|ελλην/i.test(text.language);
   const grammar = text ? getGrammarResource(text.language) : null;
 
@@ -256,19 +274,21 @@ export default function Read() {
 
   const advanceStage = useCallback(() => {
     if (stage === 1) {
+      setStage(2);
+    } else if (stage === 2) {
       interlinearMutation.mutate(
         { textId: id, index: pIndex },
-        { onSuccess: (data) => { setInterlinearData(data); setStage(2); } }
+        { onSuccess: (data) => { setInterlinearData(data); setStage(3); } }
       );
-    } else if (stage === 2) {
-      setStage(3);
     } else if (stage === 3) {
+      setStage(4);
+    } else if (stage === 4) {
       fullTranslationMutation.mutate(
         { textId: id, index: pIndex },
-        { onSuccess: (data) => { setFullTransData(data); setStage(4); } }
+        { onSuccess: (data) => { setFullTransData(data); setStage(5); } }
       );
-    } else if (stage === 4) {
-      setStage(5);
+    } else if (stage === 5) {
+      setStage(6);
     }
   }, [stage, id, pIndex, interlinearMutation, fullTranslationMutation]);
 
@@ -289,9 +309,9 @@ export default function Read() {
         }
       }
       e.preventDefault();
-      if (stage < 5 && !interlinearMutation.isPending && !fullTranslationMutation.isPending) {
+      if (stage < 6 && !interlinearMutation.isPending && !fullTranslationMutation.isPending) {
         advanceStage();
-      } else if (stage === 5) {
+      } else if (stage === 6) {
         handleGotIt();
       }
     };
@@ -353,7 +373,7 @@ export default function Read() {
           </div>
           <div className="flex items-center gap-2">
             <div className="text-xs font-medium px-3 py-1 rounded-full bg-secondary text-secondary-foreground">
-              Stage {stage} of 5
+              Stage {stage} of 6
             </div>
           </div>
         </div>
@@ -369,9 +389,15 @@ export default function Read() {
           ) : (
             <div className="w-full max-w-4xl animate-in fade-in zoom-in duration-500">
               
-              {/* STAGE 1, 3, 5: Original text only */}
-              {(stage === 1 || stage === 3 || stage === 5) && (
+              {/* STAGE 1, 2, 4, 6: Original text (read by eye, listen, read aloud, read again) */}
+              {(stage === 1 || stage === 2 || stage === 4 || stage === 6) && (
                 <div className="text-center max-w-3xl mx-auto space-y-6">
+                  <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
+                    {stage === 1 && "Read it through once"}
+                    {stage === 2 && "Listen as it's read aloud"}
+                    {stage === 4 && "Now read it aloud yourself"}
+                    {stage === 6 && "Read it through one more time"}
+                  </p>
                   <p className="font-serif text-3xl md:text-4xl leading-[1.6] text-foreground whitespace-pre-wrap">
                     {showScansion && scannedText ? scannedText : paragraph.originalText}
                   </p>
@@ -411,8 +437,8 @@ export default function Read() {
                 </div>
               )}
 
-              {/* STAGE 2: Interlinear */}
-              {stage === 2 && interlinearData && (
+              {/* STAGE 3: Interlinear */}
+              {stage === 3 && interlinearData && (
                 <div className="space-y-6">
                   <div className="flex flex-wrap justify-center gap-x-4 md:gap-x-6 gap-y-8 md:gap-y-12">
                     {interlinearData.words.map((wordPair: any, i: number) => {
@@ -453,8 +479,8 @@ export default function Read() {
                 </div>
               )}
 
-              {/* STAGE 4: Side-by-side */}
-              {stage === 4 && fullTransData && (
+              {/* STAGE 5: Side-by-side */}
+              {stage === 5 && fullTransData && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16">
                   <div>
                     <h3 className="text-xs font-semibold tracking-widest text-muted-foreground uppercase mb-6">{text?.language}</h3>
@@ -477,13 +503,13 @@ export default function Read() {
         </div>
 
         <div className="shrink-0 flex justify-center py-8">
-          {!isGenerating && stage < 5 && (
+          {!isGenerating && stage < 6 && (
             <div className="flex items-center gap-4">
-              {(stage === 2 || stage === 4) && (
+              {(stage === 3 || stage === 5) && (
                 <Button
                   size="lg"
                   variant="ghost"
-                  onClick={() => setStage(stage === 2 ? 1 : 3)}
+                  onClick={() => setStage(stage === 3 ? 2 : 4)}
                   className="rounded-full px-8 h-14 font-serif text-lg text-muted-foreground hover:text-foreground"
                 >
                   ← Back
@@ -502,7 +528,7 @@ export default function Read() {
             </div>
           )}
 
-          {!isGenerating && stage === 5 && (
+          {!isGenerating && stage === 6 && (
             <div className="flex flex-col sm:flex-row items-center gap-4">
               <Button 
                 size="lg" 
