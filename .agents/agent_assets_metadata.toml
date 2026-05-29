@@ -12,3 +12,33 @@ id = "SsdwgUZGYq34KRZjQ1wk0"
 uri = "file://artifacts/lectio-intro/public/images/parchment.png"
 type = "image"
 title = "Ancient parchment texture"
+
+[[generated]]
+id = "PEepqY0HHrjL2DPQSNdBQ"
+uri = "file://artifacts/lectio-laocoon/public/images/horse.png"
+type = "image"
+title = "Wooden horse abandoned outside Troy"
+
+[[generated]]
+id = "piLuNsI3jiZlv0t8KMY1y"
+uri = "file://artifacts/lectio-laocoon/public/images/statue.png"
+type = "image"
+title = "Laocoon statue dramatic lighting"
+
+[[generated]]
+id = "Tguv9rXtoUup_fzXvb-_n"
+uri = "file://artifacts/lectio-laocoon/public/images/spear.png"
+type = "image"
+title = "Spear striking wooden horse"
+
+[[generated]]
+id = "0sL5H6KYM3OGM6l9MzqtW"
+uri = "file://artifacts/lectio-laocoon/public/images/sea.png"
+type = "image"
+title = "Serpents rising from sea"
+
+[[generated]]
+id = "E_CzaqxR_tRR5nldBd5Lg"
+uri = "file://artifacts/lectio-laocoon/public/images/gates.png"
+type = "image"
+title = "Massive ancient city gates"

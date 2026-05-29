@@ -1,0 +1,31 @@
+kind = "video"
+previewPath = "/lectio-laocoon/"
+title = "Lectio — Laocoön"
+version = "1.0.0"
+id = "artifacts/lectio-laocoon"
+router = "path"
+
+[[integratedSkills]]
+name = "video-js"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/lectio-laocoon/" ]
+localPort = 25386
+
+[services.development]
+run = "pnpm --filter @workspace/lectio-laocoon run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/lectio-laocoon", "run", "build" ]
+publicDir = "artifacts/lectio-laocoon/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25386"
+BASE_PATH = "/lectio-laocoon/"
