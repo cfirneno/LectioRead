@@ -826,7 +826,7 @@ components:
           type: string
         source:
           type: string
-          description: "perseus | wiktionary | none"
+          description: "perseus | ai | wiktionary | none"
         sourceUrl:
           type: string
         analyses:

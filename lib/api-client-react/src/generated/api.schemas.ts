@@ -211,7 +211,7 @@ export interface WordLookupAnalysis {
 export interface WordLookup {
   word: string;
   language: string;
-  /** perseus | wiktionary | none */
+  /** perseus | ai | wiktionary | none */
   source: string;
   sourceUrl: string;
   analyses: WordLookupAnalysis[];

@@ -1,5 +1,6 @@
 import { Router, type IRouter, type Request, type Response, type NextFunction } from "express";
 import * as cheerio from "cheerio";
+import { generateWordAnalysis } from "../lib/ai";
 
 const router: IRouter = Router();
 
@@ -139,6 +140,9 @@ router.get("/lookup", rateLimit, async (req, res) => {
     const queryWord =
       perseusLang === "la" ? stripMacrons(word) : greekToBetaCode(word);
     const cleaned = queryWord.replace(/[^\p{L}\p{M}'’\-]/gu, "");
+    // Punctuation-stripped form that preserves the original script/accents,
+    // used for the AI fallback and the Wiktionary "Open full entry" link.
+    const displayWord = word.replace(/[^\p{L}\p{M}'’\-]/gu, "");
     const sourceUrl = `https://www.perseus.tufts.edu/hopper/morph?l=${encodeURIComponent(cleaned)}&la=${perseusLang}`;
 
     try {
@@ -153,23 +157,44 @@ router.get("/lookup", rateLimit, async (req, res) => {
       });
       clearTimeout(timer);
 
-      if (!resp.ok) {
-        req.log.warn({ status: resp.status, word, lang }, "Perseus returned non-200");
-        res.status(502).json({
-          error: "Perseus unavailable",
-          status: resp.status,
-          sourceUrl,
-        });
+      if (resp.ok) {
+        const html = await resp.text();
+        const analyses = parsePerseusHtml(html);
+        if (analyses.length > 0) {
+          res.json({ word, language: lang, source: "perseus", sourceUrl, analyses });
+          return;
+        }
+        // Perseus reachable but returned no parse — fall through to AI.
+        req.log.info({ word, lang }, "Perseus returned no parse; trying AI fallback");
+      } else {
+        req.log.warn({ status: resp.status, word, lang }, "Perseus returned non-200; trying AI fallback");
+      }
+    } catch (err) {
+      req.log.warn({ err, word, lang }, "Perseus lookup failed; trying AI fallback");
+    }
+
+    // Perseus unavailable or unhelpful → AI-generated morphology fallback so
+    // the grammar lookup keeps working during Perseus outages.
+    const wiktionaryUrl = `https://en.wiktionary.org/wiki/${encodeURIComponent(displayWord)}`;
+    try {
+      // Cap tail latency: if the model is slow, give up rather than risk a
+      // gateway timeout. The dangling AI promise settles and is ignored.
+      const analyses = await Promise.race([
+        generateWordAnalysis(displayWord, lang),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error("AI analysis timed out")), 12000)
+        ),
+      ]);
+      if (analyses.length > 0) {
+        res.json({ word, language: lang, source: "ai", sourceUrl: wiktionaryUrl, analyses });
         return;
       }
-
-      const html = await resp.text();
-      const analyses = parsePerseusHtml(html);
-      res.json({ word, language: lang, source: "perseus", sourceUrl, analyses });
+      // No parse from either source — return an empty (but successful) result.
+      res.json({ word, language: lang, source: "none", sourceUrl: wiktionaryUrl, analyses: [] });
       return;
     } catch (err) {
-      req.log.warn({ err, word, lang }, "Perseus lookup failed");
-      res.status(502).json({ error: "Perseus unreachable", sourceUrl });
+      req.log.warn({ err, word, lang }, "AI word-analysis fallback failed");
+      res.status(502).json({ error: "Lookup unavailable", sourceUrl: wiktionaryUrl });
       return;
     }
   }

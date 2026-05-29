@@ -194,6 +194,74 @@ ${originalText}`,
   return content;
 }
 
+export interface WordAnalysis {
+  lemma?: string;
+  features: Array<{ label: string; value: string }>;
+}
+
+/**
+ * AI fallback for word morphology when Perseus is unavailable.
+ * Returns every plausible morphological parse for a single inflected form.
+ */
+export async function generateWordAnalysis(
+  word: string,
+  language: string
+): Promise<WordAnalysis[]> {
+  const response = await openai.chat.completions.create({
+    model: "gpt-5-mini",
+    max_completion_tokens: 2048,
+    reasoning_effort: "minimal",
+    messages: [
+      {
+        role: "system",
+        content: `You are a classical-language morphology expert specializing in Latin and Ancient/Koine Greek. Given a single inflected word form, return every plausible morphological analysis. Return ONLY valid JSON, nothing else.`,
+      },
+      {
+        role: "user",
+        content: `Analyze the ${language} word form "${word}".
+Return JSON of exactly this shape:
+{"analyses":[{"lemma":"<dictionary headword>","features":[{"label":"Parse","value":"<full parse e.g. accusative plural neuter>"},{"label":"Meaning","value":"<short English gloss>"}]}]}
+Rules:
+- Include every distinct grammatical parse the form could represent (homographs, multiple cases/tenses, etc.).
+- "lemma" is the dictionary headword (nominative singular for nouns; first principal part / 1st-person singular present active indicative for verbs).
+- Each analysis's "features" must include a "Parse" entry (full morphological description) and a "Meaning" entry (concise English gloss).
+- If the form is not a valid ${language} word, return {"analyses":[]}.
+- No commentary, JSON only.`,
+      },
+    ],
+  });
+
+  const content = response.choices[0]?.message?.content?.trim();
+  if (!content) return [];
+  const jsonMatch = content.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) return [];
+  try {
+    const parsed = JSON.parse(jsonMatch[0]) as {
+      analyses?: Array<{
+        lemma?: unknown;
+        features?: Array<{ label?: unknown; value?: unknown }>;
+      }>;
+    };
+    const analyses = Array.isArray(parsed.analyses) ? parsed.analyses : [];
+    return analyses
+      .map((a) => ({
+        lemma:
+          typeof a.lemma === "string" && a.lemma.trim()
+            ? a.lemma.trim()
+            : undefined,
+        features: (Array.isArray(a.features) ? a.features : [])
+          .filter((f) => f && typeof f.value === "string" && f.value.trim())
+          .map((f) => ({
+            label: typeof f.label === "string" ? f.label : "",
+            value: (f.value as string).trim(),
+          })),
+      }))
+      .filter((a) => a.features.length > 0);
+  } catch {
+    return [];
+  }
+}
+
 export async function lookupEnglishTitles(
   books: Array<{ id: number; title: string; author: string; language: string }>
 ): Promise<Map<number, { englishTitle: string | null; englishAuthor: string | null }>> {

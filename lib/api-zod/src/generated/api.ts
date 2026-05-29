@@ -150,7 +150,7 @@ export const LookupWordQueryParams = zod.object({
 export const LookupWordResponse = zod.object({
   "word": zod.string(),
   "language": zod.string(),
-  "source": zod.string().describe('perseus | wiktionary | none'),
+  "source": zod.string().describe('perseus | ai | wiktionary | none'),
   "sourceUrl": zod.string(),
   "analyses": zod.array(zod.object({
   "lemma": zod.string().optional(),

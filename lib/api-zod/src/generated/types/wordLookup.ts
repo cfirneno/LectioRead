@@ -10,7 +10,7 @@ import type { WordLookupAnalysis } from './wordLookupAnalysis';
 export interface WordLookup {
   word: string;
   language: string;
-  /** perseus | wiktionary | none */
+  /** perseus | ai | wiktionary | none */
   source: string;
   sourceUrl: string;
   analyses: WordLookupAnalysis[];
