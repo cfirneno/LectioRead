@@ -171,6 +171,7 @@ export default function Read() {
   const audioRef = React.useRef<HTMLAudioElement | null>(null);
   const audioUrlRef = React.useRef<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [audioReady, setAudioReady] = useState(false);
 
   const cleanupAudio = useCallback(() => {
     if (audioRef.current) {
@@ -182,6 +183,30 @@ export default function Read() {
       audioUrlRef.current = null;
     }
     setIsPlaying(false);
+    setAudioReady(false);
+  }, []);
+
+  const prepareAudio = useCallback((base64: string) => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+    if (audioUrlRef.current) {
+      URL.revokeObjectURL(audioUrlRef.current);
+      audioUrlRef.current = null;
+    }
+    const byteChars = atob(base64);
+    const bytes = new Uint8Array(byteChars.length);
+    for (let i = 0; i < byteChars.length; i++) bytes[i] = byteChars.charCodeAt(i);
+    const blob = new Blob([bytes], { type: "audio/mpeg" });
+    const url = URL.createObjectURL(blob);
+    audioUrlRef.current = url;
+    const audio = new Audio(url);
+    audio.onended = () => setIsPlaying(false);
+    audio.onpause = () => setIsPlaying(false);
+    audio.onplay = () => setIsPlaying(true);
+    audioRef.current = audio;
+    setAudioReady(true);
   }, []);
 
   useEffect(() => {
@@ -195,24 +220,36 @@ export default function Read() {
 
   useEffect(() => cleanupAudio, [cleanupAudio]);
 
-  const playBase64Mp3 = (base64: string) => {
-    cleanupAudio();
-    const byteChars = atob(base64);
-    const bytes = new Uint8Array(byteChars.length);
-    for (let i = 0; i < byteChars.length; i++) bytes[i] = byteChars.charCodeAt(i);
-    const blob = new Blob([bytes], { type: "audio/mpeg" });
-    const url = URL.createObjectURL(blob);
-    audioUrlRef.current = url;
-    const audio = new Audio(url);
-    audioRef.current = audio;
-    audio.onended = () => setIsPlaying(false);
-    audio.onpause = () => setIsPlaying(false);
-    audio.play().then(() => setIsPlaying(true)).catch(() => setIsPlaying(false));
-  };
+  // Prefetch and prepare the spoken audio as soon as the paragraph loads, so the
+  // play button can start playback synchronously within the user's tap. Browsers
+  // block play() calls made after an async network response (autoplay policy).
+  useEffect(() => {
+    if (!paragraph) return;
+    let cancelled = false;
+    audioMutation.mutate(
+      { textId: id, index: pIndex },
+      {
+        onSuccess: (data) => {
+          if (cancelled) return;
+          prepareAudio(data.audioBase64);
+        },
+      }
+    );
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, pIndex, paragraph?.id]);
 
   const handleListen = () => {
-    if (isPlaying) {
-      if (audioRef.current) audioRef.current.pause();
+    const audio = audioRef.current;
+    if (audio) {
+      if (isPlaying) {
+        audio.pause();
+      } else {
+        audio.currentTime = 0;
+        audio.play().then(() => setIsPlaying(true)).catch(() => setIsPlaying(false));
+      }
       return;
     }
     const requestedId = id;
@@ -222,7 +259,11 @@ export default function Read() {
       {
         onSuccess: (data) => {
           if (requestedId !== id || requestedIndex !== pIndex) return;
-          playBase64Mp3(data.audioBase64);
+          prepareAudio(data.audioBase64);
+          audioRef.current
+            ?.play()
+            .then(() => setIsPlaying(true))
+            .catch(() => setIsPlaying(false));
         },
       }
     );
@@ -230,22 +271,16 @@ export default function Read() {
 
   useEffect(() => {
     if (stage !== 2) return;
-    let cancelled = false;
-    audioMutation.mutate(
-      { textId: id, index: pIndex },
-      {
-        onSuccess: (data) => {
-          if (cancelled) return;
-          playBase64Mp3(data.audioBase64);
-        },
-      }
-    );
+    const audio = audioRef.current;
+    if (audio) {
+      audio.currentTime = 0;
+      audio.play().then(() => setIsPlaying(true)).catch(() => {});
+    }
     return () => {
-      cancelled = true;
-      cleanupAudio();
+      if (audioRef.current) audioRef.current.pause();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stage, id, pIndex]);
+  }, [stage, audioReady]);
 
   const supportsScansion = !!text && /latin|greek|ἑλλην|ελλην/i.test(text.language);
   const grammar = text ? getGrammarResource(text.language) : null;
