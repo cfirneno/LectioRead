@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { BookOpen, Languages, Layers, GraduationCap, Sparkles, ChevronDown } from "lucide-react";
+import { BookOpen, Languages, Layers, GraduationCap, Sparkles, ChevronDown, Play } from "lucide-react";
 
 function scrollToWhyOriginal() {
   document.getElementById("why-original")?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -48,6 +48,12 @@ export default function Landing() {
             <span>Lectio</span>
           </div>
           <div className="flex items-center gap-2">
+            <a href="/lectio-iliad-intro/">
+              <Button variant="ghost" className="font-serif gap-2">
+                <Play className="h-4 w-4" />
+                Watch
+              </Button>
+            </a>
             <Link href="/sign-in">
               <Button variant="ghost" className="font-serif">Sign in</Button>
             </Link>
