@@ -1,1 +1,2 @@
 attached_assets/generated_videos/laocoon_serpents_sequence.mp4 filter=lfs diff=lfs merge=lfs -text
+artifacts/lectio-laocoon/public/video/serpents_sequence.mp4 filter=lfs diff=lfs merge=lfs -text

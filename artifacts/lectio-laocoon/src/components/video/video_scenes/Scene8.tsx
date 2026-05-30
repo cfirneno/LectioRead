@@ -26,8 +26,18 @@ export function Scene8() {
       exit={{ opacity: 0, filter: 'blur(10px)' }}
       transition={{ duration: 1 }}
     >
+      <video
+        className="absolute inset-0 w-full h-full object-cover opacity-[0.18] blur-[2px] pointer-events-none"
+        src={`${import.meta.env.BASE_URL}video/serpents_sequence_bg.mp4`}
+        autoPlay
+        muted
+        loop
+        playsInline
+      />
+      <div className="absolute inset-0 bg-bg-dark/70 pointer-events-none" />
+
       <motion.h3
-        className="text-[1.6vw] font-body tracking-[0.4em] uppercase text-secondary mb-12"
+        className="relative text-[1.6vw] font-body tracking-[0.4em] uppercase text-secondary mb-12"
         initial={{ opacity: 0, y: 20 }}
         animate={phase >= 1 ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
         transition={{ duration: 1 }}
@@ -35,7 +45,7 @@ export function Scene8() {
         Listen — Laocoön's warning · Aeneid II
       </motion.h3>
 
-      <div className="flex flex-col items-center gap-6 max-w-[80vw] border-l-4 border-primary pl-10">
+      <div className="relative flex flex-col items-center gap-6 max-w-[80vw] border-l-4 border-primary pl-10">
         {LINES.map((line, i) => (
           <motion.p
             key={line}
