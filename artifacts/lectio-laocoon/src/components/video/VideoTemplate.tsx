@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useVideoPlayer } from '@/lib/video';
 import { Scene1 } from './video_scenes/Scene1';
@@ -80,17 +80,67 @@ export default function VideoTemplate({
   const SceneComponent = SCENE_COMPONENTS[baseSceneKey];
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const targetTimeRef = useRef(0);
+  const [needsGesture, setNeedsGesture] = useState(false);
 
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
     audio.volume = 0.95;
     const targetTime = SCENE_START_SEC[baseSceneKey] ?? 0;
+    targetTimeRef.current = targetTime;
     if (Math.abs(audio.currentTime - targetTime) > AUDIO_SEEK_EPSILON_SEC) {
       audio.currentTime = targetTime;
     }
-    audio.play().catch(() => {});
+    audio
+      .play()
+      .then(() => setNeedsGesture(false))
+      .catch((err: unknown) => {
+        // Only an autoplay-policy block needs a user gesture; ignore transient
+        // play() interruptions (e.g. a rapid scene change aborting playback).
+        if (
+          err instanceof DOMException &&
+          (err.name === 'NotAllowedError' || err.name === 'SecurityError')
+        ) {
+          setNeedsGesture(true);
+        }
+      });
   }, [currentSceneKey, baseSceneKey, muted]);
+
+  // Browsers block sound until the user interacts with the page. While autoplay
+  // is blocked, resume narration on the first interaction (and via the overlay).
+  // Gated on needsGesture so once sound is playing these listeners are removed
+  // and a later click can't rewind the audio.
+  useEffect(() => {
+    if (muted || !needsGesture) return;
+    const unlock = () => {
+      const audio = audioRef.current;
+      if (!audio || !audio.paused) return;
+      audio.currentTime = targetTimeRef.current;
+      audio
+        .play()
+        .then(() => setNeedsGesture(false))
+        .catch(() => {});
+    };
+    window.addEventListener('pointerdown', unlock);
+    window.addEventListener('touchstart', unlock);
+    window.addEventListener('keydown', unlock);
+    return () => {
+      window.removeEventListener('pointerdown', unlock);
+      window.removeEventListener('touchstart', unlock);
+      window.removeEventListener('keydown', unlock);
+    };
+  }, [muted, needsGesture]);
+
+  const startSound = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.currentTime = targetTimeRef.current;
+    audio
+      .play()
+      .then(() => setNeedsGesture(false))
+      .catch(() => {});
+  };
 
   return (
     <div className="w-full h-screen overflow-hidden relative bg-bg-dark text-text-inverse">
@@ -144,6 +194,23 @@ export default function VideoTemplate({
             <span aria-hidden="true">→</span>
           </a>
         </motion.div>
+      )}
+
+      {needsGesture && !muted && (
+        <button
+          type="button"
+          onClick={startSound}
+          className="absolute inset-0 z-50 flex flex-col items-center justify-center gap-5 bg-black/55 backdrop-blur-[2px] cursor-pointer"
+        >
+          <span className="flex h-24 w-24 items-center justify-center rounded-full bg-white/95 text-black shadow-2xl transition-transform hover:scale-105">
+            <svg viewBox="0 0 24 24" className="h-9 w-9 translate-x-[2px]" fill="currentColor" aria-hidden="true">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </span>
+          <span className="font-body text-sm uppercase tracking-[0.35em] text-white/90">
+            Tap for sound
+          </span>
+        </button>
       )}
 
       <audio
