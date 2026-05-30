@@ -1,6 +1,6 @@
 // Video player hook - handles recording lifecycle, scene advancement, and looping
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, type RefObject } from 'react';
 
 declare global {
   interface Window {
@@ -19,6 +19,13 @@ export interface UseVideoPlayerOptions {
   loop?: boolean;
   /** When false, the scene timeline is paused (e.g. before the user hits play). */
   active?: boolean;
+  /**
+   * When true, the visible scene is derived from `audioRef`'s playback clock
+   * instead of independent timers, so images stay locked to the narration.
+   * Used for interactive playback; recording/export stays timer-driven.
+   */
+  driveFromAudio?: boolean;
+  audioRef?: RefObject<HTMLMediaElement | null>;
 }
 
 export interface UseVideoPlayerReturn {
@@ -29,12 +36,27 @@ export interface UseVideoPlayerReturn {
 }
 
 export function useVideoPlayer(options: UseVideoPlayerOptions): UseVideoPlayerReturn {
-  const { durations, onVideoEnd, loop = true, active = true } = options;
+  const { durations, onVideoEnd, loop = true, active = true, driveFromAudio = false, audioRef } =
+    options;
 
   // Captured once on mount -- durations must be a static object
   const sceneKeys = useRef(Object.keys(durations)).current;
   const totalScenes = sceneKeys.length;
   const durationsArray = useRef(Object.values(durations)).current;
+
+  // Cumulative scene start times (seconds) and total length, for the audio clock.
+  const sceneStartsSec = useRef(
+    (() => {
+      const starts: number[] = [];
+      let cumMs = 0;
+      for (const ms of durationsArray) {
+        starts.push(cumMs / 1000);
+        cumMs += ms;
+      }
+      return starts;
+    })(),
+  ).current;
+  const totalSec = useRef(durationsArray.reduce((a, b) => a + b, 0) / 1000).current;
 
   const [currentScene, setCurrentScene] = useState(0);
   const [hasEnded, setHasEnded] = useState(false);
@@ -44,9 +66,46 @@ export function useVideoPlayer(options: UseVideoPlayerOptions): UseVideoPlayerRe
     window.startRecording?.();
   }, []);
 
-  // Scene advancement -- loops independently of recording
+  // Audio-clock mode: the narration drives which scene is visible, so words and
+  // images can't drift apart. Each frame, pick the scene whose window contains
+  // audio.currentTime.
   useEffect(() => {
-    if (!active) return;
+    if (!active || !driveFromAudio) return;
+    const audio = audioRef?.current;
+    if (!audio) return;
+
+    let raf = 0;
+    const tick = () => {
+      const t = audio.currentTime;
+      let idx = 0;
+      for (let i = 0; i < sceneStartsSec.length; i++) {
+        if (t >= sceneStartsSec[i]) idx = i;
+        else break;
+      }
+      setCurrentScene(prev => (prev === idx ? prev : idx));
+
+      if (t >= totalSec - 0.05) {
+        if (!hasEnded) {
+          window.stopRecording?.();
+          setHasEnded(true);
+          onVideoEnd?.();
+        }
+        if (loop) {
+          audio.currentTime = 0;
+        } else {
+          audio.pause();
+        }
+      }
+
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [active, driveFromAudio, audioRef, sceneStartsSec, totalSec, hasEnded, loop, onVideoEnd]);
+
+  // Timer mode (recording/export): scenes advance on their own clock.
+  useEffect(() => {
+    if (!active || driveFromAudio) return;
     if (hasEnded && !loop) return;
 
     const currentDuration = durationsArray[currentScene];
@@ -68,7 +127,7 @@ export function useVideoPlayer(options: UseVideoPlayerOptions): UseVideoPlayerRe
     }, currentDuration);
 
     return () => clearTimeout(timer);
-  }, [active, currentScene, totalScenes, durationsArray, hasEnded, loop, onVideoEnd]);
+  }, [active, driveFromAudio, currentScene, totalScenes, durationsArray, hasEnded, loop, onVideoEnd]);
 
   return {
     currentScene,

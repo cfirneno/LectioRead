@@ -47,18 +47,6 @@ const SCENE_COMPONENTS: Record<string, React.ComponentType> = {
   scene11: Scene11,
 };
 
-const SCENE_START_SEC: Record<string, number> = (() => {
-  const out: Record<string, number> = {};
-  let cumulativeMs = 0;
-  for (const [key, ms] of Object.entries(SCENE_DURATIONS)) {
-    out[key] = cumulativeMs / 1000;
-    cumulativeMs += ms;
-  }
-  return out;
-})();
-
-const AUDIO_SEEK_EPSILON_SEC = 0.18;
-
 export default function VideoTemplate({
   durations = SCENE_DURATIONS,
   loop = true,
@@ -73,10 +61,19 @@ export default function VideoTemplate({
   // Recording/export harnesses drive playback with no user gesture, so start
   // active immediately when one is present (avoids capturing the start screen).
   // Interactive viewers start paused on the branded start screen.
-  const [started, setStarted] = useState(
-    () => typeof window !== 'undefined' && !!window.startRecording,
-  );
-  const { currentSceneKey, hasEnded } = useVideoPlayer({ durations, loop, active: started });
+  const isRecording = typeof window !== 'undefined' && !!window.startRecording;
+  const [started, setStarted] = useState(() => isRecording);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Interactive playback derives the scene from the narration's clock so words
+  // and images stay locked together; recording/export stays timer-driven.
+  const { currentSceneKey, hasEnded } = useVideoPlayer({
+    durations,
+    loop,
+    active: started,
+    driveFromAudio: started && !isRecording,
+    audioRef,
+  });
 
   useEffect(() => {
     onSceneChange?.(currentSceneKey);
@@ -84,22 +81,6 @@ export default function VideoTemplate({
 
   const baseSceneKey = currentSceneKey.replace(/_r[12]$/, '') as keyof typeof SCENE_DURATIONS;
   const SceneComponent = SCENE_COMPONENTS[baseSceneKey];
-
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  // Once playback has started, keep the narration aligned to the current scene.
-  // The audio plays continuously; this only corrects drift on a scene change.
-  useEffect(() => {
-    if (!started) return;
-    const audio = audioRef.current;
-    if (!audio) return;
-    audio.volume = 0.95;
-    const targetTime = SCENE_START_SEC[baseSceneKey] ?? 0;
-    if (Math.abs(audio.currentTime - targetTime) > AUDIO_SEEK_EPSILON_SEC) {
-      audio.currentTime = targetTime;
-    }
-    audio.play().catch(() => {});
-  }, [currentSceneKey, baseSceneKey, started]);
 
   // The play button is a real user gesture, so starting audio here always
   // unlocks sound — both the video and narration launch together.
