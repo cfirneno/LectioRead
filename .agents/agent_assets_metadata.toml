@@ -84,6 +84,120 @@ uri = "file://artifacts/lectio-iliad-intro/public/images/withdraw.png"
 type = "image"
 title = "Lone warrior by ships"
 
+[[generated]]
+id = "ky31iyFEG8P6pUPO7g_X2"
+uri = "file://artifacts/lectio-iliad-intro/public/images/iliad-hector/walls-of-troy.png"
+type = "image"
+title = "walls of troy two armies"
+
+[[generated]]
+id = "DIp2X4BuYjV-E3jWCV-wV"
+uri = "file://artifacts/lectio-iliad-intro/public/images/iliad-hector/hector-alone.png"
+type = "image"
+title = "hector alone at gates"
+
+[[generated]]
+id = "3ofm_XjjwYi_cOAyVzX4t"
+uri = "file://artifacts/lectio-iliad-intro/public/images/iliad-hector/priam-hecuba.png"
+type = "image"
+title = "priam and hecuba weeping"
+
+[[generated]]
+id = "PXeP8DuN8XrUPDWdx5Xgf"
+uri = "file://artifacts/lectio-iliad-intro/public/images/iliad-hector/achilles-star.png"
+type = "image"
+title = "achilles charging star spear"
+
+[[generated]]
+id = "GtjYSvyXqhfisuT6sz_iw"
+uri = "file://artifacts/lectio-iliad-intro/public/images/iliad-hector/chase-walls.png"
+type = "image"
+title = "warriors racing around walls"
+
+[[generated]]
+id = "zBstiO2b0PqC7R1mcMttq"
+uri = "file://artifacts/lectio-iliad-intro/public/images/iliad-hector/zeus-scales.png"
+type = "image"
+title = "zeus with golden scales"
+
+[[generated]]
+id = "81Ewd56LhoSHWDKaiNXej"
+uri = "file://artifacts/lectio-iliad-intro/public/images/iliad-hector/hector-fallen.png"
+type = "image"
+title = "fallen warrior departing soul"
+
+[[generated]]
+id = "wgghkB5sDtjPBRkj3ZEYB"
+uri = "file://artifacts/lectio-iliad-intro/public/images/odyssey-intro/wanderer.png"
+type = "image"
+title = "Wanderer against dark sea"
+
+[[generated]]
+id = "7libp3Rh_8Xp9eic7gPiz"
+uri = "file://artifacts/lectio-iliad-intro/public/images/odyssey-intro/ship_storm.png"
+type = "image"
+title = "Ship in storm waves"
+
+[[generated]]
+id = "WmlgF3LWgI93_5nHPjVbk"
+uri = "file://artifacts/lectio-iliad-intro/public/images/odyssey-intro/troy_aftermath.png"
+type = "image"
+title = "Troy in ruins aftermath"
+
+[[generated]]
+id = "cXvXmOvIFlnux4hf-vY_5"
+uri = "file://artifacts/lectio-iliad-intro/public/images/odyssey-intro/muse_starlit.png"
+type = "image"
+title = "Ethereal Muse starlit"
+
+[[generated]]
+id = "sGmtJ1WpeHgqh37FV2ka4"
+uri = "file://artifacts/lectio-iliad-intro/public/images/odyssey-intro/sun_cattle.png"
+type = "image"
+title = "Men with golden cattle"
+
+[[generated]]
+id = "BiB5nkr7NZG8pCEixZ1eG"
+uri = "file://artifacts/lectio-iliad-intro/public/images/odyssey-intro/calypso_island.png"
+type = "image"
+title = "Calypso lonely island"
+
+[[generated]]
+id = "_x-PhkG3vKo-TFt3FWReU"
+uri = "file://artifacts/lectio-iliad-intro/public/images/odyssey-cyclops/cyclops-cave.png"
+type = "image"
+title = "Cyclops silhouette in cave"
+
+[[generated]]
+id = "d3j_WtQvM6PlFJ7wUei_A"
+uri = "file://artifacts/lectio-iliad-intro/public/images/odyssey-cyclops/sealed-cave.png"
+type = "image"
+title = "Sealed cave mouth"
+
+[[generated]]
+id = "c3f9lRyE6A8saZgEoIlEJ"
+uri = "file://artifacts/lectio-iliad-intro/public/images/odyssey-cyclops/wine-krater.png"
+type = "image"
+title = "Krater of dark wine"
+
+[[generated]]
+id = "WGMWncqSUAG9RnUjKzHOb"
+uri = "file://artifacts/lectio-iliad-intro/public/images/odyssey-cyclops/glowing-stake.png"
+type = "image"
+title = "Glowing olive wood stake"
+
+[[generated]]
+id = "E3s3DaufntVqoRTJBr5o4"
+uri = "file://artifacts/lectio-iliad-intro/public/images/odyssey-cyclops/rams-escape.png"
+type = "image"
+title = "Escape under rams"
+
+[[generated]]
+id = "Ui3Ymd68vQFPlWDo_5qXS"
+uri = "file://artifacts/lectio-iliad-intro/public/images/odyssey-cyclops/ship-fleeing.png"
+type = "image"
+title = "Ship fleeing giant"
+
 [[outputs]]
 id = "jLGHvVJhEE9oTNwUDidhh"
 uri = "file://attached_assets/generated_videos/serpents_rising_sea_v1.mp4"

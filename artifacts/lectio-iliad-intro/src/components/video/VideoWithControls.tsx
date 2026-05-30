@@ -6,8 +6,9 @@ import {
   ChevronUp,
   ChevronDown,
 } from 'lucide-react';
-import VideoTemplate, { SCENE_DURATIONS } from './VideoTemplate';
+import VideoTemplate from './VideoTemplate';
 import { useSceneControls } from './useSceneControls';
+import type { VideoConfig } from '@/videos/types';
 
 const PROGRESS_TICK_MS = 60;
 
@@ -154,7 +155,7 @@ function ControlBar({
   );
 }
 
-export default function VideoWithControls() {
+export default function VideoWithControls({ config }: { config: VideoConfig }) {
   const isIframed = typeof window !== 'undefined' && window.self !== window.top;
 
   const {
@@ -168,7 +169,7 @@ export default function VideoWithControls() {
     onSceneChange,
     jumpTo,
     toggleLock,
-  } = useSceneControls(SCENE_DURATIONS);
+  } = useSceneControls(config.durations);
 
   const [muted, setMuted] = useState(false);
 
@@ -213,13 +214,14 @@ export default function VideoWithControls() {
 
   const barVisible = !collapsed || hovering || tapPinned;
 
-  // Export path: no props, preserves recording markers and unmuted audio.
-  if (!isIframed) return <VideoTemplate />;
+  // Export path: only config, preserves recording markers and unmuted audio.
+  if (!isIframed) return <VideoTemplate config={config} />;
 
   return (
     <div className="relative w-full h-screen">
       <VideoTemplate
         key={mountKey}
+        config={config}
         durations={durations}
         loop={locked}
         muted={muted}

@@ -1,56 +1,23 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useVideoPlayer } from '@/lib/video';
-import { Scene1 } from './video_scenes/Scene1';
-import { Scene2 } from './video_scenes/Scene2';
-import { Scene3 } from './video_scenes/Scene3';
-import { Scene4 } from './video_scenes/Scene4';
-import { Scene5 } from './video_scenes/Scene5';
-import { Scene6 } from './video_scenes/Scene6';
-import { Scene7 } from './video_scenes/Scene7';
-import { Scene8 } from './video_scenes/Scene8';
-import { Scene9 } from './video_scenes/Scene9';
-import { Scene10 } from './video_scenes/Scene10';
-
-// Each scene window equals its narration segment length in
-// public/audio/host_narration_full.mp3 (audio is the master clock).
-export const SCENE_DURATIONS = {
-  scene1: 16800,
-  scene2: 10900,
-  scene3: 14800,
-  scene4: 9000,
-  scene5: 9800,
-  scene6: 14500,
-  scene7: 14900,
-  scene8: 13900,
-  scene9: 13400,
-  scene10: 13500,
-};
-
-const SCENE_COMPONENTS: Record<string, React.ComponentType> = {
-  scene1: Scene1,
-  scene2: Scene2,
-  scene3: Scene3,
-  scene4: Scene4,
-  scene5: Scene5,
-  scene6: Scene6,
-  scene7: Scene7,
-  scene8: Scene8,
-  scene9: Scene9,
-  scene10: Scene10,
-};
+import type { VideoConfig } from '@/videos/types';
 
 export default function VideoTemplate({
-  durations = SCENE_DURATIONS,
+  config,
+  durations,
   loop = true,
   muted = false,
   onSceneChange,
 }: {
+  config: VideoConfig;
   durations?: Record<string, number>;
   loop?: boolean;
   muted?: boolean;
   onSceneChange?: (sceneKey: string) => void;
-} = {}) {
+}) {
+  const activeDurations = durations ?? config.durations;
+
   // Recording/export harnesses drive playback with no user gesture, so start
   // active immediately when one is present (avoids capturing the start screen).
   // Interactive viewers start paused on the branded start screen.
@@ -61,7 +28,7 @@ export default function VideoTemplate({
   // Interactive playback derives the scene from the narration's clock so words
   // and images stay locked together; recording/export stays timer-driven.
   const { currentSceneKey, hasEnded } = useVideoPlayer({
-    durations,
+    durations: activeDurations,
     loop,
     active: started,
     driveFromAudio: started && !isRecording,
@@ -72,8 +39,8 @@ export default function VideoTemplate({
     onSceneChange?.(currentSceneKey);
   }, [currentSceneKey, onSceneChange]);
 
-  const baseSceneKey = currentSceneKey.replace(/_r[12]$/, '') as keyof typeof SCENE_DURATIONS;
-  const SceneComponent = SCENE_COMPONENTS[baseSceneKey];
+  const baseSceneKey = currentSceneKey.replace(/_r[12]$/, '');
+  const SceneComponent = config.scenes[baseSceneKey];
 
   // The play button is a real user gesture, so starting audio here always
   // unlocks sound — both the video and narration launch together.
@@ -133,15 +100,15 @@ export default function VideoTemplate({
           className="absolute inset-0 z-40 flex flex-col items-center justify-center gap-6 bg-black/75 px-6 text-center backdrop-blur-sm"
         >
           <p className="font-serif text-2xl md:text-3xl text-white/90 max-w-xl leading-snug">
-            That's the opening. Continue with the Iliad in the reading room.
+            {config.end.line}
           </p>
           <a
-            href="/app/start/Ἰλιάς"
+            href={config.end.href}
             target="_top"
             rel="noopener"
             className="inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 font-serif text-lg font-semibold text-black transition-transform hover:scale-105"
           >
-            Start reading the Iliad
+            {config.end.cta}
             <span aria-hidden="true">→</span>
           </a>
         </motion.div>
@@ -156,14 +123,14 @@ export default function VideoTemplate({
         >
           <div className="flex flex-col items-center">
             <span className="font-body text-[1.1vw] uppercase tracking-[0.35em] text-secondary">
-              Welcome back to Lectio
+              {config.start.eyebrow}
             </span>
             <h1 className="mt-4 font-display font-medium leading-none text-text-inverse text-[7vw]">
-              ΙΛΙΑΣ
+              {config.greekTitle}
             </h1>
             <span className="mt-1 h-[1px] w-[12vw] bg-secondary" />
             <span className="mt-4 font-display italic text-text-muted text-[1.8vw]">
-              from Homer's Iliad
+              {config.start.subtitle}
             </span>
           </div>
 
@@ -187,7 +154,7 @@ export default function VideoTemplate({
 
       <audio
         ref={audioRef}
-        src={`${import.meta.env.BASE_URL}audio/host_narration_full.mp3`}
+        src={`${import.meta.env.BASE_URL}${config.audioSrc}`}
         preload="auto"
       />
     </div>

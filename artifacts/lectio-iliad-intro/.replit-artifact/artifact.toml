@@ -1,6 +1,6 @@
 kind = "video"
 previewPath = "/lectio-iliad-intro/"
-title = "Lectio — Iliad: Wrath"
+title = "Lectio — Homer"
 version = "1.0.0"
 id = "artifacts/lectio-iliad-intro"
 router = "path"

@@ -3,3 +3,4 @@
 - [Lectio video narration](lectio-video-narration.md) — extending a narrated video's audio: keep base mp3 untouched, ffmpeg-concat into a separate _full file (idempotent), size tail scenes to the new audio offsets.
 - [Lectio word/grammar lookup](lectio-word-lookup.md) — /lookup proxies flaky Perseus; must degrade gracefully (8s timeout → AI parse fallback, same shape) so an outage never becomes a gateway 503.
 - [Lectio text deep links](lectio-deep-links.md) — link to a specific text via /app/start/<catalogKey>; never hardcode the serial text id (not stable).
+- [Lectio Homer videos](lectio-homer-videos.md) — four narrated Greek passages share one video-js artifact via wouter routes + registry; durations must sum to narration mp3 (audio is master clock).
