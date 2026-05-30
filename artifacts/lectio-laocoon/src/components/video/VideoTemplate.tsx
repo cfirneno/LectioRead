@@ -80,47 +80,69 @@ export default function VideoTemplate({
   const SceneComponent = SCENE_COMPONENTS[baseSceneKey];
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const targetTimeRef = useRef(0);
+  const unlockingRef = useRef(false);
   const [needsGesture, setNeedsGesture] = useState(false);
 
+  // Keep the narration aligned to the current scene's start. The audio plays
+  // continuously; this only corrects drift when the scene changes.
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
     audio.volume = 0.95;
     const targetTime = SCENE_START_SEC[baseSceneKey] ?? 0;
-    targetTimeRef.current = targetTime;
     if (Math.abs(audio.currentTime - targetTime) > AUDIO_SEEK_EPSILON_SEC) {
       audio.currentTime = targetTime;
     }
+    audio.play().catch(() => {});
+  }, [currentSceneKey, baseSceneKey]);
+
+  // Sound on open: try audible autoplay first (browsers allow it for viewers
+  // who have engaged with media before). If it's blocked, play MUTED but in
+  // sync and show a prompt — so the first interaction unmutes instantly with no
+  // restart or lag, since the audio has been running in time all along.
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (muted) {
+      audio.muted = true;
+      return;
+    }
+    audio.muted = false;
     audio
       .play()
       .then(() => setNeedsGesture(false))
-      .catch((err: unknown) => {
-        // Only an autoplay-policy block needs a user gesture; ignore transient
-        // play() interruptions (e.g. a rapid scene change aborting playback).
-        if (
-          err instanceof DOMException &&
-          (err.name === 'NotAllowedError' || err.name === 'SecurityError')
-        ) {
-          setNeedsGesture(true);
-        }
+      .catch(() => {
+        audio.muted = true;
+        audio.play().catch(() => {});
+        setNeedsGesture(true);
       });
-  }, [currentSceneKey, baseSceneKey, muted]);
+  }, [muted]);
 
-  // Browsers block sound until the user interacts with the page. While autoplay
-  // is blocked, resume narration on the first interaction (and via the overlay).
-  // Gated on needsGesture so once sound is playing these listeners are removed
-  // and a later click can't rewind the audio.
+  const enableSound = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.muted = false;
+    // Only drop the prompt once sound is actually playing.
+    audio.play().then(() => setNeedsGesture(false)).catch(() => {});
+  };
+
+  // While the muted fallback is active, the first real interaction anywhere
+  // turns sound on. Gated on needsGesture so the listeners exist only until
+  // sound is enabled.
   useEffect(() => {
     if (muted || !needsGesture) return;
     const unlock = () => {
       const audio = audioRef.current;
-      if (!audio || !audio.paused) return;
-      audio.currentTime = targetTimeRef.current;
+      if (!audio || unlockingRef.current) return;
+      unlockingRef.current = true;
+      audio.muted = false;
       audio
         .play()
         .then(() => setNeedsGesture(false))
-        .catch(() => {});
+        .catch(() => {})
+        .finally(() => {
+          unlockingRef.current = false;
+        });
     };
     window.addEventListener('pointerdown', unlock);
     window.addEventListener('touchstart', unlock);
@@ -131,16 +153,6 @@ export default function VideoTemplate({
       window.removeEventListener('keydown', unlock);
     };
   }, [muted, needsGesture]);
-
-  const startSound = () => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    audio.currentTime = targetTimeRef.current;
-    audio
-      .play()
-      .then(() => setNeedsGesture(false))
-      .catch(() => {});
-  };
 
   return (
     <div className="w-full h-screen overflow-hidden relative bg-bg-dark text-text-inverse">
@@ -199,7 +211,7 @@ export default function VideoTemplate({
       {needsGesture && !muted && (
         <button
           type="button"
-          onClick={startSound}
+          onClick={enableSound}
           className="absolute inset-0 z-50 flex flex-col items-center justify-center gap-5 bg-black/55 backdrop-blur-[2px] cursor-pointer"
         >
           <span className="flex h-24 w-24 items-center justify-center rounded-full bg-white/95 text-black shadow-2xl transition-transform hover:scale-105">
@@ -217,8 +229,6 @@ export default function VideoTemplate({
         ref={audioRef}
         src={`${import.meta.env.BASE_URL}audio/host_narration_full.mp3`}
         preload="auto"
-        autoPlay
-        muted={muted}
       />
     </div>
   );
