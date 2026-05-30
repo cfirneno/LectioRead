@@ -89,3 +89,15 @@ id = "hYxfIMXa6xGnzf2Rd4scH"
 uri = "file://attached_assets/generated_videos/serpents_ashore_scaled_a.mp4"
 type = "video"
 title = "Coming ashore (rescaled) — Take A"
+
+[[outputs]]
+id = "y3N6qa6lneRXIDxxStfRk"
+uri = "file://attached_assets/generated_videos/laocoon_father_retry_a.mp4"
+type = "video"
+title = "Laocoön + two sons, two serpents — Take A (recommended)"
+
+[[outputs]]
+id = "Fp-4VbmFQEckeRittvuHO"
+uri = "file://attached_assets/generated_videos/laocoon_father_retry_b.mp4"
+type = "video"
+title = "Take B (has duplicate father)"
