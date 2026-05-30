@@ -70,7 +70,13 @@ export default function VideoTemplate({
   muted?: boolean;
   onSceneChange?: (sceneKey: string) => void;
 } = {}) {
-  const { currentSceneKey, hasEnded } = useVideoPlayer({ durations, loop });
+  // Recording/export harnesses drive playback with no user gesture, so start
+  // active immediately when one is present (avoids capturing the start screen).
+  // Interactive viewers start paused on the branded start screen.
+  const [started, setStarted] = useState(
+    () => typeof window !== 'undefined' && !!window.startRecording,
+  );
+  const { currentSceneKey, hasEnded } = useVideoPlayer({ durations, loop, active: started });
 
   useEffect(() => {
     onSceneChange?.(currentSceneKey);
@@ -80,12 +86,11 @@ export default function VideoTemplate({
   const SceneComponent = SCENE_COMPONENTS[baseSceneKey];
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const unlockingRef = useRef(false);
-  const [needsGesture, setNeedsGesture] = useState(false);
 
-  // Keep the narration aligned to the current scene's start. The audio plays
-  // continuously; this only corrects drift when the scene changes.
+  // Once playback has started, keep the narration aligned to the current scene.
+  // The audio plays continuously; this only corrects drift on a scene change.
   useEffect(() => {
+    if (!started) return;
     const audio = audioRef.current;
     if (!audio) return;
     audio.volume = 0.95;
@@ -94,65 +99,25 @@ export default function VideoTemplate({
       audio.currentTime = targetTime;
     }
     audio.play().catch(() => {});
-  }, [currentSceneKey, baseSceneKey]);
+  }, [currentSceneKey, baseSceneKey, started]);
 
-  // Sound on open: try audible autoplay first (browsers allow it for viewers
-  // who have engaged with media before). If it's blocked, play MUTED but in
-  // sync and show a prompt — so the first interaction unmutes instantly with no
-  // restart or lag, since the audio has been running in time all along.
-  useEffect(() => {
+  // The play button is a real user gesture, so starting audio here always
+  // unlocks sound — both the video and narration launch together.
+  const handleStart = () => {
+    setStarted(true);
     const audio = audioRef.current;
     if (!audio) return;
-    if (muted) {
-      audio.muted = true;
-      return;
-    }
-    audio.muted = false;
-    audio
-      .play()
-      .then(() => setNeedsGesture(false))
-      .catch(() => {
-        audio.muted = true;
-        audio.play().catch(() => {});
-        setNeedsGesture(true);
-      });
-  }, [muted]);
-
-  const enableSound = () => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    audio.muted = false;
-    // Only drop the prompt once sound is actually playing.
-    audio.play().then(() => setNeedsGesture(false)).catch(() => {});
+    audio.muted = muted;
+    audio.volume = 0.95;
+    audio.currentTime = 0;
+    audio.play().catch(() => {});
   };
 
-  // While the muted fallback is active, the first real interaction anywhere
-  // turns sound on. Gated on needsGesture so the listeners exist only until
-  // sound is enabled.
+  // Keep live mute toggles in sync once playback has started.
   useEffect(() => {
-    if (muted || !needsGesture) return;
-    const unlock = () => {
-      const audio = audioRef.current;
-      if (!audio || unlockingRef.current) return;
-      unlockingRef.current = true;
-      audio.muted = false;
-      audio
-        .play()
-        .then(() => setNeedsGesture(false))
-        .catch(() => {})
-        .finally(() => {
-          unlockingRef.current = false;
-        });
-    };
-    window.addEventListener('pointerdown', unlock);
-    window.addEventListener('touchstart', unlock);
-    window.addEventListener('keydown', unlock);
-    return () => {
-      window.removeEventListener('pointerdown', unlock);
-      window.removeEventListener('touchstart', unlock);
-      window.removeEventListener('keydown', unlock);
-    };
-  }, [muted, needsGesture]);
+    const audio = audioRef.current;
+    if (audio) audio.muted = muted;
+  }, [muted, started]);
 
   return (
     <div className="w-full h-screen overflow-hidden relative bg-bg-dark text-text-inverse">
@@ -208,21 +173,42 @@ export default function VideoTemplate({
         </motion.div>
       )}
 
-      {needsGesture && !muted && (
-        <button
-          type="button"
-          onClick={enableSound}
-          className="absolute inset-0 z-50 flex flex-col items-center justify-center gap-5 bg-black/55 backdrop-blur-[2px] cursor-pointer"
+      {!started && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
+          className="absolute inset-0 z-50 flex flex-col items-center justify-center gap-10 bg-bg-dark px-6 text-center"
         >
-          <span className="flex h-24 w-24 items-center justify-center rounded-full bg-white/95 text-black shadow-2xl transition-transform hover:scale-105">
-            <svg viewBox="0 0 24 24" className="h-9 w-9 translate-x-[2px]" fill="currentColor" aria-hidden="true">
-              <path d="M8 5v14l11-7z" />
-            </svg>
-          </span>
-          <span className="font-body text-sm uppercase tracking-[0.35em] text-white/90">
-            Tap for sound
-          </span>
-        </button>
+          <div className="flex flex-col items-center">
+            <span className="font-body text-[1.1vw] uppercase tracking-[0.35em] text-secondary">
+              Welcome back to Lectio
+            </span>
+            <h1 className="mt-4 font-display font-medium leading-none text-text-inverse text-[7vw]">
+              LAOCOÖN
+            </h1>
+            <span className="mt-1 h-[1px] w-[12vw] bg-secondary" />
+            <span className="mt-4 font-display italic text-text-muted text-[1.8vw]">
+              from Virgil's Aeneid
+            </span>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleStart}
+            aria-label="Play"
+            className="group flex flex-col items-center gap-4"
+          >
+            <span className="flex h-24 w-24 items-center justify-center rounded-full border border-secondary/40 bg-white/[0.04] text-secondary backdrop-blur-sm transition-all duration-300 group-hover:scale-105 group-hover:border-secondary group-hover:bg-secondary/10">
+              <svg viewBox="0 0 24 24" className="h-9 w-9 translate-x-[2px]" fill="currentColor" aria-hidden="true">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </span>
+            <span className="font-body text-sm uppercase tracking-[0.35em] text-text-muted transition-colors group-hover:text-text-inverse">
+              Play with sound
+            </span>
+          </button>
+        </motion.div>
       )}
 
       <audio
