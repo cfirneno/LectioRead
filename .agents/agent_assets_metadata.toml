@@ -65,3 +65,15 @@ id = "1ASFMqH9wTKkH7kSxwHAH"
 uri = "file://attached_assets/generated_videos/serpents_two_heads_b.mp4"
 type = "video"
 title = "Serpents (two) — Take B"
+
+[[outputs]]
+id = "Et_u-a_bABFipoyXKfeoR"
+uri = "file://attached_assets/generated_videos/serpents_ashore_approach_a.mp4"
+type = "video"
+title = "Coming ashore — Take A (close, intimate)"
+
+[[outputs]]
+id = "dO_rGWApoXTXKGMahGeCy"
+uri = "file://attached_assets/generated_videos/serpents_ashore_approach_b.mp4"
+type = "video"
+title = "Coming ashore — Take B (epic wide)"
