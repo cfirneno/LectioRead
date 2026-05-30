@@ -42,6 +42,48 @@ uri = "file://artifacts/lectio-laocoon/public/images/gates.png"
 type = "image"
 title = "Massive ancient city gates"
 
+[[generated]]
+id = "WOARmsfoZH5JEy6CDPnfF"
+uri = "file://artifacts/lectio-iliad-intro/public/images/embers.png"
+type = "image"
+title = "Glowing embers in dark"
+
+[[generated]]
+id = "Se_L-84tYtvR-_DBMguQ-"
+uri = "file://artifacts/lectio-iliad-intro/public/images/homer.png"
+type = "image"
+title = "Homer playing lyre"
+
+[[generated]]
+id = "0l_03fWNDMKPPYXoZ9qRN"
+uri = "file://artifacts/lectio-iliad-intro/public/images/troy.png"
+type = "image"
+title = "Walls of Troy"
+
+[[generated]]
+id = "yeL2f9GAbfxsRrvuxIFcx"
+uri = "file://artifacts/lectio-iliad-intro/public/images/muse.png"
+type = "image"
+title = "Ethereal muse"
+
+[[generated]]
+id = "QDGbHnSgqqG0kQqNk_GW6"
+uri = "file://artifacts/lectio-iliad-intro/public/images/hades.png"
+type = "image"
+title = "Hades underworld"
+
+[[generated]]
+id = "-h0WhQs3f0QESkXX1H-Q-"
+uri = "file://artifacts/lectio-iliad-intro/public/images/quarrel.png"
+type = "image"
+title = "Greek warriors quarrel"
+
+[[generated]]
+id = "ofFjd0OzofZnPG4Gpv5uF"
+uri = "file://artifacts/lectio-iliad-intro/public/images/withdraw.png"
+type = "image"
+title = "Lone warrior by ships"
+
 [[outputs]]
 id = "jLGHvVJhEE9oTNwUDidhh"
 uri = "file://attached_assets/generated_videos/serpents_rising_sea_v1.mp4"

@@ -1,0 +1,31 @@
+kind = "video"
+previewPath = "/lectio-iliad-intro/"
+title = "Lectio — Iliad: Wrath"
+version = "1.0.0"
+id = "artifacts/lectio-iliad-intro"
+router = "path"
+
+[[integratedSkills]]
+name = "video-js"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/lectio-iliad-intro/" ]
+localPort = 22457
+
+[services.development]
+run = "pnpm --filter @workspace/lectio-iliad-intro run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/lectio-iliad-intro", "run", "build" ]
+publicDir = "artifacts/lectio-iliad-intro/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "22457"
+BASE_PATH = "/lectio-iliad-intro/"
