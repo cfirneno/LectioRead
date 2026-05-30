@@ -77,3 +77,15 @@ id = "dO_rGWApoXTXKGMahGeCy"
 uri = "file://attached_assets/generated_videos/serpents_ashore_approach_b.mp4"
 type = "video"
 title = "Coming ashore — Take B (epic wide)"
+
+[[outputs]]
+id = "VYFbHRgzgzvoC6s0X6kzg"
+uri = "file://attached_assets/generated_videos/serpents_ashore_scaled_b.mp4"
+type = "video"
+title = "Coming ashore (rescaled) — Take B (coiling)"
+
+[[outputs]]
+id = "hYxfIMXa6xGnzf2Rd4scH"
+uri = "file://attached_assets/generated_videos/serpents_ashore_scaled_a.mp4"
+type = "video"
+title = "Coming ashore (rescaled) — Take A"
