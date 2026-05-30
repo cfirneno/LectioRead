@@ -101,3 +101,9 @@ id = "Fp-4VbmFQEckeRittvuHO"
 uri = "file://attached_assets/generated_videos/laocoon_father_retry_b.mp4"
 type = "video"
 title = "Take B (has duplicate father)"
+
+[[outputs]]
+id = "nOl2r3T4syyewblcBhB6Y"
+uri = "file://attached_assets/generated_videos/laocoon_serpents_sequence.mp4"
+type = "video"
+title = "Laocoön serpents — rise from the sea, then coil ashore (16s)"
