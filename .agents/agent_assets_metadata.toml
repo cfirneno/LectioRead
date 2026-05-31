@@ -198,6 +198,12 @@ uri = "file://artifacts/lectio-iliad-intro/public/images/odyssey-cyclops/ship-fl
 type = "image"
 title = "Ship fleeing giant"
 
+[[generated]]
+id = "wIilaT-xS0kv6QF19o9h3"
+uri = "file://artifacts/lectio-iliad-intro/public/images/iliad-intro/embers.png"
+type = "image"
+title = "glowing wood embers"
+
 [[outputs]]
 id = "jLGHvVJhEE9oTNwUDidhh"
 uri = "file://attached_assets/generated_videos/serpents_rising_sea_v1.mp4"
@@ -268,7 +274,7 @@ title = "Laocoön serpents — rise from the sea, then coil ashore (16s)"
 id = "WV-yzfdrJNb1IcdyT6kw2"
 uri = "file://exports/iliad-intro.mp4"
 type = "video"
-title = "Homer — Iliad Intro (1080p, corrected sync)"
+title = "Homer — Iliad Intro (1080p, wood embers)"
 
 [[outputs]]
 id = "30fRlFMApaHxkAez3SgPg"
