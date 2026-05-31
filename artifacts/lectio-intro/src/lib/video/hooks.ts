@@ -17,6 +17,9 @@ export interface UseVideoPlayerOptions {
   durations: SceneDurations;
   onVideoEnd?: () => void;
   loop?: boolean;
+  // When false, playback is held paused (e.g. behind the start screen) so scene
+  // timers don't advance until the viewer presses play.
+  active?: boolean;
 }
 
 export interface UseVideoPlayerReturn {
