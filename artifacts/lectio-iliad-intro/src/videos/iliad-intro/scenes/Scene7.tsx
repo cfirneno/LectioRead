@@ -6,8 +6,8 @@ export function Scene7() {
 
   useEffect(() => {
     const timers = [
-      setTimeout(() => setPhase(1), 500),
-      setTimeout(() => setPhase(2), 6000),
+      setTimeout(() => setPhase(1), 500),  // Greek line (shown as host speaks)
+      setTimeout(() => setPhase(2), 2800), // translation (~"souls down to Hades" 2.9s)
     ];
     return () => timers.forEach(t => clearTimeout(t));
   }, []);

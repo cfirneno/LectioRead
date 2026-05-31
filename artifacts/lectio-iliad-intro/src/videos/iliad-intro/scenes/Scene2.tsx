@@ -6,9 +6,9 @@ export function Scene2() {
 
   useEffect(() => {
     const timers = [
-      setTimeout(() => setPhase(1), 500),  // WRATH
-      setTimeout(() => setPhase(2), 2500), // mênis
-      setTimeout(() => setPhase(3), 5000), // a rage...
+      setTimeout(() => setPhase(1), 700),  // "wrath" (~1.0s)
+      setTimeout(() => setPhase(2), 3000), // "in the original Greek, menis" (~3-4.5s)
+      setTimeout(() => setPhase(3), 5200), // "a rage so fierce..." (~5.7s)
     ];
     return () => timers.forEach(t => clearTimeout(t));
   }, []);

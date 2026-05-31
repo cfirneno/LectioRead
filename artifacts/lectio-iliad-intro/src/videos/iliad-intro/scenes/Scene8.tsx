@@ -6,9 +6,9 @@ export function Scene8() {
 
   useEffect(() => {
     const timers = [
-      setTimeout(() => setPhase(1), 500),
-      setTimeout(() => setPhase(2), 2000),
-      setTimeout(() => setPhase(3), 8000),
+      setTimeout(() => setPhase(1), 1300), // Ἀχιλλεύς (~"Achilles" 1.8s)
+      setTimeout(() => setPhase(2), 5000), // Ἀγαμέμνων (~"Agamemnon" 5.3s)
+      setTimeout(() => setPhase(3), 9500), // "a quarrel over honor"
     ];
     return () => timers.forEach(t => clearTimeout(t));
   }, []);

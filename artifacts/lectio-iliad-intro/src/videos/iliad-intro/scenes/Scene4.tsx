@@ -6,11 +6,11 @@ export function Scene4() {
 
   useEffect(() => {
     const timers = [
-      setTimeout(() => setPhase(1), 500),  // 1st word
-      setTimeout(() => setPhase(2), 2000), // 2nd word
-      setTimeout(() => setPhase(3), 3500), // 3rd word
-      setTimeout(() => setPhase(4), 5500), // 4th word
-      setTimeout(() => setPhase(5), 7000), // 5th word
+      setTimeout(() => setPhase(1), 0),    // Μῆνιν (spoken ~0.0s)
+      setTimeout(() => setPhase(2), 750),  // ἄειδε (spoken ~1.0s)
+      setTimeout(() => setPhase(3), 1850), // θεά (spoken ~2.1s)
+      setTimeout(() => setPhase(4), 3450), // Πηληϊάδεω (spoken ~3.7s)
+      setTimeout(() => setPhase(5), 5100), // Ἀχιλῆος (spoken ~5.4s)
     ];
     return () => timers.forEach(t => clearTimeout(t));
   }, []);
@@ -40,35 +40,35 @@ export function Scene4() {
           <motion.span
             initial={{ opacity: 0, y: 20 }}
             animate={phase >= 1 ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-            transition={{ duration: 1, ease: "easeOut" }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
           >
             Μῆνιν
           </motion.span>
           <motion.span
             initial={{ opacity: 0, y: 20 }}
             animate={phase >= 2 ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-            transition={{ duration: 1, ease: "easeOut" }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
           >
             ἄειδε,
           </motion.span>
           <motion.span
             initial={{ opacity: 0, y: 20 }}
             animate={phase >= 3 ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-            transition={{ duration: 1, ease: "easeOut" }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
           >
             θεά,
           </motion.span>
           <motion.span
             initial={{ opacity: 0, y: 20 }}
             animate={phase >= 4 ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-            transition={{ duration: 1, ease: "easeOut" }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
           >
             Πηληϊάδεω
           </motion.span>
           <motion.span
             initial={{ opacity: 0, y: 20 }}
             animate={phase >= 5 ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-            transition={{ duration: 1, ease: "easeOut" }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
           >
             Ἀχιλῆος.
           </motion.span>

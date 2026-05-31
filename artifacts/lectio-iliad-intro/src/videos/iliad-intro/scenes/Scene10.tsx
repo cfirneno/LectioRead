@@ -6,9 +6,9 @@ export function Scene10() {
 
   useEffect(() => {
     const timers = [
-      setTimeout(() => setPhase(1), 500),
-      setTimeout(() => setPhase(2), 2000),
-      setTimeout(() => setPhase(3), 5000),
+      setTimeout(() => setPhase(1), 500),  // ΙΛΙΑΣ
+      setTimeout(() => setPhase(2), 2200), // Greek line (decorative)
+      setTimeout(() => setPhase(3), 3900), // "From a single word..." (~3.9s)
     ];
     return () => timers.forEach(t => clearTimeout(t));
   }, []);

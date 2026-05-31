@@ -27,6 +27,12 @@ When SCENE_DURATIONS are derived from each segment mp3's *container* duration (`
 **Why:** took several attempts — container-duration math and concat-demuxer rebuilds both left ~0.5s+ of accumulated drift; only decoded-length + apad-filter gave a clean lock.
 **How to apply:** any time you (re)assemble a Greek/Latin intro's full narration from segments, use apad+concat filter and decoded-length durations; re-export the mp4 afterward since the timer-driven recording path uses the same SCENE_DURATIONS.
 
+## Within-scene reveals also need to match the voice, not just scene boundaries
+Aligning the scene *windows* to narration (audio-as-clock) only fixes the cross-scene boundaries. Inside a scene, each text/word reveal still fires off its own mount-relative `setTimeout` phase delay, so a line can still appear before/after the narrator actually says it ("Greek text appears after he speaks it"). Because each scene mounts exactly at its narration segment start (the `apad` adds trailing silence only), a phase delay measured from mount equals the offset from that segment's start — so the two are directly comparable.
+**Fix:** measure each phrase's real speech onset within its segment (ffmpeg `silencedetect` to find onsets; transcripts to know which phrase is which) and set each scene's phase delays to those onsets. Shorten per-word fade durations (e.g. 1.0s→0.6s) when narration moves word-by-word so the reveal isn't still fading in after the word is spoken.
+**Why:** the user reported within-scene desync *after* the boundary fix; only retuning the per-phase delays to measured onsets resolved it.
+**How to apply:** the same delays drive both interactive playback and the timer-driven export (whose muxed audio is the same track), so re-export the mp4 after retuning — no separate export-timing change needed. Note: proxy doesn't support whisper-1/verbose_json, so word-level timestamps are unavailable; silencedetect + gpt-4o-transcribe is the workable path.
+
 ## Don't autoplay narration — gate the whole video behind a play button
 Browsers refuse audible autoplay on a cold load, so any "start muted then unmute" / "tap for sound" fallback feels broken to viewers. The durable solution: hold the entire video paused behind a branded start screen with a play button; the click is a real gesture, so visuals + narration launch together and sound is never blocked.
 **Why:** repeated autoplay/tap-to-unmute attempts kept regressing and the (non-technical) user explicitly asked to "make it look like the video and sound launch" from a play button.

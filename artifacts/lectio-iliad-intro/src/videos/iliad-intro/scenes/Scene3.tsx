@@ -6,9 +6,9 @@ export function Scene3() {
 
   useEffect(() => {
     const timers = [
-      setTimeout(() => setPhase(1), 500),  // Eyebrow
-      setTimeout(() => setPhase(2), 1500), // ILIAS
-      setTimeout(() => setPhase(3), 5000), // Quote
+      setTimeout(() => setPhase(1), 500),  // "The poem is the Iliad"
+      setTimeout(() => setPhase(2), 1200), // ILIAS (~"Iliad" at 0.7s)
+      setTimeout(() => setPhase(3), 4700), // "the rage of one man..." (~4.7s)
     ];
     return () => timers.forEach(t => clearTimeout(t));
   }, []);

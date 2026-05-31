@@ -6,8 +6,8 @@ export function Scene9() {
 
   useEffect(() => {
     const timers = [
-      setTimeout(() => setPhase(1), 1000),
-      setTimeout(() => setPhase(2), 6000),
+      setTimeout(() => setPhase(1), 1200), // "Achilles withdraws" (~1.7s)
+      setTimeout(() => setPhase(2), 8000), // "the Greeks begin to fall" (~8.3s)
     ];
     return () => timers.forEach(t => clearTimeout(t));
   }, []);

@@ -6,9 +6,9 @@ export function Scene6() {
 
   useEffect(() => {
     const timers = [
-      setTimeout(() => setPhase(1), 500),  // initial line
-      setTimeout(() => setPhase(2), 2000), // highlight first word
-      setTimeout(() => setPhase(3), 5000), // anger itself line
+      setTimeout(() => setPhase(1), 500),  // line ("the very first word is mēnin")
+      setTimeout(() => setPhase(2), 2000), // highlight Μῆνιν (~"mēnin" 1.8s)
+      setTimeout(() => setPhase(3), 6800), // "anger itself" line (~7.0s)
     ];
     return () => timers.forEach(t => clearTimeout(t));
   }, []);
