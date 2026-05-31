@@ -287,3 +287,15 @@ id = "spDetCfl5wfNQoLULfwVC"
 uri = "file://exports/odyssey-cyclops.mp4"
 type = "video"
 title = "Odyssey — The Cyclops"
+
+[[outputs]]
+id = "hEO332ViO0Hsk9LvzScB3"
+uri = "file://exports/aeneid-intro.mp4"
+type = "video"
+title = "Aeneid Intro (1080p, 98s)"
+
+[[outputs]]
+id = "_VH7YCHRGVyZNM36pVKVy"
+uri = "file://exports/aeneid-laocoon.mp4"
+type = "video"
+title = "Laocoön — Aeneid Book 2 (1080p, 150s)"
