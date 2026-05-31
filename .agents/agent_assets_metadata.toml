@@ -263,3 +263,27 @@ id = "nOl2r3T4syyewblcBhB6Y"
 uri = "file://attached_assets/generated_videos/laocoon_serpents_sequence.mp4"
 type = "video"
 title = "Laocoön serpents — rise from the sea, then coil ashore (16s)"
+
+[[outputs]]
+id = "WV-yzfdrJNb1IcdyT6kw2"
+uri = "file://exports/iliad-intro.mp4"
+type = "video"
+title = "Iliad — Opening (Μῆνιν ἄειδε)"
+
+[[outputs]]
+id = "30fRlFMApaHxkAez3SgPg"
+uri = "file://exports/iliad-hector.mp4"
+type = "video"
+title = "Iliad — Achilles & Hector"
+
+[[outputs]]
+id = "0AyQj6O6xlOgtuV9pulse"
+uri = "file://exports/odyssey-intro.mp4"
+type = "video"
+title = "Odyssey — Opening (Ἄνδρα μοι ἔννεπε)"
+
+[[outputs]]
+id = "spDetCfl5wfNQoLULfwVC"
+uri = "file://exports/odyssey-cyclops.mp4"
+type = "video"
+title = "Odyssey — The Cyclops"
