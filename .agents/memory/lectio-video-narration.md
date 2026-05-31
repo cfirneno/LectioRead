@@ -21,6 +21,12 @@ Driving scenes with independent setTimeout timers while a continuous narration m
 **Why:** repeated attempts to tune `SCENE_DURATIONS` or add drift-correction seeks failed; the non-technical user kept reporting "it slips in a number of places." Audio-as-clock fixed it for good.
 **Caveat:** the iframe control-bar (rotated/locked `durations` for scene-jump previews) isn't semantically aligned to the single full track when audio-driven — only enable audio-clock mode for the canonical full-duration ordering.
 
+## Per-scene drift cause: mp3 container duration ≠ decoded duration
+When SCENE_DURATIONS are derived from each segment mp3's *container* duration (`ffprobe format=duration`), they overstate the real playback length by the LAME encoder delay+padding (~50ms/segment at 24kHz). Cumulatively the visuals lag the narration more and more toward the end — exactly the "out of sync, slips toward the end" report. Also, building the full track with the **concat demuxer + mp3 re-encode** trims padding at every seam (≈48ms × 2 per inserted file), so boundaries no longer match the inputs.
+**Fix (drift-proof):** rebuild `host_narration_full.mp3` from the per-scene segment files using the concat **filter** with `apad` (sample-accurate on decoded audio, no seam loss): `[i]apad=pad_dur=1.0[ai]; [a0]…[a9]concat=n=N:v=0:a=1`. Then set each scene's duration to the segment's **decoded** length (decode to wav, `ffprobe` that) + the pad, NOT the container length. Cumulative total then matches the rebuilt mp3 within a few ms.
+**Why:** took several attempts — container-duration math and concat-demuxer rebuilds both left ~0.5s+ of accumulated drift; only decoded-length + apad-filter gave a clean lock.
+**How to apply:** any time you (re)assemble a Greek/Latin intro's full narration from segments, use apad+concat filter and decoded-length durations; re-export the mp4 afterward since the timer-driven recording path uses the same SCENE_DURATIONS.
+
 ## Don't autoplay narration — gate the whole video behind a play button
 Browsers refuse audible autoplay on a cold load, so any "start muted then unmute" / "tap for sound" fallback feels broken to viewers. The durable solution: hold the entire video paused behind a branded start screen with a play button; the click is a real gesture, so visuals + narration launch together and sound is never blocked.
 **Why:** repeated autoplay/tap-to-unmute attempts kept regressing and the (non-technical) user explicitly asked to "make it look like the video and sound launch" from a play button.
