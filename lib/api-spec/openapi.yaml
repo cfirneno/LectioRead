@@ -18,6 +18,8 @@ tags:
     description: Reading progress operations
   - name: subscription
     description: Subscription and billing operations
+  - name: visits
+    description: Site visit tracking and analytics
 
 paths:
   /healthz:
@@ -439,6 +441,40 @@ paths:
               schema:
                 $ref: "#/components/schemas/Progress"
 
+  /visits:
+    post:
+      operationId: recordVisit
+      tags: [visits]
+      summary: Record a site visit
+      description: Logs a page visit. Public — no authentication required.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VisitInput"
+      responses:
+        "200":
+          description: Visit recorded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VisitAck"
+
+  /visits/stats:
+    get:
+      operationId: getVisitStats
+      tags: [visits]
+      summary: Get aggregate visit statistics
+      description: Returns total visits, unique visitors, and visits in the last 24 hours and 7 days.
+      responses:
+        "200":
+          description: Visit statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VisitStats"
+
   /subscription/me:
     get:
       operationId: getSubscriptionStatus
@@ -493,6 +529,49 @@ components:
           type: string
       required:
         - status
+
+    VisitInput:
+      type: object
+      required: [visitorId, path]
+      properties:
+        visitorId:
+          type: string
+          minLength: 1
+          maxLength: 128
+          description: Stable per-browser identifier (random, stored in localStorage)
+        path:
+          type: string
+          minLength: 1
+          maxLength: 512
+          description: The path that was visited
+        referrer:
+          type: ["string", "null"]
+          maxLength: 1024
+          description: document.referrer, if any
+
+    VisitAck:
+      type: object
+      required: [recorded]
+      properties:
+        recorded:
+          type: boolean
+
+    VisitStats:
+      type: object
+      required: [total, uniqueVisitors, last24h, last7d]
+      properties:
+        total:
+          type: integer
+          description: All-time visit count
+        uniqueVisitors:
+          type: integer
+          description: Distinct visitor count
+        last24h:
+          type: integer
+          description: Visits in the last 24 hours
+        last7d:
+          type: integer
+          description: Visits in the last 7 days
 
     TextSearchRequest:
       type: object

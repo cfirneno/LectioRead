@@ -18,6 +18,8 @@ import Videos from "@/pages/videos";
 import VideoWatch from "@/pages/video-watch";
 import Subscribe from "@/pages/subscribe";
 import CheckoutSuccess from "@/pages/checkout-success";
+import Stats from "@/pages/stats";
+import { useTrackVisit } from "@/hooks/useTrackVisit";
 import { Loader2 } from "lucide-react";
 
 const queryClient = new QueryClient({
@@ -99,6 +101,7 @@ function Router() {
       <Route path="/sign-up/:rest*" component={SignUpPage} />
       <Route path="/subscribe" component={Subscribe} />
       <Route path="/checkout/success" component={CheckoutSuccess} />
+      <Route path="/stats" component={Stats} />
       <Route path="/app">
         <RequireSubscription>
           <Home />
@@ -154,11 +157,17 @@ function Router() {
   );
 }
 
+function VisitTracker() {
+  useTrackVisit();
+  return null;
+}
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+          <VisitTracker />
           <Router />
         </WouterRouter>
         <Toaster />

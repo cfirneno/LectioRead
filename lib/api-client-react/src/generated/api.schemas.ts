@@ -9,6 +9,42 @@ export interface HealthStatus {
   status: string;
 }
 
+export interface VisitInput {
+  /**
+     * Stable per-browser identifier (random, stored in localStorage)
+     * @minLength 1
+     * @maxLength 128
+     */
+  visitorId: string;
+  /**
+     * The path that was visited
+     * @minLength 1
+     * @maxLength 512
+     */
+  path: string;
+  /**
+     * document.referrer, if any
+     * @maxLength 1024
+     * @nullable
+     */
+  referrer?: string | null;
+}
+
+export interface VisitAck {
+  recorded: boolean;
+}
+
+export interface VisitStats {
+  /** All-time visit count */
+  total: number;
+  /** Distinct visitor count */
+  uniqueVisitors: number;
+  /** Visits in the last 24 hours */
+  last24h: number;
+  /** Visits in the last 7 days */
+  last7d: number;
+}
+
 export interface TextSearchRequest {
   /** e.g. 'The Prince by Machiavelli, chapter 1' */
   query: string;

@@ -48,6 +48,18 @@ export async function runIdempotentMigrations(): Promise<void> {
       )
     `);
     await db.execute(sql`CREATE UNIQUE INDEX IF NOT EXISTS flashcards_text_word_idx ON flashcards(text_id, word)`);
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS visits (
+        id serial PRIMARY KEY,
+        visitor_id text NOT NULL,
+        path text NOT NULL,
+        referrer text,
+        user_agent text,
+        created_at timestamp with time zone NOT NULL DEFAULT now()
+      )
+    `);
+    await db.execute(sql`CREATE INDEX IF NOT EXISTS visits_created_at_idx ON visits(created_at)`);
+    await db.execute(sql`CREATE INDEX IF NOT EXISTS visits_visitor_idx ON visits(visitor_id)`);
     logger.info("Idempotent migrations applied");
   } catch (err) {
     logger.error({ err }, "Idempotent migration failed");

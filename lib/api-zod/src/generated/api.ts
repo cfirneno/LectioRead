@@ -388,6 +388,41 @@ export const SaveProgressResponse = zod.object({
 
 
 /**
+ * Logs a page visit. Public — no authentication required.
+ * @summary Record a site visit
+ */
+export const recordVisitBodyVisitorIdMax = 128;
+
+export const recordVisitBodyPathMax = 512;
+
+export const recordVisitBodyReferrerMax = 1024;
+
+
+
+export const RecordVisitBody = zod.object({
+  "visitorId": zod.string().min(1).max(recordVisitBodyVisitorIdMax).describe('Stable per-browser identifier (random, stored in localStorage)'),
+  "path": zod.string().min(1).max(recordVisitBodyPathMax).describe('The path that was visited'),
+  "referrer": zod.string().max(recordVisitBodyReferrerMax).nullish().describe('document.referrer, if any')
+})
+
+export const RecordVisitResponse = zod.object({
+  "recorded": zod.boolean()
+})
+
+
+/**
+ * Returns total visits, unique visitors, and visits in the last 24 hours and 7 days.
+ * @summary Get aggregate visit statistics
+ */
+export const GetVisitStatsResponse = zod.object({
+  "total": zod.number().describe('All-time visit count'),
+  "uniqueVisitors": zod.number().describe('Distinct visitor count'),
+  "last24h": zod.number().describe('Visits in the last 24 hours'),
+  "last7d": zod.number().describe('Visits in the last 7 days')
+})
+
+
+/**
  * @summary Get current user's subscription status
  */
 export const GetSubscriptionStatusResponse = zod.object({
