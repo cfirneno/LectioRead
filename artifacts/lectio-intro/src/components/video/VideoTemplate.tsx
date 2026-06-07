@@ -75,6 +75,9 @@ export default function VideoTemplate({
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
+    // Set muted before play() so an embedded preview never leaks sound on load
+    // (React's `muted` attribute on <audio> isn't reliably applied on mount).
+    audio.muted = muted;
     audio.volume = 0.95;
     const targetTime = SCENE_START_SEC[baseSceneKey] ?? 0;
     if (Math.abs(audio.currentTime - targetTime) > AUDIO_SEEK_EPSILON_SEC) {
@@ -129,7 +132,6 @@ export default function VideoTemplate({
         ref={audioRef}
         src={`${import.meta.env.BASE_URL}audio/host_narration_full.mp3`}
         preload="auto"
-        autoPlay
         muted={muted}
       />
     </div>
