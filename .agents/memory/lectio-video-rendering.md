@@ -17,6 +17,20 @@ description: Why narrated Lectio videos can't be re-rendered in the agent contai
 - **The export/recording path MUST be audio-clock too — NOT timer-driven.** This is the whole point of the fix. So `driveFromAudio` must be `started` (or `true`), never gated by `&& !isRecording`. A `VideoTemplate` that drives recording from timers will export drift even though interactive preview looks fine. When recording there is no user gesture, so each `VideoTemplate` also needs an `isRecording` effect that plays the narration from `currentTime=0` (the recorder launches Chromium with autoplay allowed) — that playback is what the audio clock reads. Reference impl: `lectio-iliad-intro`.
 - `VideoWithControls` must default `muted` to `isIframed` (not `false`), so the embedded canvas preview never leaks sound now that recording-autoplay exists; the export branch (`!isIframed`) stays unmuted.
 
+## Preview-pane export hung at ~80% — stop-signal fix
+
+**Symptom:** export reaches ~80% and never completes/saves the mp4.
+
+**Cause:** the only "recording done" signal was the requestAnimationFrame audio-clock loop in `hooks.ts` (stopRecording at `totalSec-0.05`). Browsers throttle/freeze rAF when the tab is backgrounded, so a user who switches tabs during the long export never gets the stop. Compounded by `loop=true`, so playback never ended on its own either.
+
+**Fix (all 3 video artifacts):** drive the stop off the audio element, which keeps running when backgrounded — NOT off rAF.
+- During recording force a single pass: `loop: isRecording ? false : loop` into `useVideoPlayer`, and `audio.loop = false` in the recording effect.
+- In the recording effect, stop on the audio `'ended'` event AND a wall-clock `setTimeout(totalMs + 5000)` backstop, both guarded by one `stopped` flag → calls `window.stopRecording()`.
+- Gate the end-CTA overlay with `&& !isRecording` so it isn't captured.
+- **Stop must be single-sourced:** removed `window.stopRecording?.()` from BOTH end-branches of every `hooks.ts` (kept `setHasEnded` + `onVideoEnd` and all sync logic). The template is now the only caller — no double-stop. `hooks.ts` still calls `window.startRecording?.()` on mount.
+
+**Operational note:** still don't attempt the headless capture in-container even just to "verify" — Chromium screencast here is ~5fps choppy and the long realtime capture gets OOM-killed (see `bash-detached-teardown.md`). The export only works from the user's real browser preview pane; keep that window in the foreground for smooth frames.
+
 ## ffmpeg re-timing salvage is NOT viable
 
 Tried detecting scene boundaries in a baked mp4 to time-warp the video track onto the audio. The cross-dissolves between scenes are so gradual that ffmpeg scene detection finds ~0 boundaries even at threshold 0.04. No reliable boundaries → no salvage.

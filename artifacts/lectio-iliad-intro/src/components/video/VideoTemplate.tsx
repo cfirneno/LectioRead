@@ -25,13 +25,15 @@ export default function VideoTemplate({
   const [started, setStarted] = useState(() => isRecording);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  const totalMs = Object.values(activeDurations).reduce((a, b) => a + b, 0);
+
   // Both interactive playback and recording derive the visible scene from the
-  // narration's clock so words and images stay locked to the audio. (Timer-
-  // driven recording drifted: under heavy headless render the timers fire late
-  // and visuals fall behind the constant-rate muxed audio.)
+  // narration's clock so words and images stay locked to the audio. During an
+  // export we play exactly once (no loop) so the narration's `ended` event can
+  // cleanly stop the recording.
   const { currentSceneKey, hasEnded } = useVideoPlayer({
     durations: activeDurations,
-    loop,
+    loop: isRecording ? false : loop,
     active: started,
     driveFromAudio: started,
     audioRef,
@@ -46,14 +48,34 @@ export default function VideoTemplate({
     if (!audio) return;
     audio.muted = muted;
     audio.volume = 0.95;
+    audio.loop = false;
     audio.currentTime = 0;
+
+    // Stop the export the instant the narration finishes. `ended` and the
+    // wall-clock backstop both fire even when the tab is in the background,
+    // where the requestAnimationFrame scene clock is throttled -- so the export
+    // can never hang at the end the way the rAF-only stop did.
+    let stopped = false;
+    const stop = () => {
+      if (stopped) return;
+      stopped = true;
+      window.stopRecording?.();
+    };
+    const onEnded = () => stop();
+    audio.addEventListener('ended', onEnded);
+    const backstop = window.setTimeout(stop, totalMs + 5000);
+
     const tryPlay = () => {
       audio.play().catch(() => {});
     };
     if (audio.readyState >= 2) tryPlay();
     else audio.addEventListener('canplay', tryPlay, { once: true });
-    return () => audio.removeEventListener('canplay', tryPlay);
-  }, [isRecording, muted]);
+    return () => {
+      audio.removeEventListener('ended', onEnded);
+      audio.removeEventListener('canplay', tryPlay);
+      window.clearTimeout(backstop);
+    };
+  }, [isRecording, muted, totalMs]);
 
   useEffect(() => {
     onSceneChange?.(currentSceneKey);
@@ -115,7 +137,7 @@ export default function VideoTemplate({
         </AnimatePresence>
       </div>
 
-      {hasEnded && !loop && (
+      {hasEnded && !loop && !isRecording && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

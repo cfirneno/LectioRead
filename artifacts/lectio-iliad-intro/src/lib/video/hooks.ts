@@ -86,7 +86,6 @@ export function useVideoPlayer(options: UseVideoPlayerOptions): UseVideoPlayerRe
 
       if (t >= totalSec - 0.05) {
         if (!hasEnded) {
-          window.stopRecording?.();
           setHasEnded(true);
           onVideoEnd?.();
         }
@@ -114,7 +113,6 @@ export function useVideoPlayer(options: UseVideoPlayerOptions): UseVideoPlayerRe
       // Last scene just finished playing
       if (currentScene >= totalScenes - 1) {
         if (!hasEnded) {
-          window.stopRecording?.();
           setHasEnded(true);
           onVideoEnd?.();
         }
