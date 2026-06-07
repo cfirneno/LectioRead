@@ -14,13 +14,14 @@ description: Why narrated Lectio videos can't be re-rendered in the agent contai
 ## Drift bug + fix
 
 - Pre-fix recordings were timer-driven; under heavy render the per-scene `setTimeout`s fired late, so visuals fell behind the constant-rate muxed audio (Hector ended ~10s behind). Fix (the `driveFromAudio` / `sceneStartsSec` audio-clock approach) makes audio the master clock: each frame picks the scene whose cumulative-duration window contains `audio.currentTime`. Re-export after the fix to correct sync.
-- File dates in `exports/` reveal fix state: iliad-intro.mp4 (after the fix timestamp) is correct; the others exported earlier carry the old drift.
+- **The export/recording path MUST be audio-clock too — NOT timer-driven.** This is the whole point of the fix. So `driveFromAudio` must be `started` (or `true`), never gated by `&& !isRecording`. A `VideoTemplate` that drives recording from timers will export drift even though interactive preview looks fine. When recording there is no user gesture, so each `VideoTemplate` also needs an `isRecording` effect that plays the narration from `currentTime=0` (the recorder launches Chromium with autoplay allowed) — that playback is what the audio clock reads. Reference impl: `lectio-iliad-intro`.
+- `VideoWithControls` must default `muted` to `isIframed` (not `false`), so the embedded canvas preview never leaks sound now that recording-autoplay exists; the export branch (`!isIframed`) stays unmuted.
 
 ## ffmpeg re-timing salvage is NOT viable
 
 Tried detecting scene boundaries in a baked mp4 to time-warp the video track onto the audio. The cross-dissolves between scenes are so gradual that ffmpeg scene detection finds ~0 boundaries even at threshold 0.04. No reliable boundaries → no salvage.
 
-## Architecture differs across the video artifacts
+## Architecture across the video artifacts (all now audio-clock)
 
-- `lectio-iliad-intro` and `lectio-laocoon`: audio-clock master — `useVideoPlayer({ driveFromAudio })` + `audioRef`; scene chosen from `audio.currentTime` (the fixed approach). `audioSrc` lives in each video's `config.ts`.
-- `lectio-intro` (aeneid-intro): older/different — scenes advance on `setTimeout` timers and the **audio is seeked to follow the visible scene** (`audio.currentTime = SCENE_START_SEC[scene]`). Audio re-aligns at each scene boundary, so its failure mode is audio jumps/repeats, not cumulative drift. It was never converted to the audio-clock approach.
+- `lectio-iliad-intro`, `lectio-laocoon`, and `lectio-intro` all now use the same audio-clock master: `useVideoPlayer({ driveFromAudio, audioRef })`, scene chosen from `audio.currentTime`. Their `hooks.ts` are identical (the enhanced version with `driveFromAudio`/`active`/`audioRef`).
+- `lectio-intro` (aeneid-intro) was the last holdout — it used to advance scenes on `setTimeout` and *seek the audio to follow the scene* (`audio.currentTime = SCENE_START_SEC[scene]`). That `SCENE_START_SEC` audio-seek approach was removed; it now drives scenes from the audio clock like the others. If you see `SCENE_START_SEC`/`AUDIO_SEEK_EPSILON_SEC` reappear in a video template, the drift fix has been regressed.

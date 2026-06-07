@@ -38,18 +38,6 @@ const SCENE_COMPONENTS: Record<string, React.ComponentType> = {
   scene10: Scene10,
 };
 
-const SCENE_START_SEC: Record<string, number> = (() => {
-  const out: Record<string, number> = {};
-  let cumulativeMs = 0;
-  for (const [key, ms] of Object.entries(SCENE_DURATIONS)) {
-    out[key] = cumulativeMs / 1000;
-    cumulativeMs += ms;
-  }
-  return out;
-})();
-
-const AUDIO_SEEK_EPSILON_SEC = 0.18;
-
 export default function VideoTemplate({
   durations = SCENE_DURATIONS,
   loop = true,
@@ -61,7 +49,18 @@ export default function VideoTemplate({
   muted?: boolean;
   onSceneChange?: (sceneKey: string) => void;
 } = {}) {
-  const { currentSceneKey, hasEnded } = useVideoPlayer({ durations, loop });
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Both interactive playback and recording derive the visible scene from the
+  // narration's clock so words and images stay locked to the audio. (Timer-
+  // driven recording drifted: under heavy headless render the timers fire late
+  // and visuals fall behind the constant-rate muxed audio.)
+  const { currentSceneKey, hasEnded } = useVideoPlayer({
+    durations,
+    loop,
+    driveFromAudio: true,
+    audioRef,
+  });
 
   useEffect(() => {
     onSceneChange?.(currentSceneKey);
@@ -70,21 +69,23 @@ export default function VideoTemplate({
   const baseSceneKey = currentSceneKey.replace(/_r[12]$/, '') as keyof typeof SCENE_DURATIONS;
   const SceneComponent = SCENE_COMPONENTS[baseSceneKey];
 
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-
+  // Start the narration from the top (no user gesture exists in the preview or
+  // the recorder). The audio clock then drives scene selection above so the
+  // visuals can't drift. Muting before play() keeps an embedded preview silent
+  // while the (muted) audio clock still advances.
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
-    // Set muted before play() so an embedded preview never leaks sound on load
-    // (React's `muted` attribute on <audio> isn't reliably applied on mount).
     audio.muted = muted;
     audio.volume = 0.95;
-    const targetTime = SCENE_START_SEC[baseSceneKey] ?? 0;
-    if (Math.abs(audio.currentTime - targetTime) > AUDIO_SEEK_EPSILON_SEC) {
-      audio.currentTime = targetTime;
-    }
-    audio.play().catch(() => {});
-  }, [currentSceneKey, baseSceneKey, muted]);
+    audio.currentTime = 0;
+    const tryPlay = () => {
+      audio.play().catch(() => {});
+    };
+    if (audio.readyState >= 2) tryPlay();
+    else audio.addEventListener('canplay', tryPlay, { once: true });
+    return () => audio.removeEventListener('canplay', tryPlay);
+  }, [muted]);
 
   return (
     <div className="relative w-full h-screen overflow-hidden bg-[var(--color-bg-dark)] text-white">

@@ -65,15 +65,35 @@ export default function VideoTemplate({
   const [started, setStarted] = useState(() => isRecording);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // Interactive playback derives the scene from the narration's clock so words
-  // and images stay locked together; recording/export stays timer-driven.
+  // Both interactive playback and recording derive the visible scene from the
+  // narration's clock so words and images stay locked to the audio. (Timer-
+  // driven recording drifted: under heavy headless render the timers fire late
+  // and visuals fall behind the constant-rate muxed audio.)
   const { currentSceneKey, hasEnded } = useVideoPlayer({
     durations,
     loop,
     active: started,
-    driveFromAudio: started && !isRecording,
+    driveFromAudio: started,
     audioRef,
   });
+
+  // During recording there is no user gesture, so kick off the narration here
+  // (the recorder launches Chromium with autoplay allowed). This gives the
+  // audio clock that drives scene selection above.
+  useEffect(() => {
+    if (!isRecording) return;
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.muted = muted;
+    audio.volume = 0.95;
+    audio.currentTime = 0;
+    const tryPlay = () => {
+      audio.play().catch(() => {});
+    };
+    if (audio.readyState >= 2) tryPlay();
+    else audio.addEventListener('canplay', tryPlay, { once: true });
+    return () => audio.removeEventListener('canplay', tryPlay);
+  }, [isRecording, muted]);
 
   useEffect(() => {
     onSceneChange?.(currentSceneKey);

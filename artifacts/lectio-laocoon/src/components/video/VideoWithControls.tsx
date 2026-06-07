@@ -170,7 +170,10 @@ export default function VideoWithControls() {
     toggleLock,
   } = useSceneControls(SCENE_DURATIONS);
 
-  const [muted, setMuted] = useState(false);
+  // In an embedded preview (canvas iframe) start muted so the narration never
+  // autoplays sound; the viewer can unmute via the control bar. The export path
+  // below (`!isIframed`) renders VideoTemplate unmuted so the download has audio.
+  const [muted, setMuted] = useState(isIframed);
 
   const sensorRef = useRef<HTMLDivElement | null>(null);
   const [collapsed, setCollapsed] = useState(false);
