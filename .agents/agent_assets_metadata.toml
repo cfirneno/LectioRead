@@ -274,13 +274,13 @@ title = "Laocoön serpents — rise from the sea, then coil ashore (16s)"
 id = "WV-yzfdrJNb1IcdyT6kw2"
 uri = "file://exports/iliad-intro.mp4"
 type = "video"
-title = "Homer Iliad Intro — corrected sync (1080p)"
+title = "Iliad — Opening (Μῆνιν ἄειδε)"
 
 [[outputs]]
 id = "30fRlFMApaHxkAez3SgPg"
 uri = "file://exports/iliad-hector.mp4"
 type = "video"
-title = "Iliad — Achilles & Hector"
+title = "Iliad — The Death of Hector (Book 22)"
 
 [[outputs]]
 id = "0AyQj6O6xlOgtuV9pulse"
@@ -292,16 +292,16 @@ title = "Odyssey — Opening (Ἄνδρα μοι ἔννεπε)"
 id = "spDetCfl5wfNQoLULfwVC"
 uri = "file://exports/odyssey-cyclops.mp4"
 type = "video"
-title = "Odyssey — The Cyclops"
+title = "Odyssey — Odysseus and the Cyclops (Book 9)"
 
 [[outputs]]
 id = "hEO332ViO0Hsk9LvzScB3"
 uri = "file://exports/aeneid-intro.mp4"
 type = "video"
-title = "Aeneid Intro (1080p, 98s)"
+title = "Aeneid — Opening (Arma virumque cano)"
 
 [[outputs]]
 id = "_VH7YCHRGVyZNM36pVKVy"
 uri = "file://exports/aeneid-laocoon.mp4"
 type = "video"
-title = "Laocoön — Aeneid Book 2 (1080p, 150s)"
+title = "Aeneid — Laocoön and the Serpents (Book 2)"
