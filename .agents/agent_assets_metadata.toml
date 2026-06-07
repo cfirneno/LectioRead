@@ -305,3 +305,33 @@ id = "_VH7YCHRGVyZNM36pVKVy"
 uri = "file://exports/aeneid-laocoon.mp4"
 type = "video"
 title = "Aeneid — Laocoön and the Serpents (Book 2)"
+
+[[outputs]]
+id = "aKvsY0Z_nrFTx926zG1w4"
+uri = "file://exports_synced/aeneid-intro.mp4"
+type = "video"
+title = "Aeneid — Intro (1:38)"
+
+[[outputs]]
+id = "6JsHrTSugyUT20N4mqHdu"
+uri = "file://exports_synced/aeneid-laocoon.mp4"
+type = "video"
+title = "Aeneid — Laocoön (2:28)"
+
+[[outputs]]
+id = "RcpDXKZ8mEWC58W7htyJS"
+uri = "file://exports_synced/iliad-hector.mp4"
+type = "video"
+title = "Iliad — Hector (2:50)"
+
+[[outputs]]
+id = "1-UXm-2vn-q89KkN4aTIc"
+uri = "file://exports_synced/odyssey-intro.mp4"
+type = "video"
+title = "Odyssey — Intro (2:21)"
+
+[[outputs]]
+id = "W-CRmzFpsZIF2VcCYSAcM"
+uri = "file://exports_synced/odyssey-cyclops.mp4"
+type = "video"
+title = "Odyssey — Cyclops (3:04)"

@@ -31,9 +31,17 @@ description: Why narrated Lectio videos can't be re-rendered in the agent contai
 
 **Operational note:** the heavy screencast capture is still infeasible in-container; the real quality export only works from the user's browser preview pane. Keep that window in the foreground.
 
-## ffmpeg re-timing salvage is NOT viable
+## Salvaging drifted baked exports WITHOUT re-export (the working fix)
 
-Tried detecting scene boundaries in a baked mp4 to time-warp the video track onto the audio. The cross-dissolves between scenes are so gradual that ffmpeg scene detection finds ~0 boundaries even at threshold 0.04. No reliable boundaries → no salvage.
+**Key fact:** the already-baked `exports/<slug>.mp4` files have the CORRECT narration muxed in; only the VIDEO track runs ~1–1.6% long (captured in realtime while scenes advanced on slightly-late timers). i.e. `ffprobe` shows video-stream duration > audio-stream duration by 1.5–2.4s. The drift is ~linear, so a UNIFORM timestamp rescale of just the video track realigns it end-to-end and across the body.
+
+**Do it with stream-copy, NOT re-encode:** `ffmpeg -itsscale <audio_dur/video_dur> -i in.mp4 -i in.mp4 -map 0:v:0 -map 1:a:0 -c copy -movflags +faststart out.mp4`. Input 0's timestamps get scaled (compresses video to audio length); input 1 supplies the untouched audio. Near-instant, tiny memory, keeps full 1080p. After: video-stream duration == audio-stream duration to ~0.0003s. This is the salvage that works when the browser export won't finish.
+
+**Why NOT re-encode:** re-encoding these 1080p videos in-container (libx264, any preset incl. ultrafast, even downscaled to 720p) reliably gets SIGTERM'd (exit 143, often zero stdout) under container memory pressure — the 3 video vite dev servers eat RAM and auto-restart even after pkill. Prefer stream-copy/`-itsscale` ops; avoid full transcodes here.
+
+**Earlier dead end:** detecting scene boundaries to piecewise time-warp fails — cross-dissolves are so gradual that ffmpeg scene detection finds ~0 boundaries even at threshold 0.04. Uniform `-itsscale` sidesteps this entirely (no boundary detection needed).
+
+**Browser preview-pane export ceiling:** even after the stop-signal fix lets recording complete, the harness's "stitching frames together" encode step stalls partway (~61%) on these multi-minute 1080p videos (browser memory). So a clean full re-export is unreliable for the longer ones; the `-itsscale` salvage of the existing baked files is the dependable delivery path.
 
 ## Architecture across the video artifacts (all now audio-clock)
 
