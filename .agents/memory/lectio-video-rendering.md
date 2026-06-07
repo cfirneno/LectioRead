@@ -21,15 +21,15 @@ description: Why narrated Lectio videos can't be re-rendered in the agent contai
 
 **Symptom:** export reaches ~80% and never completes/saves the mp4.
 
-**Cause:** the only "recording done" signal was the requestAnimationFrame audio-clock loop in `hooks.ts` (stopRecording at `totalSec-0.05`). Browsers throttle/freeze rAF when the tab is backgrounded, so a user who switches tabs during the long export never gets the stop. Compounded by `loop=true`, so playback never ended on its own either.
+**Cause (verified):** the recording's "done" signal was NOT fired by `hooks.ts`. It relied on the template's audio `'ended'` listener PLUS a wall-clock backstop. But the hook's audio-clock completion branch calls `audio.pause()` at `totalSec-0.05` (because recording runs `loop=false`), so the audio is paused just before its natural end and `'ended'` NEVER fires. That left a lone backstop timer as the only stop path — unreliable, so the export hangs near the end.
 
-**Fix (all 3 video artifacts):** drive the stop off the audio element, which keeps running when backgrounded — NOT off rAF.
-- During recording force a single pass: `loop: isRecording ? false : loop` into `useVideoPlayer`, and `audio.loop = false` in the recording effect.
-- In the recording effect, stop on the audio `'ended'` event AND a wall-clock `setTimeout(totalMs + 5000)` backstop, both guarded by one `stopped` flag → calls `window.stopRecording()`.
-- Gate the end-CTA overlay with `&& !isRecording` so it isn't captured.
-- **Stop must be single-sourced:** removed `window.stopRecording?.()` from BOTH end-branches of every `hooks.ts` (kept `setHasEnded` + `onVideoEnd` and all sync logic). The template is now the only caller — no double-stop. `hooks.ts` still calls `window.startRecording?.()` on mount.
+**Why an earlier "single-source the stop in the template, remove it from hooks" change was wrong:** the skill is explicit and repeats it many times — the export pipeline expects `window.stopRecording` to be fired FROM the hook when the single recording pass completes (the hook already fires `startRecording` on mount). Moving stop out of the hook is the regression that caused the hang.
 
-**Operational note:** still don't attempt the headless capture in-container even just to "verify" — Chromium screencast here is ~5fps choppy and the long realtime capture gets OOM-killed (see `bash-detached-teardown.md`). The export only works from the user's real browser preview pane; keep that window in the foreground for smooth frames.
+**Fix (all 3 video artifacts, `hooks.ts`):** in the audio-clock completion branch (`t >= totalSec - 0.05`), the `else` (non-loop = recording) path now calls `window.stopRecording?.()` once, guarded by a `stoppedRef`. The hook is the primary stop caller again. Keep the template's `'ended'`/backstop as background safety; a possible double-call is benign (the exporter's stop is idempotent — calling it after the recorder is inactive is a no-op). Do NOT use a `window`-level "already stopped" flag — a stale `true` would BLOCK the stop and re-introduce the hang.
+
+**Verification that IS feasible in-container (do this instead of guessing):** a LIGHT, logic-only headless run — NOT a screencast. Launch nix chromium via `puppeteer-core` (resolve it by absolute path under `node_modules/.pnpm/puppeteer-core@.../...`, it is not a declared dep), `evaluateOnNewDocument` to stub `window.startRecording`/`window.stopRecording` so they log via an `exposeFunction` callback, navigate to the video's NON-iframed URL through `localhost:80/<slug>/` (non-iframe top-level = the export code path), then set `document.querySelector('audio').playbackRate = 12` to fast-forward the ~real-time pass. Confirms start fires on mount and stop fires at audio completion in ~10s. This uses almost no memory (no frame capture) — distinct from the heavy screencast capture, which remains infeasible (OOM / ~5fps).
+
+**Operational note:** the heavy screencast capture is still infeasible in-container; the real quality export only works from the user's browser preview pane. Keep that window in the foreground.
 
 ## ffmpeg re-timing salvage is NOT viable
 

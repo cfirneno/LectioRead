@@ -60,6 +60,10 @@ export function useVideoPlayer(options: UseVideoPlayerOptions): UseVideoPlayerRe
 
   const [currentScene, setCurrentScene] = useState(0);
   const [hasEnded, setHasEnded] = useState(false);
+  // When recording (loop=false), the hook itself must signal the exporter to
+  // stop once the single pass finishes. The export pipeline waits for this
+  // call; relying only on an external backstop timer can hang the export.
+  const stoppedRef = useRef(false);
 
   // Start recording on mount
   useEffect(() => {
@@ -93,6 +97,10 @@ export function useVideoPlayer(options: UseVideoPlayerOptions): UseVideoPlayerRe
           audio.currentTime = 0;
         } else {
           audio.pause();
+          if (!stoppedRef.current) {
+            stoppedRef.current = true;
+            window.stopRecording?.();
+          }
         }
       }
 
