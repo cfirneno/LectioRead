@@ -45,5 +45,10 @@ export interface Text {
      * @nullable
      */
   catalogKey?: string | null;
+  /**
+     * For English texts: 'British' or 'American', used to split the library
+     * @nullable
+     */
+  nationality?: string | null;
   createdAt: string;
 }

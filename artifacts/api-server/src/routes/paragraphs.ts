@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { eq, and } from "drizzle-orm";
-import { db, textsTable, paragraphsTable, progressTable } from "@workspace/db";
+import { db, textsTable, paragraphsTable, progressTable, paragraphTranslationsTable } from "@workspace/db";
 import {
   ListParagraphsParams,
   GetParagraphParams,
@@ -116,6 +116,9 @@ router.post(
       return;
     }
 
+    const requestedLanguage =
+      typeof req.body?.language === "string" ? req.body.language.trim() : "";
+
     const [paragraph] = await db
       .select()
       .from(paragraphsTable)
@@ -131,19 +134,6 @@ router.post(
       return;
     }
 
-    if (paragraph.interlinearTranslation) {
-      const words = JSON.parse(paragraph.interlinearTranslation) as Array<{
-        original: string;
-        translation: string;
-      }>;
-      res.json({
-        paragraphId: paragraph.id,
-        originalText: paragraph.originalText,
-        words,
-      });
-      return;
-    }
-
     const [text] = await db
       .select()
       .from(textsTable)
@@ -154,22 +144,65 @@ router.post(
       return;
     }
 
+    const defaultLanguage = text.targetLanguage ?? "English";
+    const targetLanguage = requestedLanguage || defaultLanguage;
+    const isDefault =
+      targetLanguage.toLowerCase() === defaultLanguage.toLowerCase();
+
+    // Cache lookup: legacy single column for the default language, per-language
+    // table for any other chosen language.
+    if (isDefault) {
+      if (paragraph.interlinearTranslation) {
+        const words = JSON.parse(paragraph.interlinearTranslation);
+        res.json({ paragraphId: paragraph.id, originalText: paragraph.originalText, words });
+        return;
+      }
+    } else {
+      const [cached] = await db
+        .select()
+        .from(paragraphTranslationsTable)
+        .where(
+          and(
+            eq(paragraphTranslationsTable.paragraphId, paragraph.id),
+            eq(paragraphTranslationsTable.kind, "interlinear"),
+            eq(paragraphTranslationsTable.language, targetLanguage)
+          )
+        );
+      if (cached) {
+        const words = JSON.parse(cached.content);
+        res.json({ paragraphId: paragraph.id, originalText: paragraph.originalText, words });
+        return;
+      }
+    }
+
     const releaseForeground = beginForeground();
     let words;
     try {
       words = await generateInterlinearTranslation(
         paragraph.originalText,
         text.language,
-        text.targetLanguage ?? "English"
+        targetLanguage
       );
     } finally {
       releaseForeground();
     }
 
-    await db
-      .update(paragraphsTable)
-      .set({ interlinearTranslation: JSON.stringify(words) })
-      .where(eq(paragraphsTable.id, paragraph.id));
+    if (isDefault) {
+      await db
+        .update(paragraphsTable)
+        .set({ interlinearTranslation: JSON.stringify(words) })
+        .where(eq(paragraphsTable.id, paragraph.id));
+    } else {
+      await db
+        .insert(paragraphTranslationsTable)
+        .values({
+          paragraphId: paragraph.id,
+          kind: "interlinear",
+          language: targetLanguage,
+          content: JSON.stringify(words),
+        })
+        .onConflictDoNothing();
+    }
 
     res.json({
       paragraphId: paragraph.id,
@@ -188,6 +221,9 @@ router.post(
       return;
     }
 
+    const requestedLanguage =
+      typeof req.body?.language === "string" ? req.body.language.trim() : "";
+
     const [paragraph] = await db
       .select()
       .from(paragraphsTable)
@@ -203,15 +239,6 @@ router.post(
       return;
     }
 
-    if (paragraph.fullTranslation) {
-      res.json({
-        paragraphId: paragraph.id,
-        originalText: paragraph.originalText,
-        translatedText: paragraph.fullTranslation,
-      });
-      return;
-    }
-
     const [text] = await db
       .select()
       .from(textsTable)
@@ -222,22 +249,69 @@ router.post(
       return;
     }
 
+    const defaultLanguage = text.targetLanguage ?? "English";
+    const targetLanguage = requestedLanguage || defaultLanguage;
+    const isDefault =
+      targetLanguage.toLowerCase() === defaultLanguage.toLowerCase();
+
+    if (isDefault) {
+      if (paragraph.fullTranslation) {
+        res.json({
+          paragraphId: paragraph.id,
+          originalText: paragraph.originalText,
+          translatedText: paragraph.fullTranslation,
+        });
+        return;
+      }
+    } else {
+      const [cached] = await db
+        .select()
+        .from(paragraphTranslationsTable)
+        .where(
+          and(
+            eq(paragraphTranslationsTable.paragraphId, paragraph.id),
+            eq(paragraphTranslationsTable.kind, "full"),
+            eq(paragraphTranslationsTable.language, targetLanguage)
+          )
+        );
+      if (cached) {
+        res.json({
+          paragraphId: paragraph.id,
+          originalText: paragraph.originalText,
+          translatedText: cached.content,
+        });
+        return;
+      }
+    }
+
     const releaseForeground = beginForeground();
     let translatedText: string;
     try {
       translatedText = await generateFullTranslation(
         paragraph.originalText,
         text.language,
-        text.targetLanguage ?? "English"
+        targetLanguage
       );
     } finally {
       releaseForeground();
     }
 
-    await db
-      .update(paragraphsTable)
-      .set({ fullTranslation: translatedText })
-      .where(eq(paragraphsTable.id, paragraph.id));
+    if (isDefault) {
+      await db
+        .update(paragraphsTable)
+        .set({ fullTranslation: translatedText })
+        .where(eq(paragraphsTable.id, paragraph.id));
+    } else {
+      await db
+        .insert(paragraphTranslationsTable)
+        .values({
+          paragraphId: paragraph.id,
+          kind: "full",
+          language: targetLanguage,
+          content: translatedText,
+        })
+        .onConflictDoNothing();
+    }
 
     res.json({
       paragraphId: paragraph.id,

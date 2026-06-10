@@ -197,6 +197,12 @@ paths:
           required: true
           schema:
             type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TranslationOptions"
       responses:
         "200":
           description: Interlinear translation
@@ -223,6 +229,12 @@ paths:
           required: true
           schema:
             type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TranslationOptions"
       responses:
         "200":
           description: Full literary translation
@@ -581,6 +593,13 @@ components:
           type: string
           description: "e.g. 'The Prince by Machiavelli, chapter 1'"
 
+    TranslationOptions:
+      type: object
+      properties:
+        language:
+          type: string
+          description: "Target gloss/translation language (defaults to the text's target language / English)"
+
     Text:
       type: object
       required: [id, title, author, language, sourceUrl, paragraphCount, createdAt]
@@ -616,6 +635,9 @@ components:
         catalogKey:
           type: ["string", "null"]
           description: "Stable catalog identifier for seeded texts (e.g. 'Aeneis'), used for deep links"
+        nationality:
+          type: ["string", "null"]
+          description: "For English texts: 'British' or 'American', used to split the library"
         createdAt:
           type: string
 

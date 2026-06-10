@@ -12,7 +12,15 @@ import {
 } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { ArrowLeft, Loader2, Home, Music, ExternalLink, GraduationCap, Volume2 } from "lucide-react";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import { ArrowLeft, Loader2, Home, Music, ExternalLink, GraduationCap, Volume2, Check, Languages } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { getGrammarResource, type GrammarResource } from "@/lib/grammar-resources";
 import { QuizOverlay } from "@/components/quiz-overlay";
@@ -143,6 +151,41 @@ function WordLookupPopover({
   );
 }
 
+const TARGET_LANG_KEY = "lectio:targetLang";
+
+const COMMON_LANGUAGES = [
+  "English",
+  "Spanish",
+  "French",
+  "German",
+  "Italian",
+  "Portuguese",
+  "Dutch",
+  "Russian",
+  "Polish",
+  "Ukrainian",
+  "Chinese (Simplified)",
+  "Chinese (Traditional)",
+  "Japanese",
+  "Korean",
+  "Arabic",
+  "Hebrew",
+  "Hindi",
+  "Bengali",
+  "Turkish",
+  "Greek (Modern)",
+  "Swedish",
+  "Norwegian",
+  "Danish",
+  "Finnish",
+  "Czech",
+  "Romanian",
+  "Hungarian",
+  "Vietnamese",
+  "Thai",
+  "Indonesian",
+];
+
 export default function Read() {
   const { textId, index } = useParams();
   const id = parseInt(textId || "0", 10);
@@ -152,6 +195,12 @@ export default function Read() {
 
   const [stage, setStage] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
   const [quizOpen, setQuizOpen] = useState(false);
+  const [targetLang, setTargetLang] = useState<string>(() => {
+    if (typeof window === "undefined") return "English";
+    return window.localStorage.getItem(TARGET_LANG_KEY) || "English";
+  });
+  const [langPickerOpen, setLangPickerOpen] = useState(false);
+  const [langQuery, setLangQuery] = useState("");
 
   const { data: text } = useGetText(id);
   const { data: paragraph, isLoading: isLoadingParagraph } = useGetParagraph(id, pIndex, {
@@ -217,6 +266,25 @@ export default function Read() {
     setShowScansion(false);
     cleanupAudio();
   }, [id, pIndex, cleanupAudio]);
+
+  const handleLanguageChange = useCallback(
+    (lang: string) => {
+      const next = lang.trim();
+      if (!next) return;
+      setTargetLang(next);
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem(TARGET_LANG_KEY, next);
+      }
+      // Cached glosses are language-specific; clear them and step back to the
+      // original-text stages so the reader regenerates in the new language.
+      setInterlinearData(null);
+      setFullTransData(null);
+      setLangPickerOpen(false);
+      setLangQuery("");
+      setStage((s) => (s === 3 ? 2 : s === 4 ? 2 : s));
+    },
+    []
+  );
 
   useEffect(() => cleanupAudio, [cleanupAudio]);
 
@@ -313,12 +381,12 @@ export default function Read() {
       setStage(2);
     } else if (stage === 2) {
       interlinearMutation.mutate(
-        { textId: id, index: pIndex },
+        { textId: id, index: pIndex, data: { language: targetLang } },
         { onSuccess: (data) => { setInterlinearData(data); setStage(3); } }
       );
     } else if (stage === 3) {
       fullTranslationMutation.mutate(
-        { textId: id, index: pIndex },
+        { textId: id, index: pIndex, data: { language: targetLang } },
         { onSuccess: (data) => { setFullTransData(data); setStage(4); } }
       );
     } else if (stage === 4) {
@@ -326,7 +394,7 @@ export default function Read() {
     } else if (stage === 5) {
       setStage(6);
     }
-  }, [stage, id, pIndex, interlinearMutation, fullTranslationMutation]);
+  }, [stage, id, pIndex, targetLang, interlinearMutation, fullTranslationMutation]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -408,6 +476,68 @@ export default function Read() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <Popover open={langPickerOpen} onOpenChange={setLangPickerOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="font-serif text-sm text-muted-foreground hover:text-foreground gap-1.5"
+                  title="Translation language"
+                >
+                  <Languages className="h-4 w-4" />
+                  <span className="hidden sm:inline">{targetLang}</span>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-64 p-0" align="end">
+                <Command shouldFilter={true}>
+                  <CommandInput
+                    placeholder="Any language…"
+                    value={langQuery}
+                    onValueChange={setLangQuery}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && langQuery.trim()) {
+                        e.preventDefault();
+                        handleLanguageChange(langQuery);
+                      }
+                    }}
+                  />
+                  <CommandList>
+                    <CommandEmpty>
+                      {langQuery.trim() ? (
+                        <button
+                          type="button"
+                          className="w-full px-2 py-1.5 text-sm text-left hover:bg-accent rounded-sm"
+                          onClick={() => handleLanguageChange(langQuery)}
+                        >
+                          Use “{langQuery.trim()}”
+                        </button>
+                      ) : (
+                        "Type any language."
+                      )}
+                    </CommandEmpty>
+                    <CommandGroup>
+                      {COMMON_LANGUAGES.map((lang) => (
+                        <CommandItem
+                          key={lang}
+                          value={lang}
+                          onSelect={() => handleLanguageChange(lang)}
+                        >
+                          <Check
+                            className={
+                              "mr-2 h-4 w-4 " +
+                              (targetLang.toLowerCase() === lang.toLowerCase()
+                                ? "opacity-100"
+                                : "opacity-0")
+                            }
+                          />
+                          {lang}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
             <div className="text-xs font-medium px-3 py-1 rounded-full bg-secondary text-secondary-foreground">
               Stage {stage} of 6
             </div>
@@ -563,7 +693,7 @@ export default function Read() {
                   </div>
                   <div className="relative">
                     <div className="absolute -left-4 md:-left-8 top-0 bottom-0 w-px bg-border/50 hidden md:block" />
-                    <h3 className="text-xs font-semibold tracking-widest text-muted-foreground uppercase mb-6">English</h3>
+                    <h3 className="text-xs font-semibold tracking-widest text-muted-foreground uppercase mb-6">{targetLang}</h3>
                     <p className="font-serif text-2xl leading-relaxed text-muted-foreground">
                       {fullTransData.translatedText}
                     </p>

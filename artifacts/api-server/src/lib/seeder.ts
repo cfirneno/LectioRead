@@ -131,7 +131,9 @@ export async function cleanBrokenCatalogEntries(): Promise<void> {
       .from(textsTable)
       .where(
         or(
-          ilike(textsTable.language, "english"),
+          // Old broken English placeholders predate the English library; real
+          // catalog English texts always have a nationality set, so spare those.
+          and(ilike(textsTable.language, "english"), isNull(textsTable.nationality)),
           ilike(textsTable.description ?? textsTable.title, "%cannot provide%"),
           ilike(textsTable.description ?? textsTable.title, "%under copyright%"),
         ),
@@ -149,7 +151,48 @@ export async function cleanBrokenCatalogEntries(): Promise<void> {
   }
 }
 
-const CATALOG_QUERIES: Array<{ query: string; title: string }> = [
+const CATALOG_QUERIES: Array<{ query: string; title: string; nationality?: "British" | "American" }> = [
+  // ── English literature — British (public domain) ──
+  { query: "Jane Austen Pride and Prejudice Chapter 1 in English", title: "Pride and Prejudice", nationality: "British" },
+  { query: "Jane Austen Sense and Sensibility Chapter 1 in English", title: "Sense and Sensibility", nationality: "British" },
+  { query: "Jane Austen Emma Chapter 1 in English", title: "Emma", nationality: "British" },
+  { query: "Charles Dickens A Tale of Two Cities Book 1 Chapter 1 opening in English", title: "A Tale of Two Cities", nationality: "British" },
+  { query: "Charles Dickens Great Expectations Chapter 1 in English", title: "Great Expectations", nationality: "British" },
+  { query: "Charles Dickens Oliver Twist Chapter 1 in English", title: "Oliver Twist", nationality: "British" },
+  { query: "Charlotte Brontë Jane Eyre Chapter 1 in English", title: "Jane Eyre", nationality: "British" },
+  { query: "Emily Brontë Wuthering Heights Chapter 1 in English", title: "Wuthering Heights", nationality: "British" },
+  { query: "Mary Shelley Frankenstein Letter 1 and Chapter 1 opening in English", title: "Frankenstein", nationality: "British" },
+  { query: "Lewis Carroll Alice's Adventures in Wonderland Chapter 1 in English", title: "Alice's Adventures in Wonderland", nationality: "British" },
+  { query: "Oscar Wilde The Picture of Dorian Gray Chapter 1 opening in English", title: "The Picture of Dorian Gray", nationality: "British" },
+  { query: "Arthur Conan Doyle A Study in Scarlet Chapter 1 in English", title: "A Study in Scarlet", nationality: "British" },
+  { query: "Arthur Conan Doyle The Adventures of Sherlock Holmes — A Scandal in Bohemia opening in English", title: "A Scandal in Bohemia", nationality: "British" },
+  { query: "Bram Stoker Dracula Chapter 1 opening in English", title: "Dracula", nationality: "British" },
+  { query: "Robert Louis Stevenson Strange Case of Dr Jekyll and Mr Hyde Chapter 1 in English", title: "Dr Jekyll and Mr Hyde", nationality: "British" },
+  { query: "George Eliot Middlemarch Prelude and Chapter 1 opening in English", title: "Middlemarch", nationality: "British" },
+  { query: "Thomas Hardy Tess of the d'Urbervilles Chapter 1 in English", title: "Tess of the d'Urbervilles", nationality: "British" },
+  { query: "Jonathan Swift Gulliver's Travels Part 1 Chapter 1 in English", title: "Gulliver's Travels", nationality: "British" },
+  { query: "Daniel Defoe Robinson Crusoe Chapter 1 opening in English", title: "Robinson Crusoe", nationality: "British" },
+  { query: "Joseph Conrad Heart of Darkness Part 1 opening in English", title: "Heart of Darkness", nationality: "British" },
+
+  // ── English literature — American (public domain) ──
+  { query: "Mark Twain Adventures of Huckleberry Finn Chapter 1 in English", title: "Adventures of Huckleberry Finn", nationality: "American" },
+  { query: "Mark Twain The Adventures of Tom Sawyer Chapter 1 in English", title: "The Adventures of Tom Sawyer", nationality: "American" },
+  { query: "Herman Melville Moby-Dick Chapter 1 (Loomings) opening in English", title: "Moby-Dick", nationality: "American" },
+  { query: "Nathaniel Hawthorne The Scarlet Letter Chapter 1 (The Prison-Door) in English", title: "The Scarlet Letter", nationality: "American" },
+  { query: "Edgar Allan Poe The Tell-Tale Heart full opening in English", title: "The Tell-Tale Heart", nationality: "American" },
+  { query: "Edgar Allan Poe The Fall of the House of Usher opening in English", title: "The Fall of the House of Usher", nationality: "American" },
+  { query: "Louisa May Alcott Little Women Chapter 1 in English", title: "Little Women", nationality: "American" },
+  { query: "Henry David Thoreau Walden Chapter 1 (Economy) opening in English", title: "Walden", nationality: "American" },
+  { query: "Walt Whitman Leaves of Grass — Song of Myself opening sections in English", title: "Song of Myself", nationality: "American" },
+  { query: "Kate Chopin The Awakening Chapter 1 in English", title: "The Awakening", nationality: "American" },
+  { query: "Jack London The Call of the Wild Chapter 1 in English", title: "The Call of the Wild", nationality: "American" },
+  { query: "Stephen Crane The Red Badge of Courage Chapter 1 in English", title: "The Red Badge of Courage", nationality: "American" },
+  { query: "F. Scott Fitzgerald The Great Gatsby Chapter 1 opening in English", title: "The Great Gatsby", nationality: "American" },
+  { query: "Harriet Beecher Stowe Uncle Tom's Cabin Chapter 1 in English", title: "Uncle Tom's Cabin", nationality: "American" },
+  { query: "Washington Irving The Legend of Sleepy Hollow opening in English", title: "The Legend of Sleepy Hollow", nationality: "American" },
+  { query: "Edith Wharton The Age of Innocence Book 1 Chapter 1 in English", title: "The Age of Innocence", nationality: "American" },
+
+
   // === PRIORITY: Russian & Japanese (front-loaded so they appear in the library first) ===
 
   // Pushkin (1799-1837)
@@ -729,7 +772,11 @@ async function catalogKeyExists(key: string): Promise<boolean> {
   return !!row;
 }
 
-async function fetchAndStore(query: string, catalogTitle: string): Promise<void> {
+async function fetchAndStore(
+  query: string,
+  catalogTitle: string,
+  nationality?: "British" | "American"
+): Promise<void> {
   // Dedup by stable catalogKey, NOT by AI-returned title (which varies per call).
   if (await catalogKeyExists(catalogTitle)) {
     logger.info({ catalogTitle }, "Catalog text already in DB, skipping");
@@ -757,6 +804,7 @@ async function fetchAndStore(query: string, catalogTitle: string): Promise<void>
       englishTitle: result.englishTitle ?? null,
       englishAuthor: result.englishAuthor ?? null,
       catalogKey: catalogTitle,
+      nationality: nationality ?? null,
       paragraphCount: result.paragraphs.length,
       // Do not set lastAccessedAt — only user-initiated reads should set this
     })
@@ -813,7 +861,7 @@ async function runWithConcurrency<T>(
 }
 
 export async function seedCatalog(): Promise<void> {
-  const missing: Array<{ query: string; title: string }> = [];
+  const missing: Array<{ query: string; title: string; nationality?: "British" | "American" }> = [];
 
   for (const item of CATALOG_QUERIES) {
     if (!(await catalogKeyExists(item.title))) {
@@ -830,7 +878,7 @@ export async function seedCatalog(): Promise<void> {
 
   const tasks = missing.map(
     (c) => () =>
-      fetchAndStore(c.query, c.title).catch((err) => {
+      fetchAndStore(c.query, c.title, c.nationality).catch((err) => {
         logger.error({ err, query: c.query }, "Failed to seed catalog text");
       })
   );

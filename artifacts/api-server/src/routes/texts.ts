@@ -120,6 +120,7 @@ router.get("/texts", async (_req: AuthedRequest, res): Promise<void> => {
       englishTitle: t.englishTitle,
       englishAuthor: t.englishAuthor,
       catalogKey: t.catalogKey,
+      nationality: t.nationality,
       createdAt: t.createdAt.toISOString(),
     }))
   );
@@ -208,6 +209,7 @@ router.get("/texts/:textId", async (req: AuthedRequest, res): Promise<void> => {
     sourceUrl: text.sourceUrl,
     description: text.description,
     paragraphCount: text.paragraphCount,
+    nationality: text.nationality,
     createdAt: text.createdAt.toISOString(),
   });
 });

@@ -50,6 +50,11 @@ export interface TextSearchRequest {
   query: string;
 }
 
+export interface TranslationOptions {
+  /** Target gloss/translation language (defaults to the text's target language / English) */
+  language?: string;
+}
+
 export interface Text {
   id: number;
   title: string;
@@ -89,6 +94,11 @@ export interface Text {
      * @nullable
      */
   catalogKey?: string | null;
+  /**
+     * For English texts: 'British' or 'American', used to split the library
+     * @nullable
+     */
+  nationality?: string | null;
   createdAt: string;
 }
 

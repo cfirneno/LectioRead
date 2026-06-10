@@ -147,7 +147,7 @@ const CATALOG: CatalogText[] = [
   },
 ];
 
-const LANGUAGE_ORDER = ["Latin", "Greek", "Italian", "French", "Spanish", "German", "Russian", "Japanese"];
+const LANGUAGE_ORDER = ["Latin", "Greek", "British English", "American English", "English", "Italian", "French", "Spanish", "German", "Russian", "Japanese"];
 
 function groupByLanguage(texts: CatalogText[]): Record<string, CatalogText[]> {
   const groups: Record<string, CatalogText[]> = {};
@@ -219,11 +219,24 @@ export default function Home() {
     return l.charAt(0).toUpperCase() + l.slice(1).toLowerCase();
   };
 
-  const libraryByLanguage: Record<string, typeof allTexts extends (infer U)[] | undefined ? U[] : never> = {};
-  for (const t of allTexts ?? []) {
+  type LibraryText = typeof allTexts extends (infer U)[] | undefined ? U : never;
+  // English texts are split into British / American sections by nationality; every
+  // other language groups by its normalized name.
+  const groupKey = (t: LibraryText): string => {
     const lang = normalizeLanguage(t.language);
-    if (!libraryByLanguage[lang]) libraryByLanguage[lang] = [];
-    libraryByLanguage[lang].push(t);
+    if (lang === "English") {
+      if (t.nationality === "British") return "British English";
+      if (t.nationality === "American") return "American English";
+      return "English";
+    }
+    return lang;
+  };
+
+  const libraryByLanguage: Record<string, LibraryText[]> = {};
+  for (const t of allTexts ?? []) {
+    const key = groupKey(t);
+    if (!libraryByLanguage[key]) libraryByLanguage[key] = [];
+    libraryByLanguage[key].push(t);
   }
   for (const lang of Object.keys(libraryByLanguage)) {
     const items = libraryByLanguage[lang];

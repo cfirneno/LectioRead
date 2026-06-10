@@ -41,6 +41,7 @@ import type {
   TextSearchRequest,
   TextStats,
   TextWithProgress,
+  TranslationOptions,
   VisitAck,
   VisitInput,
   VisitStats,
@@ -696,14 +697,15 @@ export const getGetInterlinearTranslationUrl = (textId: number,
  * @summary Generate or retrieve the interlinear (word-for-word) translation
  */
 export const getInterlinearTranslation = async (textId: number,
-    index: number, options?: RequestInit): Promise<InterlinearTranslation> => {
+    index: number,
+    translationOptions?: TranslationOptions, options?: RequestInit): Promise<InterlinearTranslation> => {
 
   return customFetch<InterlinearTranslation>(getGetInterlinearTranslationUrl(textId,index),
   {
     ...options,
-    method: 'POST'
-
-
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(translationOptions)
   }
 );}
 
@@ -711,8 +713,8 @@ export const getInterlinearTranslation = async (textId: number,
 
 
 export const getGetInterlinearTranslationMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getInterlinearTranslation>>, TError,{textId: number;index: number}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof getInterlinearTranslation>>, TError,{textId: number;index: number}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getInterlinearTranslation>>, TError,{textId: number;index: number;data?: BodyType<TranslationOptions>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof getInterlinearTranslation>>, TError,{textId: number;index: number;data?: BodyType<TranslationOptions>}, TContext> => {
 
 const mutationKey = ['getInterlinearTranslation'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -724,10 +726,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof getInterlinearTranslation>>, {textId: number;index: number}> = (props) => {
-          const {textId,index} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof getInterlinearTranslation>>, {textId: number;index: number;data?: BodyType<TranslationOptions>}> = (props) => {
+          const {textId,index,data} = props ?? {};
 
-          return  getInterlinearTranslation(textId,index,requestOptions)
+          return  getInterlinearTranslation(textId,index,data,requestOptions)
         }
 
 
@@ -738,18 +740,18 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type GetInterlinearTranslationMutationResult = NonNullable<Awaited<ReturnType<typeof getInterlinearTranslation>>>
-
+    export type GetInterlinearTranslationMutationBody = BodyType<TranslationOptions> | undefined
     export type GetInterlinearTranslationMutationError = ErrorType<void>
 
     /**
  * @summary Generate or retrieve the interlinear (word-for-word) translation
  */
 export const useGetInterlinearTranslation = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getInterlinearTranslation>>, TError,{textId: number;index: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getInterlinearTranslation>>, TError,{textId: number;index: number;data?: BodyType<TranslationOptions>}, TContext>, request?: SecondParameter<typeof customFetch>}
  ): UseMutationResult<
         Awaited<ReturnType<typeof getInterlinearTranslation>>,
         TError,
-        {textId: number;index: number},
+        {textId: number;index: number;data?: BodyType<TranslationOptions>},
         TContext
       > => {
       return useMutation(getGetInterlinearTranslationMutationOptions(options));
@@ -768,14 +770,15 @@ export const getGetFullTranslationUrl = (textId: number,
  * @summary Generate or retrieve the full literary translation
  */
 export const getFullTranslation = async (textId: number,
-    index: number, options?: RequestInit): Promise<FullTranslation> => {
+    index: number,
+    translationOptions?: TranslationOptions, options?: RequestInit): Promise<FullTranslation> => {
 
   return customFetch<FullTranslation>(getGetFullTranslationUrl(textId,index),
   {
     ...options,
-    method: 'POST'
-
-
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(translationOptions)
   }
 );}
 
@@ -783,8 +786,8 @@ export const getFullTranslation = async (textId: number,
 
 
 export const getGetFullTranslationMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getFullTranslation>>, TError,{textId: number;index: number}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof getFullTranslation>>, TError,{textId: number;index: number}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getFullTranslation>>, TError,{textId: number;index: number;data?: BodyType<TranslationOptions>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof getFullTranslation>>, TError,{textId: number;index: number;data?: BodyType<TranslationOptions>}, TContext> => {
 
 const mutationKey = ['getFullTranslation'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -796,10 +799,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof getFullTranslation>>, {textId: number;index: number}> = (props) => {
-          const {textId,index} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof getFullTranslation>>, {textId: number;index: number;data?: BodyType<TranslationOptions>}> = (props) => {
+          const {textId,index,data} = props ?? {};
 
-          return  getFullTranslation(textId,index,requestOptions)
+          return  getFullTranslation(textId,index,data,requestOptions)
         }
 
 
@@ -810,18 +813,18 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type GetFullTranslationMutationResult = NonNullable<Awaited<ReturnType<typeof getFullTranslation>>>
-
+    export type GetFullTranslationMutationBody = BodyType<TranslationOptions> | undefined
     export type GetFullTranslationMutationError = ErrorType<void>
 
     /**
  * @summary Generate or retrieve the full literary translation
  */
 export const useGetFullTranslation = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getFullTranslation>>, TError,{textId: number;index: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getFullTranslation>>, TError,{textId: number;index: number;data?: BodyType<TranslationOptions>}, TContext>, request?: SecondParameter<typeof customFetch>}
  ): UseMutationResult<
         Awaited<ReturnType<typeof getFullTranslation>>,
         TError,
-        {textId: number;index: number},
+        {textId: number;index: number;data?: BodyType<TranslationOptions>},
         TContext
       > => {
       return useMutation(getGetFullTranslationMutationOptions(options));

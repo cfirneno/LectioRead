@@ -38,6 +38,7 @@ export const SearchTextResponse = zod.object({
   "englishTitle": zod.string().nullish().describe('Commonly used English title (e.g. \'Crime and Punishment\' for \'Преступление и наказание\')'),
   "englishAuthor": zod.string().nullish().describe('Author\'s name in Latin script as commonly used in English (e.g. \'Fyodor Dostoevsky\')'),
   "catalogKey": zod.string().nullish().describe('Stable catalog identifier for seeded texts (e.g. \'Aeneis\'), used for deep links'),
+  "nationality": zod.string().nullish().describe('For English texts: \'British\' or \'American\', used to split the library'),
   "createdAt": zod.string()
 })
 
@@ -58,6 +59,7 @@ export const ListTextsResponseItem = zod.object({
   "englishTitle": zod.string().nullish().describe('Commonly used English title (e.g. \'Crime and Punishment\' for \'Преступление и наказание\')'),
   "englishAuthor": zod.string().nullish().describe('Author\'s name in Latin script as commonly used in English (e.g. \'Fyodor Dostoevsky\')'),
   "catalogKey": zod.string().nullish().describe('Stable catalog identifier for seeded texts (e.g. \'Aeneis\'), used for deep links'),
+  "nationality": zod.string().nullish().describe('For English texts: \'British\' or \'American\', used to split the library'),
   "createdAt": zod.string()
 })
 export const ListTextsResponse = zod.array(ListTextsResponseItem)
@@ -99,6 +101,7 @@ export const GetTextResponse = zod.object({
   "englishTitle": zod.string().nullish().describe('Commonly used English title (e.g. \'Crime and Punishment\' for \'Преступление и наказание\')'),
   "englishAuthor": zod.string().nullish().describe('Author\'s name in Latin script as commonly used in English (e.g. \'Fyodor Dostoevsky\')'),
   "catalogKey": zod.string().nullish().describe('Stable catalog identifier for seeded texts (e.g. \'Aeneis\'), used for deep links'),
+  "nationality": zod.string().nullish().describe('For English texts: \'British\' or \'American\', used to split the library'),
   "createdAt": zod.string()
 })
 
@@ -170,6 +173,10 @@ export const GetInterlinearTranslationParams = zod.object({
   "index": zod.coerce.number()
 })
 
+export const GetInterlinearTranslationBody = zod.object({
+  "language": zod.string().optional().describe('Target gloss\/translation language (defaults to the text\'s target language \/ English)')
+})
+
 export const GetInterlinearTranslationResponse = zod.object({
   "paragraphId": zod.number(),
   "originalText": zod.string(),
@@ -187,6 +194,10 @@ export const GetInterlinearTranslationResponse = zod.object({
 export const GetFullTranslationParams = zod.object({
   "textId": zod.coerce.number(),
   "index": zod.coerce.number()
+})
+
+export const GetFullTranslationBody = zod.object({
+  "language": zod.string().optional().describe('Target gloss\/translation language (defaults to the text\'s target language \/ English)')
 })
 
 export const GetFullTranslationResponse = zod.object({

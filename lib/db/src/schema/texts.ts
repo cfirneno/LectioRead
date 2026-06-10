@@ -15,6 +15,7 @@ export const textsTable = pgTable("texts", {
   englishTitle: text("english_title"),
   englishAuthor: text("english_author"),
   catalogKey: text("catalog_key"),
+  nationality: text("nationality"),
   lastAccessedAt: timestamp("last_accessed_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
