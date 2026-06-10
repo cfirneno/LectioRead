@@ -335,3 +335,9 @@ id = "W-CRmzFpsZIF2VcCYSAcM"
 uri = "file://exports_synced/odyssey-cyclops.mp4"
 type = "video"
 title = "Odyssey — Cyclops (3:04)"
+
+[[outputs]]
+id = "IG15qYoqRAGlRT_M1LP-4"
+uri = "file://scripts/outro_preview.mp4"
+type = "video"
+title = "New outro preview (end of Aeneid intro → lectioread.com)"
