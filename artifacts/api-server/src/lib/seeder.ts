@@ -131,9 +131,9 @@ export async function cleanBrokenCatalogEntries(): Promise<void> {
       .from(textsTable)
       .where(
         or(
-          // Old broken English placeholders predate the English library; real
-          // catalog English texts always have a nationality set, so spare those.
-          and(ilike(textsTable.language, "english"), isNull(textsTable.nationality)),
+          // Only genuinely broken placeholder rows (the AI refused / returned a
+          // copyright notice). English is now a first-class library language, so
+          // we must NOT delete English texts merely for being English.
           ilike(textsTable.description ?? textsTable.title, "%cannot provide%"),
           ilike(textsTable.description ?? textsTable.title, "%under copyright%"),
         ),

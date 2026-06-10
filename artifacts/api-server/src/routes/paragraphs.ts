@@ -148,6 +148,8 @@ router.post(
     const targetLanguage = requestedLanguage || defaultLanguage;
     const isDefault =
       targetLanguage.toLowerCase() === defaultLanguage.toLowerCase();
+    // Canonical key so "Spanish", "spanish", and " spanish " share one cache row.
+    const cacheKey = targetLanguage.toLowerCase();
 
     // Cache lookup: legacy single column for the default language, per-language
     // table for any other chosen language.
@@ -165,7 +167,7 @@ router.post(
           and(
             eq(paragraphTranslationsTable.paragraphId, paragraph.id),
             eq(paragraphTranslationsTable.kind, "interlinear"),
-            eq(paragraphTranslationsTable.language, targetLanguage)
+            eq(paragraphTranslationsTable.language, cacheKey)
           )
         );
       if (cached) {
@@ -198,7 +200,7 @@ router.post(
         .values({
           paragraphId: paragraph.id,
           kind: "interlinear",
-          language: targetLanguage,
+          language: cacheKey,
           content: JSON.stringify(words),
         })
         .onConflictDoNothing();
@@ -253,6 +255,8 @@ router.post(
     const targetLanguage = requestedLanguage || defaultLanguage;
     const isDefault =
       targetLanguage.toLowerCase() === defaultLanguage.toLowerCase();
+    // Canonical key so "Spanish", "spanish", and " spanish " share one cache row.
+    const cacheKey = targetLanguage.toLowerCase();
 
     if (isDefault) {
       if (paragraph.fullTranslation) {
@@ -271,7 +275,7 @@ router.post(
           and(
             eq(paragraphTranslationsTable.paragraphId, paragraph.id),
             eq(paragraphTranslationsTable.kind, "full"),
-            eq(paragraphTranslationsTable.language, targetLanguage)
+            eq(paragraphTranslationsTable.language, cacheKey)
           )
         );
       if (cached) {
@@ -307,7 +311,7 @@ router.post(
         .values({
           paragraphId: paragraph.id,
           kind: "full",
-          language: targetLanguage,
+          language: cacheKey,
           content: translatedText,
         })
         .onConflictDoNothing();
