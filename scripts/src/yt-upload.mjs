@@ -18,7 +18,7 @@ import { ReplitConnectors } from "@replit/connectors-sdk";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, "..", "..");
-const EXPORT_DIR = path.join(REPO_ROOT, "exports_synced");
+const EXPORT_DIR = path.join(REPO_ROOT, "exports_final");
 
 const JOBS = [
   { file: "aeneid-intro.mp4", title: "The Aeneid — Introduction" },
@@ -61,9 +61,10 @@ async function getMyChannel() {
   };
 }
 
-async function existingTitles(uploadsPlaylist) {
-  const titles = new Set();
-  if (!uploadsPlaylist) return titles;
+async function existingTitleIds(uploadsPlaylist) {
+  // Map of exact title -> [videoId, ...] (a title may exist more than once).
+  const map = new Map();
+  if (!uploadsPlaylist) return map;
   let pageToken = "";
   do {
     const q = `/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${encodeURIComponent(
@@ -72,11 +73,24 @@ async function existingTitles(uploadsPlaylist) {
     const r = await ytJson(q, { method: "GET" });
     if (!r.ok) break;
     for (const it of r.data.items || []) {
-      if (it.snippet?.title) titles.add(it.snippet.title);
+      const title = it.snippet?.title;
+      const vid = it.snippet?.resourceId?.videoId;
+      if (title && vid) {
+        if (!map.has(title)) map.set(title, []);
+        map.get(title).push(vid);
+      }
     }
     pageToken = r.data.nextPageToken || "";
   } while (pageToken);
-  return titles;
+  return map;
+}
+
+async function deleteVideo(videoId) {
+  const r = await ytJson(`/youtube/v3/videos?id=${encodeURIComponent(videoId)}`, {
+    method: "DELETE",
+  });
+  // YouTube returns 204 No Content on success.
+  return r.status === 204 || r.ok;
 }
 
 async function uploadOne(job) {
@@ -138,12 +152,26 @@ async function main() {
     );
     return;
   }
-  const have = await existingTitles(channel.uploadsPlaylist);
+  const have = await existingTitleIds(channel.uploadsPlaylist);
+  // Optional CLI filter: only process the given file name(s), e.g.
+  //   node src/yt-upload.mjs odyssey-cyclops.mp4
+  const only = process.argv.slice(2);
+  const jobs = only.length ? JOBS.filter((j) => only.includes(j.file)) : JOBS;
   const results = [];
-  for (const job of JOBS) {
-    if (have.has(job.title)) {
-      console.log(`SKIP (already on channel): ${job.title}`);
-      results.push({ title: job.title, ok: true, skipped: true });
+  for (const job of jobs) {
+    // Replace mode: delete any existing copies of this title, then re-upload
+    // (YouTube cannot swap the media of an existing video, only its metadata).
+    const oldIds = have.get(job.title) || [];
+    let deleteFailed = false;
+    for (const vid of oldIds) {
+      const del = await deleteVideo(vid);
+      console.log(`  ${del ? "deleted old" : "DELETE FAILED for"} ${job.title} (${vid})`);
+      if (!del) deleteFailed = true;
+    }
+    if (deleteFailed) {
+      // Abort this job rather than create a duplicate alongside the old copy.
+      console.log(`  SKIP UPLOAD (a delete failed): ${job.title}`);
+      results.push({ title: job.title, ok: false, error: "delete failed; skipped upload to avoid duplicate" });
       continue;
     }
     console.log(`UPLOADING: ${job.title} ...`);
