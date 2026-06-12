@@ -437,7 +437,12 @@ export const GetVisitStatsResponse = zod.object({
   "source": zod.string().describe('The source tag, or \"direct\" for untagged visits'),
   "visits": zod.number(),
   "uniqueVisitors": zod.number()
-})).optional().describe('Visit breakdown grouped by source tag (untagged visits grouped as \"direct\")')
+})).optional().describe('Visit breakdown grouped by source tag (untagged visits grouped as \"direct\")'),
+  "byCountry": zod.array(zod.object({
+  "country": zod.string().describe('The visitor country, or \"Unknown\" if not resolved'),
+  "visits": zod.number(),
+  "uniqueVisitors": zod.number()
+})).optional().describe('Visit breakdown grouped by visitor country (unresolved visits grouped as \"Unknown\")')
 })
 
 
@@ -451,7 +456,9 @@ export const GetRecentVisitsResponse = zod.object({
   "at": zod.coerce.date().describe('When the visit happened (UTC)'),
   "source": zod.string().nullable().describe('Source tag from the URL, or null if untagged'),
   "referrer": zod.string().nullable().describe('The page the visitor came from, if any'),
-  "path": zod.string().describe('The path that was visited')
+  "path": zod.string().describe('The path that was visited'),
+  "country": zod.string().nullable().describe('Visitor country resolved from IP, or null'),
+  "city": zod.string().nullable().describe('Visitor city resolved from IP, or null')
 }))
 })
 

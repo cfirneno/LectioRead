@@ -18,6 +18,7 @@ import {
   Mail,
   Activity,
   Lock,
+  Globe,
 } from "lucide-react";
 
 function StatCard({
@@ -203,6 +204,50 @@ export default function Dashboard() {
               </CardContent>
             </Card>
 
+            {/* Where visitors are */}
+            <Card className="mt-8">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 font-serif text-xl">
+                  <Globe className="h-5 w-5 text-muted-foreground" />
+                  Where visitors are
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {!stats.data?.byCountry || stats.data.byCountry.length === 0 ? (
+                  <p className="text-muted-foreground">No visits recorded yet.</p>
+                ) : (
+                  <div className="overflow-hidden rounded-md border border-border/60">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-border/60 bg-muted/40 text-left text-muted-foreground">
+                          <th className="px-4 py-2 font-medium">Country</th>
+                          <th className="px-4 py-2 font-medium text-right">Visits</th>
+                          <th className="px-4 py-2 font-medium text-right">Unique</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {stats.data.byCountry.map((row) => (
+                          <tr key={row.country} className="border-b border-border/40 last:border-0">
+                            <td className="px-4 py-2 font-medium">{row.country}</td>
+                            <td className="px-4 py-2 text-right tabular-nums">
+                              {row.visits.toLocaleString()}
+                            </td>
+                            <td className="px-4 py-2 text-right tabular-nums">
+                              {row.uniqueVisitors.toLocaleString()}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+                <p className="mt-4 text-xs text-muted-foreground">
+                  Location is estimated from each visitor’s IP address. Visits recorded before this
+                  feature was added show as “Unknown”.
+                </p>
+              </CardContent>
+            </Card>
+
             {/* Recent visits */}
             <Card className="mt-8">
               <CardHeader>
@@ -220,6 +265,7 @@ export default function Dashboard() {
                       <thead>
                         <tr className="border-b border-border/60 bg-muted/40 text-left text-muted-foreground">
                           <th className="px-4 py-2 font-medium">When</th>
+                          <th className="px-4 py-2 font-medium">Location</th>
                           <th className="px-4 py-2 font-medium">Source</th>
                           <th className="px-4 py-2 font-medium">Came from</th>
                           <th className="px-4 py-2 font-medium">Page</th>
@@ -230,6 +276,11 @@ export default function Dashboard() {
                           <tr key={v.id} className="border-b border-border/40 last:border-0">
                             <td className="px-4 py-2 whitespace-nowrap tabular-nums">
                               {formatWhen(v.at)}
+                            </td>
+                            <td className="px-4 py-2 text-muted-foreground whitespace-nowrap">
+                              {v.city && v.country
+                                ? `${v.city}, ${v.country}`
+                                : v.country || "—"}
                             </td>
                             <td className="px-4 py-2">
                               {v.source ? (

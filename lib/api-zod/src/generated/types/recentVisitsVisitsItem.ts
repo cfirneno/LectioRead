@@ -22,4 +22,14 @@ export type RecentVisitsVisitsItem = {
   referrer: string | null;
   /** The path that was visited */
   path: string;
+  /**
+     * Visitor country resolved from IP, or null
+     * @nullable
+     */
+  country: string | null;
+  /**
+     * Visitor city resolved from IP, or null
+     * @nullable
+     */
+  city: string | null;
 };

@@ -702,6 +702,20 @@ components:
                 type: integer
               uniqueVisitors:
                 type: integer
+        byCountry:
+          type: array
+          description: Visit breakdown grouped by visitor country (unresolved visits grouped as "Unknown")
+          items:
+            type: object
+            required: [country, visits, uniqueVisitors]
+            properties:
+              country:
+                type: string
+                description: The visitor country, or "Unknown" if not resolved
+              visits:
+                type: integer
+              uniqueVisitors:
+                type: integer
 
     RecentVisits:
       type: object
@@ -711,7 +725,7 @@ components:
           type: array
           items:
             type: object
-            required: [id, at, source, referrer, path]
+            required: [id, at, source, referrer, path, country, city]
             properties:
               id:
                 type: integer
@@ -728,6 +742,12 @@ components:
               path:
                 type: string
                 description: The path that was visited
+              country:
+                type: ["string", "null"]
+                description: Visitor country resolved from IP, or null
+              city:
+                type: ["string", "null"]
+                description: Visitor city resolved from IP, or null
 
     AdminStatus:
       type: object

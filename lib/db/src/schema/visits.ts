@@ -10,6 +10,8 @@ export const visitsTable = pgTable(
     path: text("path").notNull(),
     referrer: text("referrer"),
     source: text("source"),
+    country: text("country"),
+    city: text("city"),
     userAgent: text("user_agent"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
@@ -17,6 +19,7 @@ export const visitsTable = pgTable(
     createdAtIdx: index("visits_created_at_idx").on(t.createdAt),
     visitorIdx: index("visits_visitor_idx").on(t.visitorId),
     sourceIdx: index("visits_source_idx").on(t.source),
+    countryIdx: index("visits_country_idx").on(t.country),
   })
 );
 

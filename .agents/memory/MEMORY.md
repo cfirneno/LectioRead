@@ -10,3 +10,4 @@
 - [Lectio public API routes](lectio-public-routes.md) — mount unauthenticated routers BEFORE guarded ones in routes/index.ts, or a router-level auth guard 401s them.
 - [Bash detached teardown](bash-detached-teardown.md) — background jobs from a bash call die when the call returns (setsid/disown don't help); run multi-minute jobs as a workflow.
 - [Lectio Homer videos](lectio-homer-videos.md) — four narrated Greek passages share one video-js artifact via wouter routes + registry; durations must sum to narration mp3 (audio is master clock).
+- [Lectio visit geo lookup](lectio-geo-lookup.md) — use freeipapi.com (HTTPS, works from Node fetch); ipwho.is/ip-api.com rejected; /visits/stats public, /visits/recent admin-gated.

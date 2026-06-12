@@ -45,6 +45,7 @@ export * from './translationOptions';
 export * from './visitAck';
 export * from './visitInput';
 export * from './visitStats';
+export * from './visitStatsByCountryItem';
 export * from './visitStatsBySourceItem';
 export * from './vocabularyEntry';
 export * from './vocabularyList';

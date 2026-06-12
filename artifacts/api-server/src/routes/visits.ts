@@ -3,6 +3,7 @@ import { sql } from "drizzle-orm";
 import { db, visitsTable } from "@workspace/db";
 import { RecordVisitBody } from "@workspace/api-zod";
 import { requireAdmin } from "../lib/adminGuard";
+import { clientIpFrom, lookupGeo } from "../lib/geo";
 
 const router: IRouter = Router();
 
@@ -17,11 +18,16 @@ router.post("/visits", async (req, res): Promise<void> => {
   const userAgent = (req.get("user-agent") ?? "").slice(0, 512) || null;
   const normalizedSource = source?.trim();
 
+  const ip = clientIpFrom(req.headers["x-forwarded-for"], req.socket.remoteAddress);
+  const geo = await lookupGeo(ip);
+
   await db.insert(visitsTable).values({
     visitorId,
     path,
     referrer: referrer ?? null,
     source: normalizedSource ? normalizedSource.slice(0, 64) : null,
+    country: geo?.country ?? null,
+    city: geo?.city ?? null,
     userAgent,
   });
 
@@ -48,12 +54,23 @@ router.get("/visits/stats", async (_req, res): Promise<void> => {
     .groupBy(sql`coalesce(${visitsTable.source}, 'direct')`)
     .orderBy(sql`count(*) desc`);
 
+  const byCountryRows = await db
+    .select({
+      country: sql<string>`coalesce(${visitsTable.country}, 'Unknown')`,
+      visits: sql<number>`count(*)::int`,
+      uniqueVisitors: sql<number>`count(distinct ${visitsTable.visitorId})::int`,
+    })
+    .from(visitsTable)
+    .groupBy(sql`coalesce(${visitsTable.country}, 'Unknown')`)
+    .orderBy(sql`count(*) desc`);
+
   res.json({
     total: row?.total ?? 0,
     uniqueVisitors: row?.uniqueVisitors ?? 0,
     last24h: row?.last24h ?? 0,
     last7d: row?.last7d ?? 0,
     bySource: bySourceRows,
+    byCountry: byCountryRows,
   });
 });
 
@@ -65,6 +82,8 @@ router.get("/visits/recent", requireAdmin, async (_req, res): Promise<void> => {
       source: visitsTable.source,
       referrer: visitsTable.referrer,
       path: visitsTable.path,
+      country: visitsTable.country,
+      city: visitsTable.city,
     })
     .from(visitsTable)
     .orderBy(sql`${visitsTable.createdAt} desc`)
@@ -77,6 +96,8 @@ router.get("/visits/recent", requireAdmin, async (_req, res): Promise<void> => {
       source: r.source,
       referrer: r.referrer,
       path: r.path,
+      country: r.country,
+      city: r.city,
     })),
   });
 });

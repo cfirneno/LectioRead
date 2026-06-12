@@ -66,6 +66,13 @@ export type VisitStatsBySourceItem = {
   uniqueVisitors: number;
 };
 
+export type VisitStatsByCountryItem = {
+  /** The visitor country, or "Unknown" if not resolved */
+  country: string;
+  visits: number;
+  uniqueVisitors: number;
+};
+
 export interface VisitStats {
   /** All-time visit count */
   total: number;
@@ -77,6 +84,8 @@ export interface VisitStats {
   last7d: number;
   /** Visit breakdown grouped by source tag (untagged visits grouped as "direct") */
   bySource?: VisitStatsBySourceItem[];
+  /** Visit breakdown grouped by visitor country (unresolved visits grouped as "Unknown") */
+  byCountry?: VisitStatsByCountryItem[];
 }
 
 export type RecentVisitsVisitsItem = {
@@ -95,6 +104,16 @@ export type RecentVisitsVisitsItem = {
   referrer: string | null;
   /** The path that was visited */
   path: string;
+  /**
+     * Visitor country resolved from IP, or null
+     * @nullable
+     */
+  country: string | null;
+  /**
+     * Visitor city resolved from IP, or null
+     * @nullable
+     */
+  city: string | null;
 };
 
 export interface RecentVisits {
