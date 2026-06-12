@@ -14,8 +14,11 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { ReplitConnectors } from "@replit/connectors-sdk";
 import { renderEmail } from "../../outreach/announcement.mjs";
+
+// Sends via the Resend HTTP API using the RESEND_API_KEY secret (a key that
+// starts with "re_"). The sender domain (risxsci.com) must be verified in Resend.
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, "..", "..");
@@ -98,13 +101,14 @@ function validEmail(e) {
   return typeof e === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
 }
 
-const connectors = new ReplitConnectors();
-
 async function sendOne({ to, department, institution }) {
   const { subject, html, text, from, replyTo } = renderEmail({ department, institution });
-  const resp = await connectors.proxy("resend", "/emails", {
+  const resp = await fetch("https://api.resend.com/emails", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      Authorization: `Bearer ${RESEND_API_KEY}`,
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify({ from, to: [to], subject, html, text, reply_to: replyTo }),
   });
   const body = await resp.text();
@@ -119,6 +123,13 @@ async function sendOne({ to, department, institution }) {
 
 async function main() {
   // --- test path: one message to the sender, regardless of contacts.csv ---
+  if ((TEST_ONLY || !DRY_RUN) && !RESEND_API_KEY) {
+    console.error(
+      "RESEND_API_KEY is not set. Add it as a Replit secret (a Resend key that starts with \"re_\") before sending."
+    );
+    process.exit(1);
+  }
+
   if (TEST_ONLY) {
     console.log(`Sending a single TEST email to ${TEST_RECIPIENT} …`);
     const id = await sendOne({ to: TEST_RECIPIENT, department: "Classics", institution: "Test University" });

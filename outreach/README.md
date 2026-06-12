@@ -14,10 +14,11 @@ Tools for announcing lectioread.com to language & classics departments.
 
 ## Sending
 
-Sends go out through Resend (Replit connector) from `charles@risxsci.com`.
+Sends go out through Resend from `charles@risxsci.com`, using the `RESEND_API_KEY`
+secret (a Resend key starting with `re_`, stored in Replit secrets).
 
-> **Before a real send:** the domain `risxsci.com` must be verified in Resend
-> (SPF/DKIM DNS records), or messages will land in spam or be rejected.
+> The domain `risxsci.com` is verified in Resend (SPF/DKIM/DMARC). If sending ever
+> starts failing with a domain error, re-check it at resend.com/domains.
 
 Run from the repo root:
 
