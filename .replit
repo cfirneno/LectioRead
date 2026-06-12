@@ -58,3 +58,4 @@ channel = "stable-25_05"
 
 [userenv.shared]
 ADMIN_EMAILS = "charles@risxsci.com"
+RESEND_API_KEY = "re_fWrauXt7_PddYmTPXdu7hSTmqJeS25gRA"
