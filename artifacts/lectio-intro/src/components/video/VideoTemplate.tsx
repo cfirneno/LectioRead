@@ -12,17 +12,25 @@ import { Scene8 } from './video_scenes/Scene8';
 import { Scene9 } from './video_scenes/Scene9';
 import { Scene10 } from './video_scenes/Scene10';
 
+// Durations are aligned to the narration track (host_narration_full.mp3, 98.04s):
+// each scene window is set to where its narration actually falls, measured by
+// transcription + silence detection. The audio clock (driveFromAudio) then
+// selects the visible scene from audio.currentTime, so visuals lock to the voice.
+//   s1 welcome 0–3.5 · s2 "Virgil's Aeneid" 3.5–6 · s3 "Arma virumque cano" 6–10
+//   s4 subject 10–22 · s5 "two thousand years" 22–28.8 · s6 "let's read" 28.8–38.8
+//   s7 first reading 38.8–53.33 · s8 "Word by Word" (silent gap) 53.33–69.01
+//   s9 second reading 69.01–90.35 · s10 "Your turn" 90.35–98.04
 export const SCENE_DURATIONS = {
-  scene1: 5000,
-  scene2: 4000,
-  scene3: 7000,
-  scene4: 7000,
-  scene5: 5000,
-  scene6: 5000,
-  scene7: 22000,
-  scene8: 14000,
-  scene9: 23000,
-  scene10: 6000,
+  scene1: 3500,
+  scene2: 2500,
+  scene3: 4000,
+  scene4: 12000,
+  scene5: 6800,
+  scene6: 10000,
+  scene7: 14530,
+  scene8: 15680,
+  scene9: 21340,
+  scene10: 7690,
 };
 
 const SCENE_COMPONENTS: Record<string, React.ComponentType> = {

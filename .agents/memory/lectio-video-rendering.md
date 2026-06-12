@@ -43,6 +43,14 @@ description: Why narrated Lectio videos can't be re-rendered in the agent contai
 
 **Browser preview-pane export ceiling:** even after the stop-signal fix lets recording complete, the harness's "stitching frames together" encode step stalls partway (~61%) on these multi-minute 1080p videos (browser memory). So a clean full re-export is unreliable for the longer ones; the `-itsscale` salvage of the existing baked files is the dependable delivery path.
 
+## aeneid-intro mid-video desync was wrong SCENE_DURATIONS, not linear drift
+
+**Key distinction:** the `-itsscale` salvage above ONLY fixes *uniform* video-track stretch. The aeneid-intro (`lectio-intro`) baked export was already end-aligned (video≈audio≈98s) yet desynced in the MIDDLE — because `SCENE_DURATIONS` were round-number guesses, not because timers ran long. A uniform rescale can't fix a wrong per-scene partition; the windows themselves must be re-measured, then re-export.
+
+**True narration structure of host_narration_full.mp3 (98.04s)**, measured via gpt-4o-transcribe + ffmpeg `silencedetect`: spoken intro 0–38.8s → FIRST Latin reading 38.8–53.33s → **15.7s SILENT gap 53.33–69.01s** (this gap is what the silent "Word by Word" interlinear scene maps to) → SECOND Latin reading 69.01–90.35s → tail silence 90.35–98.04s. The Latin line is read TWICE, separated by that silent gap — easy to misread as one block.
+
+**How to apply:** derive `SCENE_DURATIONS` from the measured speech/silence spans (sum must equal the audio length to the ms), never from eyeballed round numbers. To transcribe in-container: `node` script, resolve `openai` via `createRequire('/home/runner/workspace/lib/integrations-openai-ai-server/')`, client baseURL=`AI_INTEGRATIONS_OPENAI_BASE_URL` key=`AI_INTEGRATIONS_OPENAI_API_KEY`, model `gpt-4o-transcribe` (proxy blocks whisper word-timestamps; clip with ffmpeg `-ss/-to` to locate phrases). aeneid-intro is the shortest video (98s) so a clean full browser re-export is most likely to succeed for it.
+
 ## Architecture across the video artifacts (all now audio-clock)
 
 - `lectio-iliad-intro`, `lectio-laocoon`, and `lectio-intro` all now use the same audio-clock master: `useVideoPlayer({ driveFromAudio, audioRef })`, scene chosen from `audio.currentTime`. Their `hooks.ts` are identical (the enhanced version with `driveFromAudio`/`active`/`audioRef`).
