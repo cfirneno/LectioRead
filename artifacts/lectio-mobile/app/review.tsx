@@ -7,13 +7,14 @@ import {
   Pressable,
   ActivityIndicator,
 } from "react-native";
-import { useRouter, Redirect } from "expo-router";
+import { useRouter } from "expo-router";
 import { useAuth } from "@clerk/clerk-expo";
 import { Feather } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useGetReview } from "@workspace/api-client-react";
 
 import { useColors } from "@/hooks/useColors";
+import { SignInGate } from "@/components/SignInGate";
 
 const KIND_LABEL: Record<string, string> = {
   translation: "Translation",
@@ -24,7 +25,13 @@ const KIND_LABEL: Record<string, string> = {
 export default function ReviewScreen() {
   const { isSignedIn, isLoaded } = useAuth();
   if (!isLoaded) return null;
-  if (!isSignedIn) return <Redirect href="/(auth)/sign-in" />;
+  if (!isSignedIn)
+    return (
+      <SignInGate
+        title="Sign in to review"
+        message="Your weak spots are gathered from quizzes you've taken. Sign in to track them — reading stays free."
+      />
+    );
   return (
     <>
       <ReviewBody />

@@ -10,8 +10,8 @@ import {
   RefreshControl,
   Alert,
 } from "react-native";
-import { Redirect, useRouter } from "expo-router";
-import { useAuth, useUser, useClerk } from "@clerk/clerk-expo";
+import { useRouter } from "expo-router";
+import { useUser, useClerk } from "@clerk/clerk-expo";
 import { Feather } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
@@ -38,14 +38,7 @@ function formatYear(y: number | null | undefined): string {
 }
 
 export default function HomeScreen() {
-  const { isSignedIn, isLoaded } = useAuth();
-  if (!isLoaded) return null;
-  if (!isSignedIn) return <Redirect href="/(auth)/sign-in" />;
-  return (
-    <>
-      <Library />
-    </>
-  );
+  return <Library />;
 }
 
 function Library() {
@@ -53,7 +46,7 @@ function Library() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { signOut } = useClerk();
-  const { user } = useUser();
+  const { user, isSignedIn } = useUser();
 
   const [query, setQuery] = useState("");
   const [showSearch, setShowSearch] = useState(false);
@@ -104,10 +97,32 @@ function Library() {
     );
   };
 
-  const handleSignOut = () => {
-    Alert.alert("Sign out", "Are you sure?", [
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      "Delete account",
+      "This permanently deletes your account and reading progress. This cannot be undone.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await user?.delete();
+            } catch {
+              Alert.alert("Couldn't delete account", "Please try again later.");
+            }
+          },
+        },
+      ],
+    );
+  };
+
+  const handleAccount = () => {
+    Alert.alert("Account", user?.primaryEmailAddress?.emailAddress ?? undefined, [
       { text: "Cancel", style: "cancel" },
-      { text: "Sign out", style: "destructive", onPress: () => signOut() },
+      { text: "Sign out", onPress: () => signOut() },
+      { text: "Delete account", style: "destructive", onPress: handleDeleteAccount },
     ]);
   };
 
@@ -132,13 +147,23 @@ function Library() {
           >
             <Feather name="search" size={20} color={colors.mutedForeground} />
           </Pressable>
-          <Pressable
-            onPress={handleSignOut}
-            style={({ pressed }) => [styles.iconBtn, pressed && { opacity: 0.5 }]}
-            hitSlop={8}
-          >
-            <Feather name="log-out" size={20} color={colors.mutedForeground} />
-          </Pressable>
+          {isSignedIn ? (
+            <Pressable
+              onPress={handleAccount}
+              style={({ pressed }) => [styles.iconBtn, pressed && { opacity: 0.5 }]}
+              hitSlop={8}
+            >
+              <Feather name="user" size={20} color={colors.mutedForeground} />
+            </Pressable>
+          ) : (
+            <Pressable
+              onPress={() => router.push("/(auth)/sign-in" as never)}
+              style={({ pressed }) => [styles.signInBtn, pressed && { opacity: 0.6 }]}
+              hitSlop={8}
+            >
+              <Text style={[styles.signInText, { color: colors.primary }]}>Sign in</Text>
+            </Pressable>
+          )}
         </View>
       </View>
 
@@ -317,6 +342,8 @@ const styles = StyleSheet.create({
   },
   brand: { fontFamily: "EBGaramond_600SemiBold", fontSize: 26 },
   iconBtn: { padding: 8 },
+  signInBtn: { paddingHorizontal: 10, paddingVertical: 8 },
+  signInText: { fontFamily: "Inter_600SemiBold", fontSize: 14 },
   searchWrap: {
     flexDirection: "row",
     padding: 12,

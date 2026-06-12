@@ -7,7 +7,7 @@ import {
   Pressable,
   ActivityIndicator,
 } from "react-native";
-import { useLocalSearchParams, useRouter, Redirect } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useAuth } from "@clerk/clerk-expo";
 import { Feather } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -26,20 +26,14 @@ import {
 import { useColors } from "@/hooks/useColors";
 
 export default function ReadScreen() {
-  const { isSignedIn, isLoaded } = useAuth();
-  if (!isLoaded) return null;
-  if (!isSignedIn) return <Redirect href="/(auth)/sign-in" />;
-  return (
-    <>
-      <Reader />
-    </>
-  );
+  return <Reader />;
 }
 
 function Reader() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { isSignedIn } = useAuth();
   const queryClient = useQueryClient();
   const { id, index } = useLocalSearchParams<{ id: string; index: string }>();
   const textId = parseInt(id ?? "0", 10);
@@ -84,8 +78,20 @@ function Reader() {
     }
   }, [stage, textId, pIndex, interlinearMut, fullTransMut]);
 
+  const goNext = () => {
+    if (text.data && pIndex + 1 < text.data.paragraphCount) {
+      router.replace(`/text/${textId}/read/${pIndex + 1}` as never);
+    } else {
+      router.replace(`/text/${textId}` as never);
+    }
+  };
+
   const handleGotIt = () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+    if (!isSignedIn) {
+      goNext();
+      return;
+    }
     saveProgress.mutate(
       { data: { textId, paragraphIndex: pIndex, completed: true } },
       {
@@ -93,11 +99,7 @@ function Reader() {
           queryClient.invalidateQueries({ queryKey: [`/api/texts/${textId}/paragraphs`] });
           queryClient.invalidateQueries({ queryKey: [`/api/texts/${textId}/stats`] });
           queryClient.invalidateQueries({ queryKey: [`/api/texts/recent`] });
-          if (text.data && pIndex + 1 < text.data.paragraphCount) {
-            router.replace(`/text/${textId}/read/${pIndex + 1}` as never);
-          } else {
-            router.replace(`/text/${textId}` as never);
-          }
+          goNext();
         },
       },
     );

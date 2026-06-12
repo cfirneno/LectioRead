@@ -7,8 +7,7 @@ import {
   Pressable,
   ActivityIndicator,
 } from "react-native";
-import { useLocalSearchParams, useRouter, Redirect } from "expo-router";
-import { useAuth } from "@clerk/clerk-expo";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
@@ -19,14 +18,7 @@ import {
 import { useColors } from "@/hooks/useColors";
 
 export default function TextTocScreen() {
-  const { isSignedIn, isLoaded } = useAuth();
-  if (!isLoaded) return null;
-  if (!isSignedIn) return <Redirect href="/(auth)/sign-in" />;
-  return (
-    <>
-      <Toc />
-    </>
-  );
+  return <Toc />;
 }
 
 function Toc() {

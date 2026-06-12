@@ -7,7 +7,7 @@ import {
   Pressable,
   ActivityIndicator,
 } from "react-native";
-import { useLocalSearchParams, useRouter, Redirect } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useAuth } from "@clerk/clerk-expo";
 import { Feather } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -20,6 +20,7 @@ import {
 } from "@workspace/api-client-react";
 
 import { useColors } from "@/hooks/useColors";
+import { SignInGate } from "@/components/SignInGate";
 
 const KIND_LABEL: Record<string, string> = {
   translation: "Translation",
@@ -30,7 +31,13 @@ const KIND_LABEL: Record<string, string> = {
 export default function QuizScreen() {
   const { isSignedIn, isLoaded } = useAuth();
   if (!isLoaded) return null;
-  if (!isSignedIn) return <Redirect href="/(auth)/sign-in" />;
+  if (!isSignedIn)
+    return (
+      <SignInGate
+        title="Sign in to take quizzes"
+        message="Quizzes track what you've learned and gather your weak spots for review. Sign in to get started — reading stays free."
+      />
+    );
   return (
     <>
       <Quiz />
