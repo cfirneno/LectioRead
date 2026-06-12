@@ -1,5 +1,21 @@
 institution,department,country,email
-# Add one row per recipient. Lines starting with # are ignored.
-# Only use real, publicly-listed department contact addresses you are permitted to email.
-# Example (replace with real entries):
-# University of Example,Department of Classics,US,classics@example.edu
+# Real, publicly-listed department / association contact mailboxes (gathered from
+# official department contact pages). Lines starting with # are ignored.
+# Add or remove rows as you like. Use only addresses you are permitted to email.
+University of Chicago,Classics,US,classics-department@uchicago.edu
+University of Washington,Classics,US,clasdept@uw.edu
+Harvard University,Classics,US,classics@fas.harvard.edu
+University of Michigan,Classical Studies,US,classics@umich.edu
+Yale University,Classics,US,dus.classics@yale.edu
+Boston University,Classics,US,classics@bu.edu
+Brown University,Classics,US,classics_department@brown.edu
+University of Notre Dame,Classics,US,classics@nd.edu
+Tulane University,Classical Studies,US,classics@tulane.edu
+Amherst College,Classics,US,classics@amherst.edu
+University of Kansas,Classics,US,classics@ku.edu
+Loyola University Chicago,Modern Languages,US,modernlang@luc.edu
+University of Louisiana at Lafayette,Modern Languages,US,languages@louisiana.edu
+University of Oxford,Classics,UK,reception@classics.ox.ac.uk
+University of Cambridge,Classics,UK,receptionist@classics.cam.ac.uk
+University of Toronto,Classics,CA,classics.dept@utoronto.ca
+Society for Classical Studies,Association,US,info@classicalstudies.org
