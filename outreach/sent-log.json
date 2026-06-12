@@ -1,0 +1,121 @@
+{
+  "classics-department@uchicago.edu": {
+    "status": "sent",
+    "id": "248d720a-9599-4df7-bfbb-0444aa020548",
+    "at": "2026-06-12T16:30:20.034Z",
+    "institution": "University of Chicago",
+    "department": "Classics"
+  },
+  "clasdept@uw.edu": {
+    "status": "sent",
+    "id": "8b8acf16-1a2b-4cce-a646-017e671fec1a",
+    "at": "2026-06-12T16:30:20.826Z",
+    "institution": "University of Washington",
+    "department": "Classics"
+  },
+  "classics@fas.harvard.edu": {
+    "status": "sent",
+    "id": "bcfaf2e6-723a-4c3f-a887-456b04ef1025",
+    "at": "2026-06-12T16:30:21.640Z",
+    "institution": "Harvard University",
+    "department": "Classics"
+  },
+  "classics@umich.edu": {
+    "status": "sent",
+    "id": "c242d25f-ba96-401e-9a98-d3d5b690ce8e",
+    "at": "2026-06-12T16:30:22.503Z",
+    "institution": "University of Michigan",
+    "department": "Classical Studies"
+  },
+  "dus.classics@yale.edu": {
+    "status": "sent",
+    "id": "e38d7675-f948-4205-9fb6-81016dc1b288",
+    "at": "2026-06-12T16:30:23.315Z",
+    "institution": "Yale University",
+    "department": "Classics"
+  },
+  "classics@bu.edu": {
+    "status": "sent",
+    "id": "562c14e8-7fcb-457e-8959-71fdaffa2a9a",
+    "at": "2026-06-12T16:30:24.175Z",
+    "institution": "Boston University",
+    "department": "Classics"
+  },
+  "classics_department@brown.edu": {
+    "status": "sent",
+    "id": "42d1c595-c821-40c7-bb2d-55871e93503b",
+    "at": "2026-06-12T16:30:24.996Z",
+    "institution": "Brown University",
+    "department": "Classics"
+  },
+  "classics@nd.edu": {
+    "status": "sent",
+    "id": "19c42ec3-aedc-4a24-8625-50678e4c0028",
+    "at": "2026-06-12T16:30:25.823Z",
+    "institution": "University of Notre Dame",
+    "department": "Classics"
+  },
+  "classics@tulane.edu": {
+    "status": "sent",
+    "id": "ce4b4f8f-41db-4483-b52a-38e9ca751933",
+    "at": "2026-06-12T16:30:26.728Z",
+    "institution": "Tulane University",
+    "department": "Classical Studies"
+  },
+  "classics@amherst.edu": {
+    "status": "sent",
+    "id": "93280324-6cf1-4699-843f-88b44ed0e7f5",
+    "at": "2026-06-12T16:30:27.521Z",
+    "institution": "Amherst College",
+    "department": "Classics"
+  },
+  "classics@ku.edu": {
+    "status": "sent",
+    "id": "f28b985e-72ec-4c73-b2fc-2f0d1e9d89d6",
+    "at": "2026-06-12T16:30:28.296Z",
+    "institution": "University of Kansas",
+    "department": "Classics"
+  },
+  "modernlang@luc.edu": {
+    "status": "sent",
+    "id": "a16275f5-5c7b-4651-8e03-11b93d86c58e",
+    "at": "2026-06-12T16:30:29.087Z",
+    "institution": "Loyola University Chicago",
+    "department": "Modern Languages"
+  },
+  "languages@louisiana.edu": {
+    "status": "sent",
+    "id": "63ecc1cb-527e-480b-ac6e-5b5766ea6c55",
+    "at": "2026-06-12T16:30:29.892Z",
+    "institution": "University of Louisiana at Lafayette",
+    "department": "Modern Languages"
+  },
+  "reception@classics.ox.ac.uk": {
+    "status": "sent",
+    "id": "e5fbf861-f4bd-4f46-b482-bb916ab0b0b5",
+    "at": "2026-06-12T16:30:30.698Z",
+    "institution": "University of Oxford",
+    "department": "Classics"
+  },
+  "receptionist@classics.cam.ac.uk": {
+    "status": "sent",
+    "id": "7380e3fc-ae86-482e-8dd1-14ecf910822f",
+    "at": "2026-06-12T16:30:31.546Z",
+    "institution": "University of Cambridge",
+    "department": "Classics"
+  },
+  "classics.dept@utoronto.ca": {
+    "status": "sent",
+    "id": "7b754ecb-5cf7-4fd7-b442-5b6d64c6d4f3",
+    "at": "2026-06-12T16:30:32.350Z",
+    "institution": "University of Toronto",
+    "department": "Classics"
+  },
+  "info@classicalstudies.org": {
+    "status": "sent",
+    "id": "d4d369a1-4afc-4e71-b854-bde465f48ebb",
+    "at": "2026-06-12T16:30:33.180Z",
+    "institution": "Society for Classical Studies",
+    "department": "Association"
+  }
+}
