@@ -12,13 +12,15 @@ router.post("/visits", async (req, res): Promise<void> => {
     res.status(400).json({ error: parsed.error.message });
     return;
   }
-  const { visitorId, path, referrer } = parsed.data;
+  const { visitorId, path, referrer, source } = parsed.data;
   const userAgent = (req.get("user-agent") ?? "").slice(0, 512) || null;
+  const normalizedSource = source?.trim();
 
   await db.insert(visitsTable).values({
     visitorId,
     path,
     referrer: referrer ?? null,
+    source: normalizedSource ? normalizedSource.slice(0, 64) : null,
     userAgent,
   });
 
@@ -35,11 +37,22 @@ router.get("/visits/stats", async (_req, res): Promise<void> => {
     })
     .from(visitsTable);
 
+  const bySourceRows = await db
+    .select({
+      source: sql<string>`coalesce(${visitsTable.source}, 'direct')`,
+      visits: sql<number>`count(*)::int`,
+      uniqueVisitors: sql<number>`count(distinct ${visitsTable.visitorId})::int`,
+    })
+    .from(visitsTable)
+    .groupBy(sql`coalesce(${visitsTable.source}, 'direct')`)
+    .orderBy(sql`count(*) desc`);
+
   res.json({
     total: row?.total ?? 0,
     uniqueVisitors: row?.uniqueVisitors ?? 0,
     last24h: row?.last24h ?? 0,
     last7d: row?.last7d ?? 0,
+    bySource: bySourceRows,
   });
 });
 

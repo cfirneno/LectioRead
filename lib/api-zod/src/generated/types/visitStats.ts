@@ -5,6 +5,7 @@
  * Lectio — Foreign Language Reader API
  * OpenAPI spec version: 0.1.0
  */
+import type { VisitStatsBySourceItem } from './visitStatsBySourceItem';
 
 export interface VisitStats {
   /** All-time visit count */
@@ -15,4 +16,6 @@ export interface VisitStats {
   last24h: number;
   /** Visits in the last 7 days */
   last7d: number;
+  /** Visit breakdown grouped by source tag (untagged visits grouped as "direct") */
+  bySource?: VisitStatsBySourceItem[];
 }

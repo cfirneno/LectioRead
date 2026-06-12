@@ -2,7 +2,7 @@ import { Link } from "wouter";
 import { useGetVisitStats } from "@workspace/api-client-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookOpen, Eye, Users, Clock, CalendarDays, Loader2 } from "lucide-react";
+import { BookOpen, Eye, Users, Clock, CalendarDays, Loader2, Megaphone } from "lucide-react";
 
 function StatCard({
   label,
@@ -56,12 +56,60 @@ export default function Stats() {
         ) : isError || !data ? (
           <p className="text-destructive">Couldn’t load visit stats. Please try again.</p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <StatCard label="Total visits" value={data.total} icon={Eye} />
-            <StatCard label="Unique visitors" value={data.uniqueVisitors} icon={Users} />
-            <StatCard label="Last 24 hours" value={data.last24h} icon={Clock} />
-            <StatCard label="Last 7 days" value={data.last7d} icon={CalendarDays} />
-          </div>
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <StatCard label="Total visits" value={data.total} icon={Eye} />
+              <StatCard label="Unique visitors" value={data.uniqueVisitors} icon={Users} />
+              <StatCard label="Last 24 hours" value={data.last24h} icon={Clock} />
+              <StatCard label="Last 7 days" value={data.last7d} icon={CalendarDays} />
+            </div>
+
+            <Card className="mt-8">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 font-serif text-xl">
+                  <Megaphone className="h-5 w-5 text-muted-foreground" />
+                  Where visits come from
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {!data.bySource || data.bySource.length === 0 ? (
+                  <p className="text-muted-foreground">No visits recorded yet.</p>
+                ) : (
+                  <div className="overflow-hidden rounded-md border border-border/60">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-border/60 bg-muted/40 text-left text-muted-foreground">
+                          <th className="px-4 py-2 font-medium">Source</th>
+                          <th className="px-4 py-2 font-medium text-right">Visits</th>
+                          <th className="px-4 py-2 font-medium text-right">Unique</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {data.bySource.map((row) => (
+                          <tr key={row.source} className="border-b border-border/40 last:border-0">
+                            <td className="px-4 py-2 font-medium">
+                              {row.source === "direct" ? "Direct / untagged" : row.source}
+                            </td>
+                            <td className="px-4 py-2 text-right tabular-nums">
+                              {row.visits.toLocaleString()}
+                            </td>
+                            <td className="px-4 py-2 text-right tabular-nums">
+                              {row.uniqueVisitors.toLocaleString()}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+                <p className="mt-4 text-xs text-muted-foreground">
+                  Tag any link with <code className="rounded bg-muted px-1 py-0.5">?from=name</code> to
+                  track it here — e.g.{" "}
+                  <code className="rounded bg-muted px-1 py-0.5">lectioread.com/?from=outreach</code>.
+                </p>
+              </CardContent>
+            </Card>
+          </>
         )}
 
         <div className="mt-10">

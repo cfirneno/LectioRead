@@ -40,6 +40,7 @@ export * from './translationOptions';
 export * from './visitAck';
 export * from './visitInput';
 export * from './visitStats';
+export * from './visitStatsBySourceItem';
 export * from './vocabularyEntry';
 export * from './vocabularyList';
 export * from './wordLookup';

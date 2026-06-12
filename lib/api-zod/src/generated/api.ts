@@ -408,12 +408,15 @@ export const recordVisitBodyPathMax = 512;
 
 export const recordVisitBodyReferrerMax = 1024;
 
+export const recordVisitBodySourceMax = 64;
+
 
 
 export const RecordVisitBody = zod.object({
   "visitorId": zod.string().min(1).max(recordVisitBodyVisitorIdMax).describe('Stable per-browser identifier (random, stored in localStorage)'),
   "path": zod.string().min(1).max(recordVisitBodyPathMax).describe('The path that was visited'),
-  "referrer": zod.string().max(recordVisitBodyReferrerMax).nullish().describe('document.referrer, if any')
+  "referrer": zod.string().max(recordVisitBodyReferrerMax).nullish().describe('document.referrer, if any'),
+  "source": zod.string().max(recordVisitBodySourceMax).nullish().describe('Campaign\/source tag from the URL (e.g. \"outreach\" from ?from=outreach)')
 })
 
 export const RecordVisitResponse = zod.object({
@@ -429,7 +432,12 @@ export const GetVisitStatsResponse = zod.object({
   "total": zod.number().describe('All-time visit count'),
   "uniqueVisitors": zod.number().describe('Distinct visitor count'),
   "last24h": zod.number().describe('Visits in the last 24 hours'),
-  "last7d": zod.number().describe('Visits in the last 7 days')
+  "last7d": zod.number().describe('Visits in the last 7 days'),
+  "bySource": zod.array(zod.object({
+  "source": zod.string().describe('The source tag, or \"direct\" for untagged visits'),
+  "visits": zod.number(),
+  "uniqueVisitors": zod.number()
+})).optional().describe('Visit breakdown grouped by source tag (untagged visits grouped as \"direct\")')
 })
 
 

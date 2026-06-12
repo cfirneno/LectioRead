@@ -58,8 +58,10 @@ export async function runIdempotentMigrations(): Promise<void> {
         created_at timestamp with time zone NOT NULL DEFAULT now()
       )
     `);
+    await db.execute(sql`ALTER TABLE visits ADD COLUMN IF NOT EXISTS source text`);
     await db.execute(sql`CREATE INDEX IF NOT EXISTS visits_created_at_idx ON visits(created_at)`);
     await db.execute(sql`CREATE INDEX IF NOT EXISTS visits_visitor_idx ON visits(visitor_id)`);
+    await db.execute(sql`CREATE INDEX IF NOT EXISTS visits_source_idx ON visits(source)`);
     await db.execute(sql`ALTER TABLE texts ADD COLUMN IF NOT EXISTS nationality text`);
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS paragraph_translations (

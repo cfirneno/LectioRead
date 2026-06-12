@@ -588,6 +588,10 @@ components:
           type: ["string", "null"]
           maxLength: 1024
           description: document.referrer, if any
+        source:
+          type: ["string", "null"]
+          maxLength: 64
+          description: Campaign/source tag from the URL (e.g. "outreach" from ?from=outreach)
 
     VisitAck:
       type: object
@@ -634,6 +638,20 @@ components:
         last7d:
           type: integer
           description: Visits in the last 7 days
+        bySource:
+          type: array
+          description: Visit breakdown grouped by source tag (untagged visits grouped as "direct")
+          items:
+            type: object
+            required: [source, visits, uniqueVisitors]
+            properties:
+              source:
+                type: string
+                description: The source tag, or "direct" for untagged visits
+              visits:
+                type: integer
+              uniqueVisitors:
+                type: integer
 
     TextSearchRequest:
       type: object

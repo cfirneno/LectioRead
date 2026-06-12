@@ -28,6 +28,12 @@ export interface VisitInput {
      * @nullable
      */
   referrer?: string | null;
+  /**
+     * Campaign/source tag from the URL (e.g. "outreach" from ?from=outreach)
+     * @maxLength 64
+     * @nullable
+     */
+  source?: string | null;
 }
 
 export interface VisitAck {
@@ -53,6 +59,13 @@ export interface NewsletterAck {
   ok: boolean;
 }
 
+export type VisitStatsBySourceItem = {
+  /** The source tag, or "direct" for untagged visits */
+  source: string;
+  visits: number;
+  uniqueVisitors: number;
+};
+
 export interface VisitStats {
   /** All-time visit count */
   total: number;
@@ -62,6 +75,8 @@ export interface VisitStats {
   last24h: number;
   /** Visits in the last 7 days */
   last7d: number;
+  /** Visit breakdown grouped by source tag (untagged visits grouped as "direct") */
+  bySource?: VisitStatsBySourceItem[];
 }
 
 export interface TextSearchRequest {

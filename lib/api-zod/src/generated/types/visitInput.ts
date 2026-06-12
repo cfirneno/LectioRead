@@ -25,4 +25,10 @@ export interface VisitInput {
      * @nullable
      */
   referrer?: string | null;
+  /**
+     * Campaign/source tag from the URL (e.g. "outreach" from ?from=outreach)
+     * @maxLength 64
+     * @nullable
+     */
+  source?: string | null;
 }
