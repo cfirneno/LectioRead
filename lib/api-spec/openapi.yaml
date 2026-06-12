@@ -22,6 +22,8 @@ tags:
     description: Site visit tracking and analytics
   - name: outreach
     description: Educator outreach records
+  - name: admin
+    description: Admin access checks
 
 paths:
   /healthz:
@@ -508,7 +510,7 @@ paths:
       operationId: getOutreachRecipients
       tags: [outreach]
       summary: List the educator outreach recipients
-      description: Returns every institution/email that the outreach announcement was sent to, with the send time.
+      description: Admin only. Returns every institution/email that the outreach announcement was sent to, with the send time.
       responses:
         "200":
           description: Outreach recipients
@@ -516,6 +518,24 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/OutreachRecipients"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+
+  /admin/me:
+    get:
+      operationId: getAdminStatus
+      tags: [admin]
+      summary: Whether the current user may view the dashboard
+      description: Returns admin=true when the signed-in user is on the admin allowlist.
+      responses:
+        "200":
+          description: Admin status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminStatus"
 
   /subscribe:
     post:
@@ -708,6 +728,14 @@ components:
               path:
                 type: string
                 description: The path that was visited
+
+    AdminStatus:
+      type: object
+      required: [admin]
+      properties:
+        admin:
+          type: boolean
+          description: Whether the current user may view the dashboard
 
     OutreachRecipients:
       type: object

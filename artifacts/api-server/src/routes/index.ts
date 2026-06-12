@@ -11,6 +11,7 @@ import quizRouter from "./quiz";
 import flashcardsRouter from "./flashcards";
 import visitsRouter from "./visits";
 import outreachRouter from "./outreach";
+import adminRouter from "./admin";
 
 const router: IRouter = Router();
 
@@ -20,6 +21,7 @@ const router: IRouter = Router();
 router.use(healthRouter);
 router.use(visitsRouter);
 router.use(outreachRouter);
+router.use(adminRouter);
 router.use(subscriptionRouter);
 router.use(donateRouter);
 router.use(subscribeRouter);

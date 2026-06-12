@@ -20,6 +20,7 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  AdminStatus,
   CheckoutUrl,
   DonationInput,
   FlashcardDeck,
@@ -1815,7 +1816,7 @@ export const getGetOutreachRecipientsUrl = () => {
 }
 
 /**
- * Returns every institution/email that the outreach announcement was sent to, with the send time.
+ * Admin only. Returns every institution/email that the outreach announcement was sent to, with the send time.
  * @summary List the educator outreach recipients
  */
 export const getOutreachRecipients = async ( options?: RequestInit): Promise<OutreachRecipients> => {
@@ -1840,7 +1841,7 @@ export const getGetOutreachRecipientsQueryKey = () => {
     }
 
 
-export const getGetOutreachRecipientsQueryOptions = <TData = Awaited<ReturnType<typeof getOutreachRecipients>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getOutreachRecipients>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+export const getGetOutreachRecipientsQueryOptions = <TData = Awaited<ReturnType<typeof getOutreachRecipients>>, TError = ErrorType<void>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getOutreachRecipients>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -1859,19 +1860,97 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GetOutreachRecipientsQueryResult = NonNullable<Awaited<ReturnType<typeof getOutreachRecipients>>>
-export type GetOutreachRecipientsQueryError = ErrorType<unknown>
+export type GetOutreachRecipientsQueryError = ErrorType<void>
 
 
 /**
  * @summary List the educator outreach recipients
  */
 
-export function useGetOutreachRecipients<TData = Awaited<ReturnType<typeof getOutreachRecipients>>, TError = ErrorType<unknown>>(
+export function useGetOutreachRecipients<TData = Awaited<ReturnType<typeof getOutreachRecipients>>, TError = ErrorType<void>>(
   options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getOutreachRecipients>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
 
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getGetOutreachRecipientsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getGetAdminStatusUrl = () => {
+
+
+
+
+  return `/api/admin/me`
+}
+
+/**
+ * Returns admin=true when the signed-in user is on the admin allowlist.
+ * @summary Whether the current user may view the dashboard
+ */
+export const getAdminStatus = async ( options?: RequestInit): Promise<AdminStatus> => {
+
+  return customFetch<AdminStatus>(getGetAdminStatusUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetAdminStatusQueryKey = () => {
+    return [
+    `/api/admin/me`
+    ] as const;
+    }
+
+
+export const getGetAdminStatusQueryOptions = <TData = Awaited<ReturnType<typeof getAdminStatus>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAdminStatus>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminStatusQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminStatus>>> = ({ signal }) => getAdminStatus({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminStatus>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetAdminStatusQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminStatus>>>
+export type GetAdminStatusQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Whether the current user may view the dashboard
+ */
+
+export function useGetAdminStatus<TData = Awaited<ReturnType<typeof getAdminStatus>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAdminStatus>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetAdminStatusQueryOptions(options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

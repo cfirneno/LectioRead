@@ -3,6 +3,7 @@ import {
   useGetVisitStats,
   useGetRecentVisits,
   useGetOutreachRecipients,
+  useGetAdminStatus,
 } from "@workspace/api-client-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,7 @@ import {
   Megaphone,
   Mail,
   Activity,
+  Lock,
 } from "lucide-react";
 
 function StatCard({
@@ -67,15 +69,7 @@ function describeReferrer(referrer: string | null): string {
   }
 }
 
-export default function Dashboard() {
-  const stats = useGetVisitStats();
-  const recent = useGetRecentVisits();
-  const outreach = useGetOutreachRecipients();
-
-  const loading = stats.isLoading || recent.isLoading || outreach.isLoading;
-  const recipients = outreach.data?.recipients ?? [];
-  const visits = recent.data?.visits ?? [];
-
+function Shell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-[100dvh] bg-background text-foreground">
       <header className="border-b border-border/40">
@@ -89,8 +83,58 @@ export default function Dashboard() {
           </Link>
         </div>
       </header>
+      <main className="container max-w-5xl mx-auto px-4 py-12">{children}</main>
+    </div>
+  );
+}
 
-      <main className="container max-w-5xl mx-auto px-4 py-12">
+export default function Dashboard() {
+  const admin = useGetAdminStatus();
+  const isAdmin = admin.data?.admin === true;
+
+  const stats = useGetVisitStats({ query: { enabled: isAdmin } as never });
+  const recent = useGetRecentVisits({ query: { enabled: isAdmin } as never });
+  const outreach = useGetOutreachRecipients({ query: { enabled: isAdmin } as never });
+
+  if (admin.isLoading) {
+    return (
+      <Shell>
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <Loader2 className="h-5 w-5 animate-spin" />
+          Loading…
+        </div>
+      </Shell>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <Shell>
+        <div className="max-w-md">
+          <div className="flex items-center gap-2 font-serif text-2xl font-semibold mb-2">
+            <Lock className="h-6 w-6 text-muted-foreground" />
+            Private dashboard
+          </div>
+          <p className="text-muted-foreground mb-6">
+            This page is restricted to the site owner. Your account isn’t authorized to view it.
+          </p>
+          <Link href="/">
+            <Button variant="outline" className="font-serif">
+              Back to home
+            </Button>
+          </Link>
+        </div>
+      </Shell>
+    );
+  }
+
+  const loading = stats.isLoading || recent.isLoading || outreach.isLoading;
+  const recipients = outreach.data?.recipients ?? [];
+  const visits = recent.data?.visits ?? [];
+
+  return (
+    <Shell>
+      <>
         <h1 className="font-serif text-3xl font-semibold mb-2">Outreach &amp; visits dashboard</h1>
         <p className="text-muted-foreground mb-8">
           Who the announcement was emailed to, and who is visiting the site — with times.
@@ -268,7 +312,7 @@ export default function Dashboard() {
             </Button>
           </Link>
         </div>
-      </main>
-    </div>
+      </>
+    </Shell>
   );
 }

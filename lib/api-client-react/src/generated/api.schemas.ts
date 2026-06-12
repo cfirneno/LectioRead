@@ -101,6 +101,11 @@ export interface RecentVisits {
   visits: RecentVisitsVisitsItem[];
 }
 
+export interface AdminStatus {
+  /** Whether the current user may view the dashboard */
+  admin: boolean;
+}
+
 export type OutreachRecipientsRecipientsItem = {
   email: string;
   institution: string;

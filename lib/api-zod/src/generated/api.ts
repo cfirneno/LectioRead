@@ -457,7 +457,7 @@ export const GetRecentVisitsResponse = zod.object({
 
 
 /**
- * Returns every institution/email that the outreach announcement was sent to, with the send time.
+ * Admin only. Returns every institution/email that the outreach announcement was sent to, with the send time.
  * @summary List the educator outreach recipients
  */
 export const GetOutreachRecipientsResponse = zod.object({
@@ -469,6 +469,15 @@ export const GetOutreachRecipientsResponse = zod.object({
   "status": zod.string().describe('Send status (e.g. \"sent\")'),
   "sentAt": zod.coerce.date().describe('When the announcement was sent (UTC)')
 }))
+})
+
+
+/**
+ * Returns admin=true when the signed-in user is on the admin allowlist.
+ * @summary Whether the current user may view the dashboard
+ */
+export const GetAdminStatusResponse = zod.object({
+  "admin": zod.boolean().describe('Whether the current user may view the dashboard')
 })
 
 

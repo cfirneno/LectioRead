@@ -2,6 +2,7 @@ import { Router, type IRouter } from "express";
 import { sql } from "drizzle-orm";
 import { db, visitsTable } from "@workspace/db";
 import { RecordVisitBody } from "@workspace/api-zod";
+import { requireAdmin } from "../lib/adminGuard";
 
 const router: IRouter = Router();
 
@@ -56,7 +57,7 @@ router.get("/visits/stats", async (_req, res): Promise<void> => {
   });
 });
 
-router.get("/visits/recent", async (_req, res): Promise<void> => {
+router.get("/visits/recent", requireAdmin, async (_req, res): Promise<void> => {
   const rows = await db
     .select({
       id: visitsTable.id,

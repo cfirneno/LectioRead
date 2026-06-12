@@ -105,7 +105,11 @@ function Router() {
       <Route path="/educators" component={Educators} />
       <Route path="/checkout/success" component={CheckoutSuccess} />
       <Route path="/stats" component={Stats} />
-      <Route path="/dashboard" component={Dashboard} />
+      <Route path="/dashboard">
+        <RequireAuth>
+          <Dashboard />
+        </RequireAuth>
+      </Route>
       <Route path="/app" component={Home} />
       <Route path="/app/continue">
         <RequireAuth>
