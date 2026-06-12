@@ -442,6 +442,37 @@ export const GetVisitStatsResponse = zod.object({
 
 
 /**
+ * Returns the latest individual visits with their time, source, referrer and path.
+ * @summary Get the most recent site visits
+ */
+export const GetRecentVisitsResponse = zod.object({
+  "visits": zod.array(zod.object({
+  "id": zod.number(),
+  "at": zod.coerce.date().describe('When the visit happened (UTC)'),
+  "source": zod.string().nullable().describe('Source tag from the URL, or null if untagged'),
+  "referrer": zod.string().nullable().describe('The page the visitor came from, if any'),
+  "path": zod.string().describe('The path that was visited')
+}))
+})
+
+
+/**
+ * Returns every institution/email that the outreach announcement was sent to, with the send time.
+ * @summary List the educator outreach recipients
+ */
+export const GetOutreachRecipientsResponse = zod.object({
+  "recipients": zod.array(zod.object({
+  "email": zod.string(),
+  "institution": zod.string(),
+  "department": zod.string(),
+  "country": zod.string(),
+  "status": zod.string().describe('Send status (e.g. \"sent\")'),
+  "sentAt": zod.coerce.date().describe('When the announcement was sent (UTC)')
+}))
+})
+
+
+/**
  * Public — adds an email to the subscriber list. Idempotent on email.
  * @summary Subscribe an email address to the Lectio newsletter
  */

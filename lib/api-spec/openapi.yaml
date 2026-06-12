@@ -20,6 +20,8 @@ tags:
     description: Subscription and billing operations
   - name: visits
     description: Site visit tracking and analytics
+  - name: outreach
+    description: Educator outreach records
 
 paths:
   /healthz:
@@ -487,6 +489,34 @@ paths:
               schema:
                 $ref: "#/components/schemas/VisitStats"
 
+  /visits/recent:
+    get:
+      operationId: getRecentVisits
+      tags: [visits]
+      summary: Get the most recent site visits
+      description: Returns the latest individual visits with their time, source, referrer and path.
+      responses:
+        "200":
+          description: Recent visits
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecentVisits"
+
+  /outreach/recipients:
+    get:
+      operationId: getOutreachRecipients
+      tags: [outreach]
+      summary: List the educator outreach recipients
+      description: Returns every institution/email that the outreach announcement was sent to, with the send time.
+      responses:
+        "200":
+          description: Outreach recipients
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OutreachRecipients"
+
   /subscribe:
     post:
       operationId: subscribeNewsletter
@@ -652,6 +682,58 @@ components:
                 type: integer
               uniqueVisitors:
                 type: integer
+
+    RecentVisits:
+      type: object
+      required: [visits]
+      properties:
+        visits:
+          type: array
+          items:
+            type: object
+            required: [id, at, source, referrer, path]
+            properties:
+              id:
+                type: integer
+              at:
+                type: string
+                format: date-time
+                description: When the visit happened (UTC)
+              source:
+                type: ["string", "null"]
+                description: Source tag from the URL, or null if untagged
+              referrer:
+                type: ["string", "null"]
+                description: The page the visitor came from, if any
+              path:
+                type: string
+                description: The path that was visited
+
+    OutreachRecipients:
+      type: object
+      required: [recipients]
+      properties:
+        recipients:
+          type: array
+          items:
+            type: object
+            required: [email, institution, department, country, status, sentAt]
+            properties:
+              email:
+                type: string
+              institution:
+                type: string
+              department:
+                type: string
+              country:
+                type: string
+              status:
+                type: string
+                description: Send status (e.g. "sent")
+              sentAt:
+                type: string
+                format: date-time
+                description: When the announcement was sent (UTC)
 
     TextSearchRequest:
       type: object

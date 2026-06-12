@@ -29,6 +29,7 @@ import type {
   LookupWordParams,
   NewsletterAck,
   NewsletterSignupInput,
+  OutreachRecipients,
   Paragraph,
   ParagraphAudio,
   ParagraphSummary,
@@ -37,6 +38,7 @@ import type {
   PublicQuiz,
   QuizResult,
   QuizSubmission,
+  RecentVisits,
   ReviewSummary,
   Scansion,
   SubscriptionStatus,
@@ -1714,6 +1716,162 @@ export function useGetVisitStats<TData = Awaited<ReturnType<typeof getVisitStats
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getGetVisitStatsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getGetRecentVisitsUrl = () => {
+
+
+
+
+  return `/api/visits/recent`
+}
+
+/**
+ * Returns the latest individual visits with their time, source, referrer and path.
+ * @summary Get the most recent site visits
+ */
+export const getRecentVisits = async ( options?: RequestInit): Promise<RecentVisits> => {
+
+  return customFetch<RecentVisits>(getGetRecentVisitsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetRecentVisitsQueryKey = () => {
+    return [
+    `/api/visits/recent`
+    ] as const;
+    }
+
+
+export const getGetRecentVisitsQueryOptions = <TData = Awaited<ReturnType<typeof getRecentVisits>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getRecentVisits>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetRecentVisitsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getRecentVisits>>> = ({ signal }) => getRecentVisits({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getRecentVisits>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetRecentVisitsQueryResult = NonNullable<Awaited<ReturnType<typeof getRecentVisits>>>
+export type GetRecentVisitsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get the most recent site visits
+ */
+
+export function useGetRecentVisits<TData = Awaited<ReturnType<typeof getRecentVisits>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getRecentVisits>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetRecentVisitsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getGetOutreachRecipientsUrl = () => {
+
+
+
+
+  return `/api/outreach/recipients`
+}
+
+/**
+ * Returns every institution/email that the outreach announcement was sent to, with the send time.
+ * @summary List the educator outreach recipients
+ */
+export const getOutreachRecipients = async ( options?: RequestInit): Promise<OutreachRecipients> => {
+
+  return customFetch<OutreachRecipients>(getGetOutreachRecipientsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetOutreachRecipientsQueryKey = () => {
+    return [
+    `/api/outreach/recipients`
+    ] as const;
+    }
+
+
+export const getGetOutreachRecipientsQueryOptions = <TData = Awaited<ReturnType<typeof getOutreachRecipients>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getOutreachRecipients>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetOutreachRecipientsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getOutreachRecipients>>> = ({ signal }) => getOutreachRecipients({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getOutreachRecipients>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetOutreachRecipientsQueryResult = NonNullable<Awaited<ReturnType<typeof getOutreachRecipients>>>
+export type GetOutreachRecipientsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List the educator outreach recipients
+ */
+
+export function useGetOutreachRecipients<TData = Awaited<ReturnType<typeof getOutreachRecipients>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getOutreachRecipients>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetOutreachRecipientsQueryOptions(options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

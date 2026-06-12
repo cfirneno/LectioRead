@@ -10,6 +10,7 @@ import lookupRouter from "./lookup";
 import quizRouter from "./quiz";
 import flashcardsRouter from "./flashcards";
 import visitsRouter from "./visits";
+import outreachRouter from "./outreach";
 
 const router: IRouter = Router();
 
@@ -18,6 +19,7 @@ const router: IRouter = Router();
 // 401 a public path before it matches its own handler.
 router.use(healthRouter);
 router.use(visitsRouter);
+router.use(outreachRouter);
 router.use(subscriptionRouter);
 router.use(donateRouter);
 router.use(subscribeRouter);

@@ -56,4 +56,28 @@ router.get("/visits/stats", async (_req, res): Promise<void> => {
   });
 });
 
+router.get("/visits/recent", async (_req, res): Promise<void> => {
+  const rows = await db
+    .select({
+      id: visitsTable.id,
+      at: visitsTable.createdAt,
+      source: visitsTable.source,
+      referrer: visitsTable.referrer,
+      path: visitsTable.path,
+    })
+    .from(visitsTable)
+    .orderBy(sql`${visitsTable.createdAt} desc`)
+    .limit(200);
+
+  res.json({
+    visits: rows.map((r) => ({
+      id: r.id,
+      at: (r.at instanceof Date ? r.at : new Date(r.at as unknown as string)).toISOString(),
+      source: r.source,
+      referrer: r.referrer,
+      path: r.path,
+    })),
+  });
+});
+
 export default router;

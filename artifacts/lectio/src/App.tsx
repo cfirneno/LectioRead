@@ -20,6 +20,7 @@ import SupportThanks from "@/pages/support-thanks";
 import Educators from "@/pages/educators";
 import CheckoutSuccess from "@/pages/checkout-success";
 import Stats from "@/pages/stats";
+import Dashboard from "@/pages/dashboard";
 import { useTrackVisit } from "@/hooks/useTrackVisit";
 import { Loader2 } from "lucide-react";
 
@@ -104,6 +105,7 @@ function Router() {
       <Route path="/educators" component={Educators} />
       <Route path="/checkout/success" component={CheckoutSuccess} />
       <Route path="/stats" component={Stats} />
+      <Route path="/dashboard" component={Dashboard} />
       <Route path="/app" component={Home} />
       <Route path="/app/continue">
         <RequireAuth>

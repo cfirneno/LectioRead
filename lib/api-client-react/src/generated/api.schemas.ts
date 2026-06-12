@@ -79,6 +79,43 @@ export interface VisitStats {
   bySource?: VisitStatsBySourceItem[];
 }
 
+export type RecentVisitsVisitsItem = {
+  id: number;
+  /** When the visit happened (UTC) */
+  at: string;
+  /**
+     * Source tag from the URL, or null if untagged
+     * @nullable
+     */
+  source: string | null;
+  /**
+     * The page the visitor came from, if any
+     * @nullable
+     */
+  referrer: string | null;
+  /** The path that was visited */
+  path: string;
+};
+
+export interface RecentVisits {
+  visits: RecentVisitsVisitsItem[];
+}
+
+export type OutreachRecipientsRecipientsItem = {
+  email: string;
+  institution: string;
+  department: string;
+  country: string;
+  /** Send status (e.g. "sent") */
+  status: string;
+  /** When the announcement was sent (UTC) */
+  sentAt: string;
+};
+
+export interface OutreachRecipients {
+  recipients: OutreachRecipientsRecipientsItem[];
+}
+
 export interface TextSearchRequest {
   /** e.g. 'The Prince by Machiavelli, chapter 1' */
   query: string;
