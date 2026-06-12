@@ -27,6 +27,8 @@ import type {
   HealthStatus,
   InterlinearTranslation,
   LookupWordParams,
+  NewsletterAck,
+  NewsletterSignupInput,
   Paragraph,
   ParagraphAudio,
   ParagraphSummary,
@@ -1723,6 +1725,77 @@ export function useGetVisitStats<TData = Awaited<ReturnType<typeof getVisitStats
 
 
 
+
+export const getSubscribeNewsletterUrl = () => {
+
+
+
+
+  return `/api/subscribe`
+}
+
+/**
+ * Public — adds an email to the subscriber list. Idempotent on email.
+ * @summary Subscribe an email address to the Lectio newsletter
+ */
+export const subscribeNewsletter = async (newsletterSignupInput: NewsletterSignupInput, options?: RequestInit): Promise<NewsletterAck> => {
+
+  return customFetch<NewsletterAck>(getSubscribeNewsletterUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(newsletterSignupInput)
+  }
+);}
+
+
+
+
+export const getSubscribeNewsletterMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof subscribeNewsletter>>, TError,{data: BodyType<NewsletterSignupInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof subscribeNewsletter>>, TError,{data: BodyType<NewsletterSignupInput>}, TContext> => {
+
+const mutationKey = ['subscribeNewsletter'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof subscribeNewsletter>>, {data: BodyType<NewsletterSignupInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  subscribeNewsletter(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SubscribeNewsletterMutationResult = NonNullable<Awaited<ReturnType<typeof subscribeNewsletter>>>
+    export type SubscribeNewsletterMutationBody = BodyType<NewsletterSignupInput>
+    export type SubscribeNewsletterMutationError = ErrorType<void>
+
+    /**
+ * @summary Subscribe an email address to the Lectio newsletter
+ */
+export const useSubscribeNewsletter = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof subscribeNewsletter>>, TError,{data: BodyType<NewsletterSignupInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof subscribeNewsletter>>,
+        TError,
+        {data: BodyType<NewsletterSignupInput>},
+        TContext
+      > => {
+      return useMutation(getSubscribeNewsletterMutationOptions(options));
+    }
 
 export const getGetSubscriptionStatusUrl = () => {
 

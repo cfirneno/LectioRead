@@ -72,6 +72,15 @@ export async function runIdempotentMigrations(): Promise<void> {
       )
     `);
     await db.execute(sql`CREATE UNIQUE INDEX IF NOT EXISTS paragraph_translations_unique ON paragraph_translations(paragraph_id, kind, language)`);
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS subscribers (
+        id serial PRIMARY KEY,
+        email text NOT NULL,
+        source text,
+        created_at timestamp with time zone NOT NULL DEFAULT now()
+      )
+    `);
+    await db.execute(sql`CREATE UNIQUE INDEX IF NOT EXISTS subscribers_email_unique ON subscribers(lower(email))`);
     logger.info("Idempotent migrations applied");
   } catch (err) {
     logger.error({ err }, "Idempotent migration failed");

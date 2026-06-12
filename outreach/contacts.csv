@@ -1,0 +1,5 @@
+institution,department,country,email
+# Add one row per recipient. Lines starting with # are ignored.
+# Only use real, publicly-listed department contact addresses you are permitted to email.
+# Example (replace with real entries):
+# University of Example,Department of Classics,US,classics@example.edu

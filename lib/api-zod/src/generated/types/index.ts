@@ -15,6 +15,8 @@ export * from './healthStatus';
 export * from './interlinearTranslation';
 export * from './interlinearWord';
 export * from './lookupWordParams';
+export * from './newsletterAck';
+export * from './newsletterSignupInput';
 export * from './paragraph';
 export * from './paragraphAudio';
 export * from './paragraphSummary';

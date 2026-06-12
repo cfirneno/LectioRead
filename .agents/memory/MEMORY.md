@@ -4,6 +4,7 @@
 - [Lectio video rendering limits](lectio-video-rendering.md) — narrated videos can't be re-rendered in-container (no GPU, blur scenes ~1-3fps); export only via Replit preview pane (browser GPU). ffmpeg re-time salvage not viable.
 - [Lectio word/grammar lookup](lectio-word-lookup.md) — /lookup proxies flaky Perseus; must degrade gracefully (8s timeout → AI parse fallback, same shape) so an outage never becomes a gateway 503.
 - [Lectio text deep links](lectio-deep-links.md) — link to a specific text via /app/start/<catalogKey>; never hardcode the serial text id (not stable).
+- [Lectio educator outreach](lectio-outreach.md) — Resend via connectors proxy (sender domain must be DNS-verified); safe-by-default blast; never fabricate recipients; onConflictDoNothing can't target a functional index.
 - [Lectio free + donations](lectio-free-donations.md) — no paywall: reading public, account features need sign-in only; donation is one-time Stripe Checkout; keep /subscription portal+me for legacy subs.
 - [Lectio translation cache](lectio-translation-cache.md) — per-language glosses keyed in paragraph_translations w/ lowercased key; catalog cleanup must never delete by language='english'.
 - [Lectio public API routes](lectio-public-routes.md) — mount unauthenticated routers BEFORE guarded ones in routes/index.ts, or a router-level auth guard 401s them.

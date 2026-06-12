@@ -34,6 +34,25 @@ export interface VisitAck {
   recorded: boolean;
 }
 
+export interface NewsletterSignupInput {
+  /**
+     * Email address to subscribe
+     * @minLength 3
+     * @maxLength 254
+     */
+  email: string;
+  /**
+     * Where the signup came from (e.g. "educators")
+     * @maxLength 64
+     * @nullable
+     */
+  source?: string | null;
+}
+
+export interface NewsletterAck {
+  ok: boolean;
+}
+
 export interface VisitStats {
   /** All-time visit count */
   total: number;

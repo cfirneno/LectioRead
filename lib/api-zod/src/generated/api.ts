@@ -434,6 +434,27 @@ export const GetVisitStatsResponse = zod.object({
 
 
 /**
+ * Public — adds an email to the subscriber list. Idempotent on email.
+ * @summary Subscribe an email address to the Lectio newsletter
+ */
+export const subscribeNewsletterBodyEmailMin = 3;
+export const subscribeNewsletterBodyEmailMax = 254;
+
+export const subscribeNewsletterBodySourceMax = 64;
+
+
+
+export const SubscribeNewsletterBody = zod.object({
+  "email": zod.string().email().min(subscribeNewsletterBodyEmailMin).max(subscribeNewsletterBodyEmailMax).describe('Email address to subscribe'),
+  "source": zod.string().max(subscribeNewsletterBodySourceMax).nullish().describe('Where the signup came from (e.g. \"educators\")')
+})
+
+export const SubscribeNewsletterResponse = zod.object({
+  "ok": zod.boolean()
+})
+
+
+/**
  * @summary Get current user's subscription status
  */
 export const GetSubscriptionStatusResponse = zod.object({

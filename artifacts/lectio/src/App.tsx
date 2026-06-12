@@ -17,6 +17,7 @@ import Videos from "@/pages/videos";
 import VideoWatch from "@/pages/video-watch";
 import Support from "@/pages/support";
 import SupportThanks from "@/pages/support-thanks";
+import Educators from "@/pages/educators";
 import CheckoutSuccess from "@/pages/checkout-success";
 import Stats from "@/pages/stats";
 import { useTrackVisit } from "@/hooks/useTrackVisit";
@@ -100,6 +101,7 @@ function Router() {
       </Route>
       <Route path="/support" component={Support} />
       <Route path="/support/thanks" component={SupportThanks} />
+      <Route path="/educators" component={Educators} />
       <Route path="/checkout/success" component={CheckoutSuccess} />
       <Route path="/stats" component={Stats} />
       <Route path="/app" component={Home} />

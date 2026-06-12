@@ -57,6 +57,9 @@ export default function Landing() {
             <Link href="/app">
               <Button variant="ghost" className="font-serif">Browse the library</Button>
             </Link>
+            <Link href="/educators">
+              <Button variant="ghost" className="font-serif">For educators</Button>
+            </Link>
             <Link href="/sign-in">
               <Button variant="ghost" className="font-serif">Sign in</Button>
             </Link>
