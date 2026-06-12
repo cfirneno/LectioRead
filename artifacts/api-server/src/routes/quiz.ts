@@ -8,11 +8,11 @@ import {
   quizAttemptsTable,
 } from "@workspace/db";
 import { generateQuiz, generateFullTranslation, type QuizQuestion } from "../lib/ai";
-import { requireSubscribedUser, type AuthedRequest } from "../lib/subscriptionGuard";
+import { requireAuthed, type AuthedRequest } from "../lib/subscriptionGuard";
 import { beginForeground } from "../lib/foregroundGate";
 
 const router: IRouter = Router();
-router.use(requireSubscribedUser);
+router.use(requireAuthed);
 
 type StoredQuiz = {
   paragraphText: string;

@@ -4,7 +4,7 @@ import { UserButton, useAuth } from "@clerk/react";
 import { useSearchText, useListTexts, useGetRecentTexts, useCreateBillingPortalSession, useGetSubscriptionStatus } from "@workspace/api-client-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { BookOpen, Search, Loader2, Clock, ChevronDown, ChevronUp, CreditCard, Sparkles, Film } from "lucide-react";
+import { BookOpen, Search, Loader2, Clock, ChevronDown, ChevronUp, CreditCard, Sparkles, Film, Heart } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface CatalogText {
@@ -295,13 +295,7 @@ export default function Home() {
           const apiErr = err as { status?: number; data?: { error?: string } | null };
           const serverMessage = apiErr?.data?.error;
           const status = apiErr?.status;
-          if (status === 401 || status === 402) {
-            toast({
-              title: "Subscribe to search the archives",
-              description: "Browsing and the free preview of every text are open to all. Searching for new works is part of the $1/month subscription.",
-            });
-            setLocation("/subscribe");
-          } else if (status === 400 && serverMessage) {
+          if (status === 400 && serverMessage) {
             toast({
               title: "Not available",
               description: serverMessage,
@@ -339,7 +333,13 @@ export default function Home() {
             </div>
           </Link>
           <div className="flex items-center gap-2">
-            {isSubscribed ? (
+            <Link href="/app/videos">
+              <Button variant="ghost" size="sm" className="font-serif text-muted-foreground">
+                <Film className="h-4 w-4 mr-1.5" />
+                Videos
+              </Button>
+            </Link>
+            {isSignedIn && (
               <>
                 {recentTexts && recentTexts.length > 0 && (
                   <Link href="/app/continue">
@@ -349,47 +349,40 @@ export default function Home() {
                     </Button>
                   </Link>
                 )}
-                <Link href="/app/videos">
-                  <Button variant="ghost" size="sm" className="font-serif text-muted-foreground">
-                    <Film className="h-4 w-4 mr-1.5" />
-                    Videos
-                  </Button>
-                </Link>
                 <Link href="/app/review">
                   <Button variant="ghost" size="sm" className="font-serif text-muted-foreground">
                     <Sparkles className="h-4 w-4 mr-1.5" />
                     Review
                   </Button>
                 </Link>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleManageBilling}
-                  disabled={portal.isPending}
-                  className="font-serif text-muted-foreground"
-                >
-                  <CreditCard className="h-4 w-4 mr-1.5" />
-                  {portal.isPending ? "Opening…" : "Billing"}
-                </Button>
-                <UserButton />
               </>
+            )}
+            {isSubscribed && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleManageBilling}
+                disabled={portal.isPending}
+                className="font-serif text-muted-foreground"
+              >
+                <CreditCard className="h-4 w-4 mr-1.5" />
+                {portal.isPending ? "Opening…" : "Billing"}
+              </Button>
+            )}
+            <Link href="/support">
+              <Button variant="ghost" size="sm" className="font-serif text-muted-foreground">
+                <Heart className="h-4 w-4 mr-1.5" />
+                Support
+              </Button>
+            </Link>
+            {isSignedIn ? (
+              <UserButton />
             ) : (
-              <>
-                {isSignedIn ? (
-                  <UserButton />
-                ) : (
-                  <Link href="/sign-in">
-                    <Button variant="ghost" size="sm" className="font-serif text-muted-foreground">
-                      Sign in
-                    </Button>
-                  </Link>
-                )}
-                <Link href="/subscribe">
-                  <Button size="sm" className="font-serif">
-                    Subscribe — $1/month
-                  </Button>
-                </Link>
-              </>
+              <Link href="/sign-in">
+                <Button size="sm" className="font-serif">
+                  Sign in
+                </Button>
+              </Link>
             )}
           </div>
         </div>

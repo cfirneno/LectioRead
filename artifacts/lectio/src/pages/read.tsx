@@ -20,7 +20,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { ArrowLeft, Loader2, Home, Music, ExternalLink, GraduationCap, Volume2, Check, Languages, Lock } from "lucide-react";
+import { ArrowLeft, Loader2, Home, Music, ExternalLink, GraduationCap, Volume2, Check, Languages } from "lucide-react";
 import { useAuth } from "@clerk/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { getGrammarResource, type GrammarResource } from "@/lib/grammar-resources";
@@ -205,21 +205,11 @@ export default function Read() {
   const [langQuery, setLangQuery] = useState("");
 
   const { data: text } = useGetText(id);
-  const { data: paragraph, isLoading: isLoadingParagraph, error: paragraphError } = useGetParagraph(id, pIndex, {
+  const { data: paragraph, isLoading: isLoadingParagraph } = useGetParagraph(id, pIndex, {
     query: {
       // Wait until Clerk has resolved the session before fetching, so the auth
-      // token is attached for signed-in users and isSignedIn is reliable. This
-      // avoids a transient 401 during warmup being mistaken for the paywall.
+      // token is attached for signed-in users (progress is personalised).
       enabled: authLoaded && Number.isFinite(id) && id > 0 && Number.isFinite(pIndex) && pIndex >= 0,
-      // Beyond the free preview the API returns 402 (signed-in, no sub) or 401
-      // (anonymous). For an anon reader a 401 is a definitive paywall boundary,
-      // so don't retry — show the upsell immediately instead of a long spinner.
-      retry: (failureCount: number, error: unknown) => {
-        const status = (error as { status?: number } | null)?.status;
-        if (status === 402) return false;
-        if (status === 401 && !isSignedIn) return false;
-        return failureCount < 3;
-      },
     } as never,
   });
   
@@ -448,7 +438,7 @@ export default function Read() {
       }
     };
 
-    // Anonymous preview readers have nowhere to save progress — just advance.
+    // Anonymous readers have nowhere to save progress — just advance.
     if (!isSignedIn) {
       goNext();
       return;
@@ -462,7 +452,7 @@ export default function Read() {
           queryClient.invalidateQueries({ queryKey: [`/api/texts/${id}/stats`] });
           goNext();
         },
-        // Signed-in but not subscribed (preview) → saving is gated; still advance.
+        // Saving failed (e.g. transient error) — still advance the reader.
         onError: goNext,
       }
     );
@@ -471,43 +461,6 @@ export default function Read() {
   const handleTryAgain = () => {
     setStage(1);
   };
-
-  // Past the free preview the API returns 402 for a signed-in non-subscriber
-  // and 401 for an anonymous reader — both mean "subscribe to keep reading".
-  const previewStatus = (paragraphError as { status?: number } | null)?.status;
-  const previewEnded = previewStatus === 402 || previewStatus === 401;
-
-  if (previewEnded) {
-    return (
-      <div className="min-h-[100dvh] bg-background flex flex-col items-center justify-center px-6 text-center">
-        <div className="max-w-md space-y-6">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-secondary">
-            <Lock className="h-6 w-6 text-primary" />
-          </div>
-          <h1 className="font-serif text-3xl text-foreground">
-            End of the free preview
-          </h1>
-          <p className="font-serif text-muted-foreground text-lg leading-relaxed">
-            {text?.title ? `Keep reading ${text.title} ` : "Keep reading "}
-            and unlock every text in the library — the full five-stage cycle,
-            audio, and translations — for $1/month.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-            <Link href="/subscribe">
-              <Button size="lg" className="rounded-full px-8 font-serif text-lg">
-                Subscribe — $1/month
-              </Button>
-            </Link>
-            <Link href={`/texts/${id}`}>
-              <Button size="lg" variant="ghost" className="rounded-full px-6 font-serif text-lg">
-                Back
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   if (isLoadingParagraph || !paragraph) {
     return (

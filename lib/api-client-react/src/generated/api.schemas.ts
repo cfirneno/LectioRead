@@ -128,8 +128,6 @@ export interface ParagraphSummary {
   index: number;
   originalText: string;
   completed: boolean;
-  /** True when this paragraph is beyond the free preview and the viewer is not subscribed; originalText is redacted. */
-  locked?: boolean;
 }
 
 export interface Paragraph {
@@ -317,6 +315,15 @@ export interface SubscriptionStatus {
 
 export interface CheckoutUrl {
   url: string;
+}
+
+export interface DonationInput {
+  /**
+     * Donation amount in US cents (min $1, max $10,000).
+     * @minimum 100
+     * @maximum 1000000
+     */
+  amountCents: number;
 }
 
 export type LookupWordParams = {

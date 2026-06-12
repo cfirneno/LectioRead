@@ -8,13 +8,13 @@ import {
   GetTextVocabularyParams,
 } from "@workspace/api-zod";
 import { searchAndFetchText, CopyrightedTextError } from "../lib/ai";
-import { requireSubscribedUser, attachOptionalUser, type AuthedRequest } from "../lib/subscriptionGuard";
+import { requireAuthed, attachOptionalUser, type AuthedRequest } from "../lib/subscriptionGuard";
 import { beginForeground } from "../lib/foregroundGate";
 import { aggregateVocabulary } from "../lib/vocab";
 
 const router: IRouter = Router();
 
-router.post("/texts/search", requireSubscribedUser, async (req: AuthedRequest, res): Promise<void> => {
+router.post("/texts/search", attachOptionalUser, async (req: AuthedRequest, res): Promise<void> => {
   const parsed = SearchTextBody.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.message });
@@ -216,7 +216,7 @@ router.get("/texts/:textId", async (req: AuthedRequest, res): Promise<void> => {
   });
 });
 
-router.get("/texts/:textId/stats", requireSubscribedUser, async (req: AuthedRequest, res): Promise<void> => {
+router.get("/texts/:textId/stats", requireAuthed, async (req: AuthedRequest, res): Promise<void> => {
   const params = GetTextStatsParams.safeParse(req.params);
   if (!params.success) {
     res.status(400).json({ error: params.error.message });
@@ -257,7 +257,7 @@ router.get("/texts/:textId/stats", requireSubscribedUser, async (req: AuthedRequ
   });
 });
 
-router.get("/texts/:textId/vocabulary", requireSubscribedUser, async (req: AuthedRequest, res): Promise<void> => {
+router.get("/texts/:textId/vocabulary", requireAuthed, async (req: AuthedRequest, res): Promise<void> => {
   const params = GetTextVocabularyParams.safeParse(req.params);
   if (!params.success) {
     res.status(400).json({ error: params.error.message });

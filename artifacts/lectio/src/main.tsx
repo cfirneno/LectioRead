@@ -18,7 +18,7 @@ createRoot(document.getElementById("root")!).render(
     signInUrl="/sign-in"
     signUpUrl="/sign-up"
     signInFallbackRedirectUrl="/app"
-    signUpFallbackRedirectUrl="/subscribe"
+    signUpFallbackRedirectUrl="/app"
     appearance={{
       variables: {
         colorPrimary: "hsl(8, 50%, 35%)",

@@ -118,8 +118,7 @@ export const ListParagraphsResponseItem = zod.object({
   "textId": zod.number(),
   "index": zod.number(),
   "originalText": zod.string(),
-  "completed": zod.boolean(),
-  "locked": zod.boolean().optional().describe('True when this paragraph is beyond the free preview and the viewer is not subscribed; originalText is redacted.')
+  "completed": zod.boolean()
 })
 export const ListParagraphsResponse = zod.array(ListParagraphsResponseItem)
 
@@ -444,9 +443,18 @@ export const GetSubscriptionStatusResponse = zod.object({
 
 
 /**
- * @summary Create a Stripe Checkout session for the $1/month subscription
+ * @summary Create a Stripe Checkout session for a one-time donation
  */
-export const CreateCheckoutSessionResponse = zod.object({
+export const createDonationCheckoutBodyAmountCentsMin = 100;
+export const createDonationCheckoutBodyAmountCentsMax = 1000000;
+
+
+
+export const CreateDonationCheckoutBody = zod.object({
+  "amountCents": zod.number().min(createDonationCheckoutBodyAmountCentsMin).max(createDonationCheckoutBodyAmountCentsMax).describe('Donation amount in US cents (min $1, max $10,000).')
+})
+
+export const CreateDonationCheckoutResponse = zod.object({
   "url": zod.string()
 })
 

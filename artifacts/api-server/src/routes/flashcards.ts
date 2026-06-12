@@ -2,14 +2,14 @@ import { Router, type IRouter } from "express";
 import { eq, and, inArray } from "drizzle-orm";
 import { db, textsTable, flashcardsTable } from "@workspace/db";
 import { GetTextFlashcardsParams } from "@workspace/api-zod";
-import { requireSubscribedUser, type AuthedRequest } from "../lib/subscriptionGuard";
+import { requireAuthed, type AuthedRequest } from "../lib/subscriptionGuard";
 import { beginForeground } from "../lib/foregroundGate";
 import { aggregateVocabulary, normalizeWord } from "../lib/vocab";
 import { enrichVocabulary } from "../lib/ai";
 
 const router: IRouter = Router();
 
-router.use(requireSubscribedUser);
+router.use(requireAuthed);
 
 const ENRICH_BATCH = 40;
 

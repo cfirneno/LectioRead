@@ -16,11 +16,7 @@ import {
   generateSpeech,
 } from "../lib/ai";
 import {
-  requireSubscribedUser,
   attachOptionalUser,
-  requirePreviewOrSubscribed,
-  getEffectiveSubscriptionStatus,
-  FREE_PREVIEW_PARAGRAPHS,
   type AuthedRequest,
 } from "../lib/subscriptionGuard";
 import { beginForeground } from "../lib/foregroundGate";
@@ -40,10 +36,6 @@ router.get("/texts/:textId/paragraphs", attachOptionalUser, async (req: AuthedRe
     .where(eq(paragraphsTable.textId, params.data.textId))
     .orderBy(paragraphsTable.index);
 
-  const active = req.userId
-    ? (await getEffectiveSubscriptionStatus(req.userId)).active
-    : false;
-
   const progressMap = new Map<number, boolean>();
   if (req.userId) {
     const progressRecords = await db
@@ -59,25 +51,19 @@ router.get("/texts/:textId/paragraphs", attachOptionalUser, async (req: AuthedRe
   }
 
   res.json(
-    paragraphs.map((p) => {
-      // Beyond the free preview, redact the text for anyone without an active
-      // subscription so the paid catalogue can't be scraped via the list route.
-      const locked = !active && p.index >= FREE_PREVIEW_PARAGRAPHS;
-      return {
-        id: p.id,
-        textId: p.textId,
-        index: p.index,
-        originalText: locked ? "" : p.originalText,
-        completed: progressMap.get(p.index) ?? false,
-        locked,
-      };
-    })
+    paragraphs.map((p) => ({
+      id: p.id,
+      textId: p.textId,
+      index: p.index,
+      originalText: p.originalText,
+      completed: progressMap.get(p.index) ?? false,
+    }))
   );
 });
 
 router.get(
   "/texts/:textId/paragraphs/:index",
-  requirePreviewOrSubscribed,
+  attachOptionalUser,
   async (req: AuthedRequest, res): Promise<void> => {
     const params = GetParagraphParams.safeParse(req.params);
     if (!params.success) {
@@ -129,7 +115,7 @@ router.get(
 
 router.post(
   "/texts/:textId/paragraphs/:index/interlinear",
-  requirePreviewOrSubscribed,
+  attachOptionalUser,
   async (req, res): Promise<void> => {
     const params = GetInterlinearTranslationParams.safeParse(req.params);
     if (!params.success) {
@@ -237,7 +223,7 @@ router.post(
 
 router.post(
   "/texts/:textId/paragraphs/:index/translation",
-  requirePreviewOrSubscribed,
+  attachOptionalUser,
   async (req, res): Promise<void> => {
     const params = GetFullTranslationParams.safeParse(req.params);
     if (!params.success) {
@@ -349,7 +335,7 @@ router.post(
 
 router.post(
   "/texts/:textId/paragraphs/:index/scansion",
-  requirePreviewOrSubscribed,
+  attachOptionalUser,
   async (req, res): Promise<void> => {
     const params = GetScansionParams.safeParse(req.params);
     if (!params.success) {
@@ -419,7 +405,7 @@ router.post(
 
 router.post(
   "/texts/:textId/paragraphs/:index/audio",
-  requirePreviewOrSubscribed,
+  attachOptionalUser,
   async (req, res): Promise<void> => {
     const params = GetParagraphAudioParams.safeParse(req.params);
     if (!params.success) {

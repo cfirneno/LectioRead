@@ -21,6 +21,7 @@ import type {
 
 import type {
   CheckoutUrl,
+  DonationInput,
   FlashcardDeck,
   FullTranslation,
   HealthStatus,
@@ -1800,36 +1801,36 @@ export function useGetSubscriptionStatus<TData = Awaited<ReturnType<typeof getSu
 
 
 
-export const getCreateCheckoutSessionUrl = () => {
+export const getCreateDonationCheckoutUrl = () => {
 
 
 
 
-  return `/api/subscription/checkout`
+  return `/api/donate/checkout`
 }
 
 /**
- * @summary Create a Stripe Checkout session for the $1/month subscription
+ * @summary Create a Stripe Checkout session for a one-time donation
  */
-export const createCheckoutSession = async ( options?: RequestInit): Promise<CheckoutUrl> => {
+export const createDonationCheckout = async (donationInput: DonationInput, options?: RequestInit): Promise<CheckoutUrl> => {
 
-  return customFetch<CheckoutUrl>(getCreateCheckoutSessionUrl(),
+  return customFetch<CheckoutUrl>(getCreateDonationCheckoutUrl(),
   {
     ...options,
-    method: 'POST'
-
-
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(donationInput)
   }
 );}
 
 
 
 
-export const getCreateCheckoutSessionMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCheckoutSession>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof createCheckoutSession>>, TError,void, TContext> => {
+export const getCreateDonationCheckoutMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createDonationCheckout>>, TError,{data: BodyType<DonationInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createDonationCheckout>>, TError,{data: BodyType<DonationInput>}, TContext> => {
 
-const mutationKey = ['createCheckoutSession'];
+const mutationKey = ['createDonationCheckout'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -1839,10 +1840,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createCheckoutSession>>, void> = () => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createDonationCheckout>>, {data: BodyType<DonationInput>}> = (props) => {
+          const {data} = props ?? {};
 
-
-          return  createCheckoutSession(requestOptions)
+          return  createDonationCheckout(data,requestOptions)
         }
 
 
@@ -1852,22 +1853,22 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type CreateCheckoutSessionMutationResult = NonNullable<Awaited<ReturnType<typeof createCheckoutSession>>>
-
-    export type CreateCheckoutSessionMutationError = ErrorType<void>
+    export type CreateDonationCheckoutMutationResult = NonNullable<Awaited<ReturnType<typeof createDonationCheckout>>>
+    export type CreateDonationCheckoutMutationBody = BodyType<DonationInput>
+    export type CreateDonationCheckoutMutationError = ErrorType<void>
 
     /**
- * @summary Create a Stripe Checkout session for the $1/month subscription
+ * @summary Create a Stripe Checkout session for a one-time donation
  */
-export const useCreateCheckoutSession = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCheckoutSession>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+export const useCreateDonationCheckout = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createDonationCheckout>>, TError,{data: BodyType<DonationInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
  ): UseMutationResult<
-        Awaited<ReturnType<typeof createCheckoutSession>>,
+        Awaited<ReturnType<typeof createDonationCheckout>>,
         TError,
-        void,
+        {data: BodyType<DonationInput>},
         TContext
       > => {
-      return useMutation(getCreateCheckoutSessionMutationOptions(options));
+      return useMutation(getCreateDonationCheckoutMutationOptions(options));
     }
 
 export const getCreateBillingPortalSessionUrl = () => {

@@ -12,6 +12,11 @@ function isActive(status: string | null | undefined): boolean {
   return status === "active" || status === "trialing";
 }
 
+/**
+ * Reading and all features are free. We still track subscription status for the
+ * handful of legacy $1/month subscribers so they can reach the Stripe billing
+ * portal and cancel. Nothing in the app is gated on this anymore.
+ */
 export async function getEffectiveSubscriptionStatus(userId: string): Promise<{
   status: string | null;
   active: boolean;
@@ -27,38 +32,9 @@ export async function getEffectiveSubscriptionStatus(userId: string): Promise<{
   return { status: sub.status, active: false };
 }
 
-export async function requireSubscribedUser(
-  req: AuthedRequest,
-  res: Response,
-  next: NextFunction
-): Promise<void> {
-  const auth = getAuth(req);
-  const userId = auth?.userId;
-  if (!userId) {
-    res.status(401).json({ error: "Unauthorized" });
-    return;
-  }
-  req.userId = userId;
-
-  const { active, status } = await getEffectiveSubscriptionStatus(userId);
-  if (!active) {
-    res.status(402).json({ error: "Subscription required", status });
-    return;
-  }
-  next();
-}
-
-/**
- * Number of opening paragraphs of every text that are readable for free,
- * with no sign-in and no subscription. Anything at or beyond this index
- * requires an active subscription.
- */
-export const FREE_PREVIEW_PARAGRAPHS = 3;
-
 /**
  * Attaches req.userId when a Clerk session is present, but never blocks the
- * request. Use on endpoints that serve free-preview content to anonymous
- * visitors while still personalising for signed-in users.
+ * request. Use on public endpoints that still personalise for signed-in users.
  */
 export function attachOptionalUser(
   req: AuthedRequest,
@@ -71,27 +47,9 @@ export function attachOptionalUser(
 }
 
 /**
- * Allows anonymous access to the first FREE_PREVIEW_PARAGRAPHS paragraphs of a
- * text (by :index param); anything beyond falls through to the subscription
- * gate (401 if signed out, 402 if not subscribed).
+ * Requires a signed-in user (but not a subscription). Use on endpoints that
+ * store or read per-user data: progress, review, flashcards, vocabulary.
  */
-export async function requirePreviewOrSubscribed(
-  req: AuthedRequest,
-  res: Response,
-  next: NextFunction
-): Promise<void> {
-  const auth = getAuth(req);
-  if (auth?.userId) req.userId = auth.userId;
-
-  const index = Number(req.params.index);
-  if (Number.isInteger(index) && index >= 0 && index < FREE_PREVIEW_PARAGRAPHS) {
-    next();
-    return;
-  }
-
-  await requireSubscribedUser(req, res, next);
-}
-
 export async function requireAuthed(
   req: AuthedRequest,
   res: Response,

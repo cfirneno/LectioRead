@@ -7,6 +7,7 @@
  */
 
 export * from './checkoutUrl';
+export * from './donationInput';
 export * from './flashcard';
 export * from './flashcardDeck';
 export * from './fullTranslation';

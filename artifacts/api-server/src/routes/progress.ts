@@ -2,11 +2,11 @@ import { Router, type IRouter } from "express";
 import { eq, and } from "drizzle-orm";
 import { db, progressTable } from "@workspace/db";
 import { SaveProgressBody } from "@workspace/api-zod";
-import { requireSubscribedUser, type AuthedRequest } from "../lib/subscriptionGuard";
+import { requireAuthed, type AuthedRequest } from "../lib/subscriptionGuard";
 
 const router: IRouter = Router();
 
-router.get("/progress", requireSubscribedUser, async (req: AuthedRequest, res): Promise<void> => {
+router.get("/progress", requireAuthed, async (req: AuthedRequest, res): Promise<void> => {
   const records = await db.select().from(progressTable).where(eq(progressTable.userId, req.userId!));
   res.json(
     records.map((r) => ({
@@ -19,7 +19,7 @@ router.get("/progress", requireSubscribedUser, async (req: AuthedRequest, res): 
   );
 });
 
-router.post("/progress", requireSubscribedUser, async (req: AuthedRequest, res): Promise<void> => {
+router.post("/progress", requireAuthed, async (req: AuthedRequest, res): Promise<void> => {
   const parsed = SaveProgressBody.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.message });

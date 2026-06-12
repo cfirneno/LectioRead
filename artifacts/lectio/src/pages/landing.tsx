@@ -84,7 +84,7 @@ export default function Landing() {
               </Button>
             </Link>
             <span className="text-sm text-muted-foreground font-serif">
-              First three paragraphs of every text, no account needed.
+              Every text, every feature, free — no account needed.
             </span>
           </div>
           <button
@@ -261,14 +261,14 @@ export default function Landing() {
             Support the site
           </h2>
           <p className="text-muted-foreground font-serif max-w-xl mx-auto">
-            Lectio is supported entirely by its readers — $1 a month, no ads,
-            no tracking, no investors. Every subscription goes directly into
-            adding more works, more languages, and new features like scansion,
-            grammar notes, and audio. Cancel from your account at any time.
+            Lectio is free for everyone — no ads, no tracking, no paywall. It's
+            supported entirely by readers who chip in. If it's useful to you,
+            a one-time gift of any size helps add more works, more languages,
+            and new features like scansion, grammar notes, and audio.
           </p>
-          <Link href="/sign-up">
+          <Link href="/support">
             <Button size="lg" className="font-serif">
-              Create your account
+              Support Lectio
             </Button>
           </Link>
         </section>

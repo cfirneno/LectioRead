@@ -12,6 +12,4 @@ export interface ParagraphSummary {
   index: number;
   originalText: string;
   completed: boolean;
-  /** True when this paragraph is beyond the free preview and the viewer is not subscribed; originalText is redacted. */
-  locked?: boolean;
 }

@@ -3,7 +3,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { SignIn, SignUp, useAuth } from "@clerk/react";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { useGetSubscriptionStatus } from "@workspace/api-client-react";
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
 import Home from "@/pages/home";
@@ -16,7 +15,8 @@ import ContinueReading from "@/pages/continue";
 import StartReading from "@/pages/start";
 import Videos from "@/pages/videos";
 import VideoWatch from "@/pages/video-watch";
-import Subscribe from "@/pages/subscribe";
+import Support from "@/pages/support";
+import SupportThanks from "@/pages/support-thanks";
 import CheckoutSuccess from "@/pages/checkout-success";
 import Stats from "@/pages/stats";
 import { useTrackVisit } from "@/hooks/useTrackVisit";
@@ -27,9 +27,10 @@ const queryClient = new QueryClient({
     queries: {
       retry: (failureCount, error: unknown) => {
         const status = (error as { status?: number })?.status;
-        // 402 = subscription required — never retry; user must subscribe.
-        if (status === 402) return false;
         // 401 can be transient (Clerk session warming up) — retry a few times.
+        if (status === 401) return failureCount < 3;
+        // Other 4xx are deterministic — don't retry.
+        if (typeof status === "number" && status >= 400 && status < 500) return false;
         return failureCount < 3;
       },
       retryDelay: (attemptIndex) => Math.min(500 * 2 ** attemptIndex, 3000),
@@ -45,17 +46,12 @@ function FullPageSpinner() {
   );
 }
 
-function RequireSubscription({ children }: { children: React.ReactNode }) {
+// Reading is free for everyone. Sign-in is only required for features that
+// store per-user data: continue, review, vocabulary, flashcards.
+function RequireAuth({ children }: { children: React.ReactNode }) {
   const { isLoaded, isSignedIn } = useAuth();
-  const enabled = isLoaded && !!isSignedIn;
-  const { data, isLoading } = useGetSubscriptionStatus({
-    query: { enabled } as never,
-  });
-
   if (!isLoaded) return <FullPageSpinner />;
   if (!isSignedIn) return <Redirect to="/sign-in" />;
-  if (isLoading || !data) return <FullPageSpinner />;
-  if (!data.active) return <Redirect to="/subscribe" />;
   return <>{children}</>;
 }
 
@@ -99,45 +95,37 @@ function Router() {
       <Route path="/sign-in/:rest*" component={SignInPage} />
       <Route path="/sign-up" component={SignUpPage} />
       <Route path="/sign-up/:rest*" component={SignUpPage} />
-      <Route path="/subscribe" component={Subscribe} />
+      <Route path="/subscribe">
+        <Redirect to="/support" />
+      </Route>
+      <Route path="/support" component={Support} />
+      <Route path="/support/thanks" component={SupportThanks} />
       <Route path="/checkout/success" component={CheckoutSuccess} />
       <Route path="/stats" component={Stats} />
       <Route path="/app" component={Home} />
       <Route path="/app/continue">
-        <RequireSubscription>
+        <RequireAuth>
           <ContinueReading />
-        </RequireSubscription>
+        </RequireAuth>
       </Route>
-      <Route path="/app/start/:catalogKey">
-        <RequireSubscription>
-          <StartReading />
-        </RequireSubscription>
-      </Route>
+      <Route path="/app/start/:catalogKey" component={StartReading} />
       <Route path="/app/review">
-        <RequireSubscription>
+        <RequireAuth>
           <Review />
-        </RequireSubscription>
+        </RequireAuth>
       </Route>
-      <Route path="/app/videos">
-        <RequireSubscription>
-          <Videos />
-        </RequireSubscription>
-      </Route>
-      <Route path="/app/videos/:slug">
-        <RequireSubscription>
-          <VideoWatch />
-        </RequireSubscription>
-      </Route>
+      <Route path="/app/videos" component={Videos} />
+      <Route path="/app/videos/:slug" component={VideoWatch} />
       <Route path="/texts/:textId/read/:index" component={Read} />
       <Route path="/texts/:textId/vocabulary">
-        <RequireSubscription>
+        <RequireAuth>
           <Vocabulary />
-        </RequireSubscription>
+        </RequireAuth>
       </Route>
       <Route path="/texts/:textId/flashcards">
-        <RequireSubscription>
+        <RequireAuth>
           <Flashcards />
-        </RequireSubscription>
+        </RequireAuth>
       </Route>
       <Route path="/texts/:textId" component={TextToc} />
       <Route component={NotFound} />

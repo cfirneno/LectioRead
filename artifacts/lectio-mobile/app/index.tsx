@@ -18,7 +18,6 @@ import {
   useSearchText,
   useListTexts,
   useGetRecentTexts,
-  useGetSubscriptionStatus,
 } from "@workspace/api-client-react";
 
 import { useColors } from "@/hooks/useColors";
@@ -61,11 +60,8 @@ function Library() {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({ Latin: true, Greek: true });
   const [loadingQuery, setLoadingQuery] = useState<string | null>(null);
 
-  const subscription = useGetSubscriptionStatus();
-  const subActive = subscription.data?.active === true;
-
-  const recent = useGetRecentTexts({ query: { enabled: subActive } as never });
-  const list = useListTexts({ query: { enabled: subActive } as never });
+  const recent = useGetRecentTexts();
+  const list = useListTexts();
   const search = useSearchText();
 
   const grouped = useMemo(() => {
@@ -114,18 +110,6 @@ function Library() {
       { text: "Sign out", style: "destructive", onPress: () => signOut() },
     ]);
   };
-
-  if (subscription.isLoading) {
-    return (
-      <View style={[styles.center, { backgroundColor: colors.background }]}>
-        <ActivityIndicator color={colors.primary} />
-      </View>
-    );
-  }
-
-  if (!subActive) {
-    return <Redirect href="/paywall" />;
-  }
 
   const refreshing = recent.isFetching || list.isFetching;
 

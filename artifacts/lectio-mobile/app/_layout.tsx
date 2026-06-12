@@ -57,7 +57,6 @@ function RootLayoutNav() {
       <Stack.Screen name="text/[id]/read/[index]" />
       <Stack.Screen name="text/[id]/quiz/[index]" options={{ presentation: "modal" }} />
       <Stack.Screen name="review" />
-      <Stack.Screen name="paywall" options={{ presentation: "modal" }} />
     </Stack>
   );
 }

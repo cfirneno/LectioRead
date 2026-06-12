@@ -502,11 +502,17 @@ paths:
         "401":
           description: Unauthorized
 
-  /subscription/checkout:
+  /donate/checkout:
     post:
-      operationId: createCheckoutSession
-      tags: [subscription]
-      summary: Create a Stripe Checkout session for the $1/month subscription
+      operationId: createDonationCheckout
+      tags: [donate]
+      summary: Create a Stripe Checkout session for a one-time donation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DonationInput"
       responses:
         "200":
           description: Checkout URL
@@ -514,8 +520,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CheckoutUrl"
-        "401":
-          description: Unauthorized
+        "400":
+          description: Invalid donation amount
 
   /subscription/portal:
     post:
@@ -689,9 +695,6 @@ components:
           type: string
         completed:
           type: boolean
-        locked:
-          type: boolean
-          description: "True when this paragraph is beyond the free preview and the viewer is not subscribed; originalText is redacted."
 
     Paragraph:
       type: object
@@ -1038,3 +1041,13 @@ components:
       properties:
         url:
           type: string
+
+    DonationInput:
+      type: object
+      required: [amountCents]
+      properties:
+        amountCents:
+          type: integer
+          minimum: 100
+          maximum: 1000000
+          description: "Donation amount in US cents (min $1, max $10,000)."
