@@ -8,7 +8,7 @@ import {
   GetTextVocabularyParams,
 } from "@workspace/api-zod";
 import { searchAndFetchText, CopyrightedTextError } from "../lib/ai";
-import { requireSubscribedUser, type AuthedRequest } from "../lib/subscriptionGuard";
+import { requireSubscribedUser, attachOptionalUser, type AuthedRequest } from "../lib/subscriptionGuard";
 import { beginForeground } from "../lib/foregroundGate";
 import { aggregateVocabulary } from "../lib/vocab";
 
@@ -98,7 +98,7 @@ router.post("/texts/search", requireSubscribedUser, async (req: AuthedRequest, r
   }
 });
 
-router.get("/texts", requireSubscribedUser, async (_req: AuthedRequest, res): Promise<void> => {
+router.get("/texts", attachOptionalUser, async (_req: AuthedRequest, res): Promise<void> => {
   const texts = await db
     .select()
     .from(textsTable)
@@ -124,8 +124,12 @@ router.get("/texts", requireSubscribedUser, async (_req: AuthedRequest, res): Pr
   );
 });
 
-router.get("/texts/recent", requireSubscribedUser, async (req: AuthedRequest, res): Promise<void> => {
-  const userId = req.userId!;
+router.get("/texts/recent", attachOptionalUser, async (req: AuthedRequest, res): Promise<void> => {
+  const userId = req.userId;
+  if (!userId) {
+    res.json([]);
+    return;
+  }
   const userProgress = await db
     .select()
     .from(progressTable)

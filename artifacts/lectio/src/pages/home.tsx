@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { UserButton } from "@clerk/react";
-import { useSearchText, useListTexts, useGetRecentTexts, useCreateBillingPortalSession } from "@workspace/api-client-react";
+import { UserButton, useAuth } from "@clerk/react";
+import { useSearchText, useListTexts, useGetRecentTexts, useCreateBillingPortalSession, useGetSubscriptionStatus } from "@workspace/api-client-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { BookOpen, Search, Loader2, Clock, ChevronDown, ChevronUp, CreditCard, Sparkles, Film } from "lucide-react";
@@ -197,6 +197,12 @@ export default function Home() {
   const [showSearch, setShowSearch] = useState(false);
   const [loadingQuery, setLoadingQuery] = useState<string | null>(null);
 
+  const { isLoaded: authLoaded, isSignedIn } = useAuth();
+  const { data: subStatus } = useGetSubscriptionStatus({
+    query: { enabled: (authLoaded && !!isSignedIn) as boolean } as never,
+  });
+  const isSubscribed = !!subStatus?.active;
+
   const searchMutation = useSearchText();
   const { data: recentTexts } = useGetRecentTexts();
   const { data: allTexts } = useListTexts();
@@ -289,7 +295,13 @@ export default function Home() {
           const apiErr = err as { status?: number; data?: { error?: string } | null };
           const serverMessage = apiErr?.data?.error;
           const status = apiErr?.status;
-          if (status === 400 && serverMessage) {
+          if (status === 401 || status === 402) {
+            toast({
+              title: "Subscribe to search the archives",
+              description: "Browsing and the free preview of every text are open to all. Searching for new works is part of the $1/month subscription.",
+            });
+            setLocation("/subscribe");
+          } else if (status === 400 && serverMessage) {
             toast({
               title: "Not available",
               description: serverMessage,
@@ -327,37 +339,58 @@ export default function Home() {
             </div>
           </Link>
           <div className="flex items-center gap-2">
-            {recentTexts && recentTexts.length > 0 && (
-              <Link href="/app/continue">
-                <Button variant="ghost" size="sm" className="font-serif text-muted-foreground">
-                  <Clock className="h-4 w-4 mr-1.5" />
-                  Continue
+            {isSubscribed ? (
+              <>
+                {recentTexts && recentTexts.length > 0 && (
+                  <Link href="/app/continue">
+                    <Button variant="ghost" size="sm" className="font-serif text-muted-foreground">
+                      <Clock className="h-4 w-4 mr-1.5" />
+                      Continue
+                    </Button>
+                  </Link>
+                )}
+                <Link href="/app/videos">
+                  <Button variant="ghost" size="sm" className="font-serif text-muted-foreground">
+                    <Film className="h-4 w-4 mr-1.5" />
+                    Videos
+                  </Button>
+                </Link>
+                <Link href="/app/review">
+                  <Button variant="ghost" size="sm" className="font-serif text-muted-foreground">
+                    <Sparkles className="h-4 w-4 mr-1.5" />
+                    Review
+                  </Button>
+                </Link>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleManageBilling}
+                  disabled={portal.isPending}
+                  className="font-serif text-muted-foreground"
+                >
+                  <CreditCard className="h-4 w-4 mr-1.5" />
+                  {portal.isPending ? "Opening…" : "Billing"}
                 </Button>
-              </Link>
+                <UserButton />
+              </>
+            ) : (
+              <>
+                {isSignedIn ? (
+                  <UserButton />
+                ) : (
+                  <Link href="/sign-in">
+                    <Button variant="ghost" size="sm" className="font-serif text-muted-foreground">
+                      Sign in
+                    </Button>
+                  </Link>
+                )}
+                <Link href="/subscribe">
+                  <Button size="sm" className="font-serif">
+                    Subscribe — $1/month
+                  </Button>
+                </Link>
+              </>
             )}
-            <Link href="/app/videos">
-              <Button variant="ghost" size="sm" className="font-serif text-muted-foreground">
-                <Film className="h-4 w-4 mr-1.5" />
-                Videos
-              </Button>
-            </Link>
-            <Link href="/app/review">
-              <Button variant="ghost" size="sm" className="font-serif text-muted-foreground">
-                <Sparkles className="h-4 w-4 mr-1.5" />
-                Review
-              </Button>
-            </Link>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleManageBilling}
-              disabled={portal.isPending}
-              className="font-serif text-muted-foreground"
-            >
-              <CreditCard className="h-4 w-4 mr-1.5" />
-              {portal.isPending ? "Opening…" : "Billing"}
-            </Button>
-            <UserButton />
           </div>
         </div>
       </header>

@@ -54,6 +54,9 @@ export default function Landing() {
                 Watch
               </Button>
             </a>
+            <Link href="/app">
+              <Button variant="ghost" className="font-serif">Browse the library</Button>
+            </Link>
             <Link href="/sign-in">
               <Button variant="ghost" className="font-serif">Sign in</Button>
             </Link>
@@ -74,6 +77,16 @@ export default function Landing() {
             Built for students and lifelong readers who want to meet Virgil, Homer, Dante,
             Tolstoy, and Sōseki on their own terms.
           </p>
+          <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+            <Link href="/app">
+              <Button size="lg" className="font-serif">
+                Start reading free
+              </Button>
+            </Link>
+            <span className="text-sm text-muted-foreground font-serif">
+              First three paragraphs of every text, no account needed.
+            </span>
+          </div>
           <button
             onClick={scrollToWhyOriginal}
             className="group mx-auto mt-16 flex flex-col items-center gap-2 text-muted-foreground hover:text-primary transition-colors"

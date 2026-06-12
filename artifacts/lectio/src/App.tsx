@@ -102,11 +102,7 @@ function Router() {
       <Route path="/subscribe" component={Subscribe} />
       <Route path="/checkout/success" component={CheckoutSuccess} />
       <Route path="/stats" component={Stats} />
-      <Route path="/app">
-        <RequireSubscription>
-          <Home />
-        </RequireSubscription>
-      </Route>
+      <Route path="/app" component={Home} />
       <Route path="/app/continue">
         <RequireSubscription>
           <ContinueReading />
