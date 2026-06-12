@@ -15,14 +15,19 @@ import {
   generateScansion,
   generateSpeech,
 } from "../lib/ai";
-import { requireSubscribedUser, type AuthedRequest } from "../lib/subscriptionGuard";
+import {
+  requireSubscribedUser,
+  attachOptionalUser,
+  requirePreviewOrSubscribed,
+  getEffectiveSubscriptionStatus,
+  FREE_PREVIEW_PARAGRAPHS,
+  type AuthedRequest,
+} from "../lib/subscriptionGuard";
 import { beginForeground } from "../lib/foregroundGate";
 
 const router: IRouter = Router();
 
-router.use(requireSubscribedUser);
-
-router.get("/texts/:textId/paragraphs", async (req: AuthedRequest, res): Promise<void> => {
+router.get("/texts/:textId/paragraphs", attachOptionalUser, async (req: AuthedRequest, res): Promise<void> => {
   const params = ListParagraphsParams.safeParse(req.params);
   if (!params.success) {
     res.status(400).json({ error: params.error.message });
@@ -35,33 +40,44 @@ router.get("/texts/:textId/paragraphs", async (req: AuthedRequest, res): Promise
     .where(eq(paragraphsTable.textId, params.data.textId))
     .orderBy(paragraphsTable.index);
 
-  const progressRecords = await db
-    .select()
-    .from(progressTable)
-    .where(
-      and(
-        eq(progressTable.textId, params.data.textId),
-        eq(progressTable.userId, req.userId!)
-      )
-    );
+  const active = req.userId
+    ? (await getEffectiveSubscriptionStatus(req.userId)).active
+    : false;
 
-  const progressMap = new Map(
-    progressRecords.map((p) => [p.paragraphIndex, p.completed])
-  );
+  const progressMap = new Map<number, boolean>();
+  if (req.userId) {
+    const progressRecords = await db
+      .select()
+      .from(progressTable)
+      .where(
+        and(
+          eq(progressTable.textId, params.data.textId),
+          eq(progressTable.userId, req.userId)
+        )
+      );
+    for (const p of progressRecords) progressMap.set(p.paragraphIndex, p.completed);
+  }
 
   res.json(
-    paragraphs.map((p) => ({
-      id: p.id,
-      textId: p.textId,
-      index: p.index,
-      originalText: p.originalText,
-      completed: progressMap.get(p.index) ?? false,
-    }))
+    paragraphs.map((p) => {
+      // Beyond the free preview, redact the text for anyone without an active
+      // subscription so the paid catalogue can't be scraped via the list route.
+      const locked = !active && p.index >= FREE_PREVIEW_PARAGRAPHS;
+      return {
+        id: p.id,
+        textId: p.textId,
+        index: p.index,
+        originalText: locked ? "" : p.originalText,
+        completed: progressMap.get(p.index) ?? false,
+        locked,
+      };
+    })
   );
 });
 
 router.get(
   "/texts/:textId/paragraphs/:index",
+  requirePreviewOrSubscribed,
   async (req: AuthedRequest, res): Promise<void> => {
     const params = GetParagraphParams.safeParse(req.params);
     if (!params.success) {
@@ -84,23 +100,27 @@ router.get(
       return;
     }
 
-    const [progressRecord] = await db
-      .select()
-      .from(progressTable)
-      .where(
-        and(
-          eq(progressTable.userId, req.userId!),
-          eq(progressTable.textId, params.data.textId),
-          eq(progressTable.paragraphIndex, params.data.index)
-        )
-      );
+    let completed = false;
+    if (req.userId) {
+      const [progressRecord] = await db
+        .select()
+        .from(progressTable)
+        .where(
+          and(
+            eq(progressTable.userId, req.userId),
+            eq(progressTable.textId, params.data.textId),
+            eq(progressTable.paragraphIndex, params.data.index)
+          )
+        );
+      completed = progressRecord?.completed ?? false;
+    }
 
     res.json({
       id: paragraph.id,
       textId: paragraph.textId,
       index: paragraph.index,
       originalText: paragraph.originalText,
-      completed: progressRecord?.completed ?? false,
+      completed,
       interlinearTranslation: paragraph.interlinearTranslation,
       fullTranslation: paragraph.fullTranslation,
     });
@@ -109,6 +129,7 @@ router.get(
 
 router.post(
   "/texts/:textId/paragraphs/:index/interlinear",
+  requirePreviewOrSubscribed,
   async (req, res): Promise<void> => {
     const params = GetInterlinearTranslationParams.safeParse(req.params);
     if (!params.success) {
@@ -216,6 +237,7 @@ router.post(
 
 router.post(
   "/texts/:textId/paragraphs/:index/translation",
+  requirePreviewOrSubscribed,
   async (req, res): Promise<void> => {
     const params = GetFullTranslationParams.safeParse(req.params);
     if (!params.success) {
@@ -327,6 +349,7 @@ router.post(
 
 router.post(
   "/texts/:textId/paragraphs/:index/scansion",
+  requirePreviewOrSubscribed,
   async (req, res): Promise<void> => {
     const params = GetScansionParams.safeParse(req.params);
     if (!params.success) {
@@ -396,6 +419,7 @@ router.post(
 
 router.post(
   "/texts/:textId/paragraphs/:index/audio",
+  requirePreviewOrSubscribed,
   async (req, res): Promise<void> => {
     const params = GetParagraphAudioParams.safeParse(req.params);
     if (!params.success) {

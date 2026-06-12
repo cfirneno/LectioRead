@@ -689,6 +689,9 @@ components:
           type: string
         completed:
           type: boolean
+        locked:
+          type: boolean
+          description: "True when this paragraph is beyond the free preview and the viewer is not subscribed; originalText is redacted."
 
     Paragraph:
       type: object

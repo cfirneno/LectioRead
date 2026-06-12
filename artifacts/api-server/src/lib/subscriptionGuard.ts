@@ -48,6 +48,50 @@ export async function requireSubscribedUser(
   next();
 }
 
+/**
+ * Number of opening paragraphs of every text that are readable for free,
+ * with no sign-in and no subscription. Anything at or beyond this index
+ * requires an active subscription.
+ */
+export const FREE_PREVIEW_PARAGRAPHS = 3;
+
+/**
+ * Attaches req.userId when a Clerk session is present, but never blocks the
+ * request. Use on endpoints that serve free-preview content to anonymous
+ * visitors while still personalising for signed-in users.
+ */
+export function attachOptionalUser(
+  req: AuthedRequest,
+  _res: Response,
+  next: NextFunction
+): void {
+  const auth = getAuth(req);
+  if (auth?.userId) req.userId = auth.userId;
+  next();
+}
+
+/**
+ * Allows anonymous access to the first FREE_PREVIEW_PARAGRAPHS paragraphs of a
+ * text (by :index param); anything beyond falls through to the subscription
+ * gate (401 if signed out, 402 if not subscribed).
+ */
+export async function requirePreviewOrSubscribed(
+  req: AuthedRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  const auth = getAuth(req);
+  if (auth?.userId) req.userId = auth.userId;
+
+  const index = Number(req.params.index);
+  if (Number.isInteger(index) && index >= 0 && index < FREE_PREVIEW_PARAGRAPHS) {
+    next();
+    return;
+  }
+
+  await requireSubscribedUser(req, res, next);
+}
+
 export async function requireAuthed(
   req: AuthedRequest,
   res: Response,

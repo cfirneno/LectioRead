@@ -2,7 +2,7 @@ import React from "react";
 import { Link, useParams } from "wouter";
 import { useGetText, useListParagraphs, useGetTextStats } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, CheckCircle2, Circle, BookOpen, GraduationCap, Layers } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Circle, BookOpen, GraduationCap, Layers, Lock } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getGrammarResource } from "@/lib/grammar-resources";
 
@@ -112,7 +112,9 @@ export default function TextToc() {
             <Link href={`/texts/${text.id}/read/${p.index}`} key={p.id}>
               <div className="group flex gap-4 p-4 rounded-lg hover:bg-secondary/40 transition-colors cursor-pointer border border-transparent hover:border-border/40">
                 <div className="flex-shrink-0 mt-1">
-                  {p.completed ? (
+                  {p.locked ? (
+                    <Lock className="h-5 w-5 text-muted-foreground/40 group-hover:text-muted-foreground" />
+                  ) : p.completed ? (
                     <CheckCircle2 className="h-5 w-5 text-primary" />
                   ) : (
                     <Circle className="h-5 w-5 text-muted-foreground/40 group-hover:text-muted-foreground" />
@@ -120,9 +122,15 @@ export default function TextToc() {
                 </div>
                 <div className="space-y-2 flex-grow">
                   <div className="text-sm font-medium text-muted-foreground">Paragraph {p.index + 1}</div>
-                  <p className={`font-serif text-lg leading-relaxed line-clamp-2 ${p.completed ? "text-muted-foreground" : "text-foreground"}`}>
-                    {p.originalText}
-                  </p>
+                  {p.locked ? (
+                    <p className="font-serif text-lg leading-relaxed italic text-muted-foreground/60">
+                      Subscribe to unlock the rest of this text
+                    </p>
+                  ) : (
+                    <p className={`font-serif text-lg leading-relaxed line-clamp-2 ${p.completed ? "text-muted-foreground" : "text-foreground"}`}>
+                      {p.originalText}
+                    </p>
+                  )}
                 </div>
               </div>
             </Link>

@@ -132,11 +132,7 @@ function Router() {
           <VideoWatch />
         </RequireSubscription>
       </Route>
-      <Route path="/texts/:textId/read/:index">
-        <RequireSubscription>
-          <Read />
-        </RequireSubscription>
-      </Route>
+      <Route path="/texts/:textId/read/:index" component={Read} />
       <Route path="/texts/:textId/vocabulary">
         <RequireSubscription>
           <Vocabulary />
@@ -147,11 +143,7 @@ function Router() {
           <Flashcards />
         </RequireSubscription>
       </Route>
-      <Route path="/texts/:textId">
-        <RequireSubscription>
-          <TextToc />
-        </RequireSubscription>
-      </Route>
+      <Route path="/texts/:textId" component={TextToc} />
       <Route component={NotFound} />
     </Switch>
   );

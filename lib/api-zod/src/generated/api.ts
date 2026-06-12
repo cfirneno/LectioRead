@@ -118,7 +118,8 @@ export const ListParagraphsResponseItem = zod.object({
   "textId": zod.number(),
   "index": zod.number(),
   "originalText": zod.string(),
-  "completed": zod.boolean()
+  "completed": zod.boolean(),
+  "locked": zod.boolean().optional().describe('True when this paragraph is beyond the free preview and the viewer is not subscribed; originalText is redacted.')
 })
 export const ListParagraphsResponse = zod.array(ListParagraphsResponseItem)
 

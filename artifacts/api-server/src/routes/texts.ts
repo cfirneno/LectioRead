@@ -14,9 +14,7 @@ import { aggregateVocabulary } from "../lib/vocab";
 
 const router: IRouter = Router();
 
-router.use(requireSubscribedUser);
-
-router.post("/texts/search", async (req: AuthedRequest, res): Promise<void> => {
+router.post("/texts/search", requireSubscribedUser, async (req: AuthedRequest, res): Promise<void> => {
   const parsed = SearchTextBody.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.message });
@@ -100,7 +98,7 @@ router.post("/texts/search", async (req: AuthedRequest, res): Promise<void> => {
   }
 });
 
-router.get("/texts", async (_req: AuthedRequest, res): Promise<void> => {
+router.get("/texts", requireSubscribedUser, async (_req: AuthedRequest, res): Promise<void> => {
   const texts = await db
     .select()
     .from(textsTable)
@@ -126,7 +124,7 @@ router.get("/texts", async (_req: AuthedRequest, res): Promise<void> => {
   );
 });
 
-router.get("/texts/recent", async (req: AuthedRequest, res): Promise<void> => {
+router.get("/texts/recent", requireSubscribedUser, async (req: AuthedRequest, res): Promise<void> => {
   const userId = req.userId!;
   const userProgress = await db
     .select()
@@ -214,7 +212,7 @@ router.get("/texts/:textId", async (req: AuthedRequest, res): Promise<void> => {
   });
 });
 
-router.get("/texts/:textId/stats", async (req: AuthedRequest, res): Promise<void> => {
+router.get("/texts/:textId/stats", requireSubscribedUser, async (req: AuthedRequest, res): Promise<void> => {
   const params = GetTextStatsParams.safeParse(req.params);
   if (!params.success) {
     res.status(400).json({ error: params.error.message });
@@ -255,7 +253,7 @@ router.get("/texts/:textId/stats", async (req: AuthedRequest, res): Promise<void
   });
 });
 
-router.get("/texts/:textId/vocabulary", async (req: AuthedRequest, res): Promise<void> => {
+router.get("/texts/:textId/vocabulary", requireSubscribedUser, async (req: AuthedRequest, res): Promise<void> => {
   const params = GetTextVocabularyParams.safeParse(req.params);
   if (!params.success) {
     res.status(400).json({ error: params.error.message });
