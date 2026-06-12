@@ -117,5 +117,89 @@
     "at": "2026-06-12T16:30:33.180Z",
     "institution": "Society for Classical Studies",
     "department": "Association"
+  },
+  "hmansfield@gov.harvard.edu": {
+    "status": "sent",
+    "id": "ec798ba1-abe0-4311-90e5-299c397f739e",
+    "at": "2026-06-12T16:39:49.834Z",
+    "institution": "Harvard University",
+    "department": "Government (Prof. Harvey Mansfield)"
+  },
+  "info@scruton.org": {
+    "status": "sent",
+    "id": "bc4c45ea-dff2-4c85-99c6-e0d8f996c250",
+    "at": "2026-06-12T16:39:50.650Z",
+    "institution": "Roger Scruton Legacy Foundation",
+    "department": "Institute"
+  },
+  "library-reference@stanford.edu": {
+    "status": "sent",
+    "id": "e49e0df4-fa2d-4b82-8f44-b8047e289149",
+    "at": "2026-06-12T16:39:51.452Z",
+    "institution": "Stanford University",
+    "department": "Library"
+  },
+  "help.desk@utoronto.ca": {
+    "status": "sent",
+    "id": "255398d7-ae70-4d47-918d-3abbf0561cbc",
+    "at": "2026-06-12T16:39:52.256Z",
+    "institution": "University of Toronto",
+    "department": "Library"
+  },
+  "library@amherst.edu": {
+    "status": "sent",
+    "id": "8cf5d09d-e151-4a9b-9b22-b72e6a66fdf3",
+    "at": "2026-06-12T16:39:53.074Z",
+    "institution": "Amherst College",
+    "department": "Library"
+  },
+  "ask@bu.edu": {
+    "status": "sent",
+    "id": "2364d41c-b3a5-40ed-85c5-842fd031f7d9",
+    "at": "2026-06-12T16:39:53.887Z",
+    "institution": "Boston University",
+    "department": "Library"
+  },
+  "libref@syr.edu": {
+    "status": "sent",
+    "id": "b4992f8d-e8b2-49f9-b6b9-874b2b437d47",
+    "at": "2026-06-12T16:39:54.660Z",
+    "institution": "Syracuse University",
+    "department": "Library"
+  },
+  "askyalelibrary@yale.edu": {
+    "status": "sent",
+    "id": "5cdb1d36-c758-4d15-b320-29a2a7091c33",
+    "at": "2026-06-12T16:39:55.477Z",
+    "institution": "Yale University",
+    "department": "Library"
+  },
+  "askalibrarian@psu.edu": {
+    "status": "sent",
+    "id": "fa623838-bcd4-4d23-bc7d-e1842ff6b421",
+    "at": "2026-06-12T16:39:56.323Z",
+    "institution": "Pennsylvania State University",
+    "department": "Library"
+  },
+  "libraryinfo@ucd.ie": {
+    "status": "sent",
+    "id": "26c0421f-0ad2-461c-b3ca-0d9416dcf9ec",
+    "at": "2026-06-12T16:39:57.128Z",
+    "institution": "University College Dublin",
+    "department": "Library"
+  },
+  "library@glasgow.ac.uk": {
+    "status": "sent",
+    "id": "bf2feccf-f6b3-436a-983a-eed4fbe964c0",
+    "at": "2026-06-12T16:39:57.931Z",
+    "institution": "University of Glasgow",
+    "department": "Library"
+  },
+  "library@lincoln.ac.uk": {
+    "status": "sent",
+    "id": "32dab80d-f86e-4af4-a4f9-f925926e308a",
+    "at": "2026-06-12T16:39:58.724Z",
+    "institution": "University of Lincoln",
+    "department": "Library"
   }
 }
