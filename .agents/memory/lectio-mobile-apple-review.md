@@ -26,6 +26,21 @@ The TestFlight build was rejected under Guideline 5.1.1. Two root causes, both f
    Implemented via Clerk `useUser().user?.delete()` behind a confirm Alert in the
    Home header account menu (Sign out / Delete account).
 
-## Not fixable in code (Charles must set in App Store Connect)
-- Privacy Policy URL (the website has no /privacy or /terms page), age rating,
-  category. These are App Store Connect metadata fields, not app code.
+## Demo account for Beta App Review
+A TestFlight Beta App Review rejection was also caused by **no demo credentials**:
+"Sign-in required" was on but the Sign-In Information box was blank, so the reviewer
+couldn't get past login. Always provide a working account (login features still exist:
+quizzes/review/progress). The demo account email is `charles@risxsci.com`; the account
+already existed, so the password was set via the Clerk Backend API
+(`PATCH api.clerk.com/v1/users/{id}` with `CLERK_SECRET_KEY`, `skip_password_checks:true`).
+Backend-created/updated accounts are auto-verified. Never store the password here.
+
+## Now fixed in code
+- Privacy Policy page added at web route `/privacy` (`artifacts/lectio/src/pages/privacy.tsx`)
+  → live URL `https://lectioread.com/privacy` after the web app is published.
+
+## Charles must still do manually in App Store Connect / Expo
+- Paste the demo email+password into TestFlight → Beta App Review → Sign-In Information.
+- Paste the Privacy Policy URL, fill Contact Info + Review Notes.
+- Rebuild the iOS app (buildNumber bumped to 4 in app.json) via EAS and resubmit.
+- Age rating + category are App Store Connect metadata fields, not app code.

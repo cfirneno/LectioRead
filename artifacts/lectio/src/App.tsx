@@ -13,6 +13,7 @@ import Flashcards from "@/pages/flashcards";
 import Review from "@/pages/review";
 import ContinueReading from "@/pages/continue";
 import StartReading from "@/pages/start";
+import Privacy from "@/pages/privacy";
 import Videos from "@/pages/videos";
 import VideoWatch from "@/pages/video-watch";
 import Support from "@/pages/support";
@@ -101,6 +102,7 @@ function Router() {
         <Redirect to="/support" />
       </Route>
       <Route path="/support" component={Support} />
+      <Route path="/privacy" component={Privacy} />
       <Route path="/support/thanks" component={SupportThanks} />
       <Route path="/educators" component={Educators} />
       <Route path="/checkout/success" component={CheckoutSuccess} />
