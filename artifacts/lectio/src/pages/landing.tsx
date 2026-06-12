@@ -87,6 +87,20 @@ export default function Landing() {
               Every text, every feature, free — no account needed.
             </span>
           </div>
+          <div className="pt-10">
+            <div className="mx-auto max-w-2xl overflow-hidden rounded-xl border border-border/60 shadow-lg aspect-video bg-black">
+              <iframe
+                className="h-full w-full"
+                src="https://www.youtube-nocookie.com/embed/PhjvB98pG4k?rel=0"
+                title="The Aeneid — Introduction"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+            <p className="mt-3 text-sm text-muted-foreground font-serif">
+              Watch: <em>The Aeneid</em> — Introduction
+            </p>
+          </div>
           <button
             onClick={scrollToWhyOriginal}
             className="group mx-auto mt-16 flex flex-col items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
