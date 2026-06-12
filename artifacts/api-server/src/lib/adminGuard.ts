@@ -18,8 +18,10 @@ export async function isAdminUser(userId: string): Promise<boolean> {
   const allow = adminEmails();
   if (allow.length === 0) return false;
   const user = await clerkClient.users.getUser(userId);
-  return user.emailAddresses.some((e) =>
-    allow.includes(e.emailAddress.toLowerCase()),
+  return user.emailAddresses.some(
+    (e) =>
+      e.verification?.status === "verified" &&
+      allow.includes(e.emailAddress.toLowerCase()),
   );
 }
 
